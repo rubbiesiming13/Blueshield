@@ -1,0 +1,1573 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register Suspect | BlueShield</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+            background: #0b1f3a;
+            color: white;
+            padding: 18px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .container {
+            max-width: 1050px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #0b1f3a;
+            margin-bottom: 8px;
+            font-size: 30px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* =====================================================
+           FORM CARD
+        ===================================================== */
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        /* =====================================================
+           FORM SECTIONS
+        ===================================================== */
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+        }
+
+        .section-header h2 {
+            color: #0b1f3a;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .section-header p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           TWO COLUMN FORM
+        ===================================================== */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* =====================================================
+           LABELS
+        ===================================================== */
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #dc2626;
+            margin-left: 2px;
+        }
+
+        /* =====================================================
+           INPUTS
+        ===================================================== */
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1f2937;
+            background: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:hover,
+        select:hover,
+        textarea:hover {
+            border-color: #9ca3af;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        textarea {
+            min-height: 105px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 9px;
+            background: #f9fafb;
+        }
+
+        /* =====================================================
+           HELP TEXT
+        ===================================================== */
+
+        .help-text {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           ERRORS
+        ===================================================== */
+
+        .errorlist {
+            color: #dc2626;
+            margin: 5px 0 7px;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .non-field-errors {
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            color: #b91c1c;
+        }
+
+        /* =====================================================
+           SYSTEM INFORMATION
+        ===================================================== */
+
+        .system-note {
+            background: #f0f4f8;
+            border-left: 4px solid #0b1f3a;
+            padding: 14px 16px;
+            margin-bottom: 28px;
+            border-radius: 5px;
+        }
+
+        .system-note strong {
+            color: #0b1f3a;
+        }
+
+        .system-note p {
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           FULL NAME PREVIEW
+        ===================================================== */
+
+        .name-preview {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f0f4f8;
+            border-left: 3px solid #0b1f3a;
+            border-radius: 5px;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        .name-preview strong {
+            color: #0b1f3a;
+        }
+
+        /* =====================================================
+           CASE AUTO-FILL INFORMATION
+        ===================================================== */
+
+        .case-auto-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #dbe3ec;
+            border-radius: 8px;
+        }
+
+        .case-auto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .case-auto-header strong {
+            color: #0b1f3a;
+            font-size: 15px;
+        }
+
+        .case-auto-header span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .case-auto-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .case-auto-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .case-auto-grid input {
+            background: #eef2f7;
+            color: #374151;
+            cursor: not-allowed;
+        }
+
+        /* =====================================================
+           FORM FOOTER
+        ===================================================== */
+
+        .form-footer {
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-note {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #0b1f3a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #163b68;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 16px 20px;
+            }
+
+            .container {
+                margin: 25px auto;
+                padding: 0 12px;
+            }
+
+            .form-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+
+            .case-auto-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .case-auto-grid .full-width {
+                grid-column: auto;
+            }
+
+            .case-auto-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .form-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+                width: 100%;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
+
+    <div class="navbar">
+
+        <div class="brand">
+            BlueShield
+        </div>
+
+        <div class="user-info">
+            Police Officer: {{ request.user.username }}
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN CONTAINER
+    ====================================================== -->
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>Register Suspect</h1>
+
+            <p>
+                Enter the suspect's personal, identification,
+                residential and case information below.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="form-body">
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+                    {% csrf_token %}
+
+                    {{ form.non_field_errors }}
+
+
+                    <!-- =================================================
+                         SYSTEM INFORMATION
+                    ================================================== -->
+
+                    <div class="system-note">
+
+                        <p>
+
+                            <strong>
+                                BlueShield Registration:
+                            </strong>
+
+                            The suspect number, registering officer,
+                            police station and district are automatically
+                            recorded by the system.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 01 - IDENTIFICATION
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                01. Identification Information
+                            </h2>
+
+                            <p>
+                                Enter the suspect's official identification
+                                details.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.id_type.id_for_label }}"
+                                >
+
+                                    Identification Type
+
+                                    {% if form.id_type.field.required %}
+                                        <span class="required">*</span>
+                                    {% endif %}
+
+                                </label>
+
+                                {{ form.id_type }}
+
+                                {{ form.id_type.errors }}
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.national_id_or_voter_no.id_for_label }}"
+                                >
+
+                                    Identification Number
+
+                                    {% if form.national_id_or_voter_no.field.required %}
+                                        <span class="required">*</span>
+                                    {% endif %}
+
+                                </label>
+
+                                {{ form.national_id_or_voter_no }}
+
+                                {{ form.national_id_or_voter_no.errors }}
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 02 - PERSONAL INFORMATION
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                02. Personal Information
+                            </h2>
+
+                            <p>
+                                Enter the suspect's basic personal details.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <!-- FIRST NAME -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.first_name.id_for_label }}"
+                                >
+
+                                    First Name
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.first_name }}
+
+                                {{ form.first_name.errors }}
+
+                            </div>
+
+
+                            <!-- MIDDLE NAME -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.middle_name.id_for_label }}"
+                                >
+
+                                    Middle Name
+
+                                </label>
+
+                                {{ form.middle_name }}
+
+                                {{ form.middle_name.errors }}
+
+                            </div>
+
+
+                            <!-- LAST NAME -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.last_name.id_for_label }}"
+                                >
+
+                                    Last Name
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.last_name }}
+
+                                {{ form.last_name.errors }}
+
+
+                                <!-- FULL NAME AUTO PREVIEW -->
+
+                                <div
+                                    class="name-preview"
+                                    id="full-name-preview"
+                                >
+
+                                    <strong>
+                                        Full Name:
+                                    </strong>
+
+                                    <span id="full-name-value">
+                                        Full name will appear here
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ALIAS -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.alias.id_for_label }}"
+                                >
+
+                                    Alias / Nickname
+
+                                </label>
+
+                                {{ form.alias }}
+
+                                {% if form.alias.help_text %}
+
+                                    <small class="help-text">
+                                        {{ form.alias.help_text }}
+                                    </small>
+
+                                {% endif %}
+
+                                {{ form.alias.errors }}
+
+                            </div>
+
+
+                            <!-- GENDER -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.gender.id_for_label }}"
+                                >
+
+                                    Gender
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.gender }}
+
+                                {{ form.gender.errors }}
+
+                            </div>
+
+
+                            <!-- DATE OF BIRTH -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.date_of_birth.id_for_label }}"
+                                >
+
+                                    Date of Birth
+
+                                </label>
+
+                                {{ form.date_of_birth }}
+
+                                {{ form.date_of_birth.errors }}
+
+                            </div>
+
+
+                            <!-- NATIONALITY -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.nationality.id_for_label }}"
+                                >
+
+                                    Nationality
+
+                                </label>
+
+                                {{ form.nationality }}
+
+                                {{ form.nationality.errors }}
+
+                                <small class="help-text">
+                                    Default value is Papua New Guinean.
+                                    Change it if necessary.
+                                </small>
+
+                            </div>
+
+
+                            <!-- OCCUPATION -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.occupation.id_for_label }}"
+                                >
+
+                                    Occupation
+
+                                </label>
+
+                                {{ form.occupation }}
+
+                                {{ form.occupation.errors }}
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 03 - CONTACT AND HOME ADDRESS
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                03. Contact & Home Address
+                            </h2>
+
+                            <p>
+                                Enter the suspect's current residential
+                                and contact information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <!-- PHONE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.phone_number.id_for_label }}"
+                                >
+
+                                    Phone Number
+
+                                </label>
+
+                                {{ form.phone_number }}
+
+                                {{ form.phone_number.errors }}
+
+                            </div>
+
+
+                            <!-- VILLAGE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.village.id_for_label }}"
+                                >
+
+                                    Village
+
+                                </label>
+
+                                {{ form.village }}
+
+                                {{ form.village.errors }}
+
+                            </div>
+
+
+                            <!-- HOME PROVINCE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.province.id_for_label }}"
+                                >
+
+                                    Home Province
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.province }}
+
+                                {{ form.province.errors }}
+
+                                <small class="help-text">
+
+                                    Select the province where the suspect
+                                    normally resides or comes from.
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- RESIDENTIAL ADDRESS -->
+
+                            <div class="form-group full-width">
+
+                                <label
+                                    for="{{ form.residential_address.id_for_label }}"
+                                >
+
+                                    Residential Address
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.residential_address }}
+
+                                {{ form.residential_address.errors }}
+
+                                {% if form.residential_address.help_text %}
+
+                                    <small class="help-text">
+                                        {{ form.residential_address.help_text }}
+                                    </small>
+
+                                {% endif %}
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 04 - PHOTOGRAPH
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                04. Photograph & Identifying Features
+                            </h2>
+
+                            <p>
+                                Provide information that can help identify
+                                the suspect.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <!-- MUGSHOT -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.mugshot.id_for_label }}"
+                                >
+
+                                    Suspect Photograph
+
+                                </label>
+
+                                {{ form.mugshot }}
+
+                                {{ form.mugshot.errors }}
+
+                                <small class="help-text">
+
+                                    Upload a clear photograph of the suspect.
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- IDENTIFYING MARKS -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.identifying_marks.id_for_label }}"
+                                >
+
+                                    Identifying Marks
+
+                                </label>
+
+                                {{ form.identifying_marks }}
+
+                                {{ form.identifying_marks.errors }}
+
+                                {% if form.identifying_marks.help_text %}
+
+                                    <small class="help-text">
+                                        {{ form.identifying_marks.help_text }}
+                                    </small>
+
+                                {% endif %}
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 05 - CASE INFORMATION
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                05. Case Information
+                            </h2>
+
+                            <p>
+                                Link the suspect to an existing case and
+                                specify their role.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <!-- CASE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.case.id_for_label }}"
+                                >
+
+                                    Case
+
+                                </label>
+
+                                {{ form.case }}
+
+                                {{ form.case.errors }}
+
+                                <small class="help-text">
+
+                                    Select a case to automatically display
+                                    its information.
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- SUSPECT ROLE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    for="{{ form.suspect_role.id_for_label }}"
+                                >
+
+                                    Suspect Role
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                {{ form.suspect_role }}
+
+                                {{ form.suspect_role.errors }}
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- =================================================
+                             CASE AUTO-FILL
+                        ================================================== -->
+
+                        <div
+                            id="case-auto-info"
+                            class="case-auto-info"
+                            style="display: none;"
+                        >
+
+                            <div class="case-auto-header">
+
+                                <strong>
+                                    Case Information
+                                </strong>
+
+                                <span>
+                                    Automatically loaded from BlueShield
+                                </span>
+
+                            </div>
+
+
+                            <div class="case-auto-grid">
+
+
+                                <!-- CASE NUMBER -->
+
+                                <div>
+
+                                    <label>
+                                        Case Number
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-number"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- CASE TITLE -->
+
+                                <div>
+
+                                    <label>
+                                        Case Title
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-title"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- OFFENCE -->
+
+                                <div>
+
+                                    <label>
+                                        Offence
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-offence"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- STATUS -->
+
+                                <div>
+
+                                    <label>
+                                        Status
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-status"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- PRIORITY -->
+
+                                <div>
+
+                                    <label>
+                                        Priority
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-priority"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- INCIDENT DATE -->
+
+                                <div>
+
+                                    <label>
+                                        Incident Date
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-date"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- INCIDENT LOCATION -->
+
+                                <div>
+
+                                    <label>
+                                        Incident Location
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-location"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- INVESTIGATING OFFICER -->
+
+                                <div>
+
+                                    <label>
+                                        Investigating Officer
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-officer"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                                <!-- POLICE STATION -->
+
+                                <div class="full-width">
+
+                                    <label>
+                                        Police Station
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="auto-case-station"
+                                        readonly
+                                    >
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SECTION 06 - ADDITIONAL INFORMATION
+                    ================================================== -->
+
+                    <div class="form-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                06. Additional Information
+                            </h2>
+
+                            <p>
+                                Add any other relevant information about
+                                the suspect.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+                            <div class="form-group full-width">
+
+                                <label
+                                    for="{{ form.notes.id_for_label }}"
+                                >
+
+                                    Additional Notes
+
+                                </label>
+
+                                {{ form.notes }}
+
+                                {{ form.notes.errors }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         FORM FOOTER
+                    ================================================== -->
+
+                    <div class="form-footer">
+
+                        <div class="footer-note">
+
+                            Fields marked with
+                            <span class="required">*</span>
+                            are required.
+
+                        </div>
+
+
+                        <div class="buttons">
+
+                            <a
+                                href="{% url 'accounts:dashboard' %}"
+                                class="btn btn-secondary"
+                            >
+                                Cancel
+                            </a>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Register Suspect
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        // ============================================================
+        // CASE AUTO-FILL
+        // ============================================================
+
+        const caseDetails = {{ case_details|safe }};
+
+        const caseSelect =
+            document.getElementById("id_case");
+
+        const caseAutoInfo =
+            document.getElementById("case-auto-info");
+
+        const caseNumber =
+            document.getElementById("auto-case-number");
+
+        const caseTitle =
+            document.getElementById("auto-case-title");
+
+        const caseOffence =
+            document.getElementById("auto-case-offence");
+
+        const caseStatus =
+            document.getElementById("auto-case-status");
+
+        const casePriority =
+            document.getElementById("auto-case-priority");
+
+        const caseDate =
+            document.getElementById("auto-case-date");
+
+        const caseLocation =
+            document.getElementById("auto-case-location");
+
+        const caseOfficer =
+            document.getElementById("auto-case-officer");
+
+        const caseStation =
+            document.getElementById("auto-case-station");
+
+
+        function clearCaseInformation() {
+
+            caseAutoInfo.style.display = "none";
+
+            caseNumber.value = "";
+            caseTitle.value = "";
+            caseOffence.value = "";
+            caseStatus.value = "";
+            casePriority.value = "";
+            caseDate.value = "";
+            caseLocation.value = "";
+            caseOfficer.value = "";
+            caseStation.value = "";
+        }
+
+
+        function loadCaseInformation() {
+
+            const selectedCase =
+                caseSelect.value;
+
+            if (!selectedCase) {
+
+                clearCaseInformation();
+
+                return;
+            }
+
+
+            const data =
+                caseDetails[selectedCase];
+
+
+            if (!data) {
+
+                clearCaseInformation();
+
+                return;
+            }
+
+
+            caseNumber.value =
+                data.case_number || "";
+
+            caseTitle.value =
+                data.title || "";
+
+            caseOffence.value =
+                data.offence || "";
+
+            caseStatus.value =
+                data.status || "";
+
+            casePriority.value =
+                data.priority || "";
+
+            caseDate.value =
+                data.incident_date || "";
+
+            caseLocation.value =
+                data.location || "";
+
+            caseOfficer.value =
+                data.investigating_officer || "";
+
+            caseStation.value =
+                data.station || "";
+
+
+            caseAutoInfo.style.display =
+                "block";
+        }
+
+
+        if (caseSelect) {
+
+            caseSelect.addEventListener(
+                "change",
+                loadCaseInformation
+            );
+
+            loadCaseInformation();
+        }
+
+
+        // ============================================================
+        // FULL NAME AUTO PREVIEW
+        // ============================================================
+
+        const firstNameInput =
+            document.getElementById("id_first_name");
+
+        const middleNameInput =
+            document.getElementById("id_middle_name");
+
+        const lastNameInput =
+            document.getElementById("id_last_name");
+
+        const fullNameValue =
+            document.getElementById("full-name-value");
+
+
+        function updateFullNamePreview() {
+
+            const firstName =
+                firstNameInput.value.trim();
+
+            const middleName =
+                middleNameInput.value.trim();
+
+            const lastName =
+                lastNameInput.value.trim();
+
+
+            const parts = [];
+
+
+            if (firstName) {
+
+                parts.push(firstName);
+
+            }
+
+
+            if (middleName) {
+
+                parts.push(middleName);
+
+            }
+
+
+            if (lastName) {
+
+                parts.push(lastName);
+
+            }
+
+
+            const fullName =
+                parts.join(" ");
+
+
+            if (fullName) {
+
+                fullNameValue.textContent =
+                    fullName;
+
+            } else {
+
+                fullNameValue.textContent =
+                    "Full name will appear here";
+
+            }
+
+        }
+
+
+        if (firstNameInput) {
+
+            firstNameInput.addEventListener(
+                "input",
+                updateFullNamePreview
+            );
+
+        }
+
+
+        if (middleNameInput) {
+
+            middleNameInput.addEventListener(
+                "input",
+                updateFullNamePreview
+            );
+
+        }
+
+
+        if (lastNameInput) {
+
+            lastNameInput.addEventListener(
+                "input",
+                updateFullNamePreview
+            );
+
+        }
+
+
+        // Load the name preview when the page
+        // contains previously entered values.
+
+        updateFullNamePreview();
+
+
+    </script>
+
+</body>
+</html>

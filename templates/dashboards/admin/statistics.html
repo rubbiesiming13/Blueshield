@@ -1,0 +1,1010 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Statistics | BlueShield</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+    body {
+        background: #eaf4fb;
+        font-family: Arial, sans-serif;
+        color: #1f2937;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #0b3d62;
+    }
+
+    .page-header p {
+        color: #55738a !important;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #cfe3f1;
+        border-left: 5px solid #2388c7;
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        box-shadow: 0 3px 10px rgba(25, 93, 135, 0.08);
+        transition: 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 14px rgba(25, 93, 135, 0.14);
+    }
+
+    .stat-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #5c7486;
+        margin-bottom: 8px;
+    }
+
+    .stat-number {
+        font-size: 30px;
+        font-weight: 700;
+        color: #0b5f8a;
+    }
+
+    .section-card {
+        background: #ffffff;
+        border: 1px solid #cfe3f1;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 10px rgba(25, 93, 135, 0.07);
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #0b3d62;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #d9ecf8;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #dff1fb;
+        color: #0b3d62;
+        font-size: 13px;
+        font-weight: 700;
+        border-color: #c6dfed;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        background: #ffffff;
+        border-color: #e1edf4;
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover td {
+        background: #f2f9fd;
+    }
+
+    .empty-message {
+        color: #6b8292;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .statistics-divider {
+        height: 4px;
+        width: 60px;
+        background: #2388c7;
+        border-radius: 5px;
+        margin-top: 8px;
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================================================= -->
+<!-- PAGE HEADER -->
+<!-- ================================================= -->
+
+<div class="page-header">
+
+    <div
+        class="p-4 rounded-3"
+        style="background: #dff1fb; border-left: 5px solid #2388c7;"
+    >
+
+        <h2 class="fw-bold mb-1" style="color: #0b3d62;">
+            BlueShield Statistics
+        </h2>
+
+        <p class="mb-2" style="color: #55738a;">
+            System Administration
+        </p>
+
+        <div class="statistics-divider"></div>
+
+    </div>
+
+</div>
+    <!-- ================================================= -->
+    <!-- OVERALL STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Complaints
+                </div>
+
+                <div class="stat-number">
+                    {{ total_complaints }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Cases
+                </div>
+
+                <div class="stat-number">
+                    {{ total_cases }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Suspects
+                </div>
+
+                <div class="stat-number">
+                    {{ total_suspects }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Arrests
+                </div>
+
+                <div class="stat-number">
+                    {{ total_arrests }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SECONDARY STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Active Cases
+                </div>
+
+                <div class="stat-number">
+                    {{ active_cases }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Closed Cases
+                </div>
+
+                <div class="stat-number">
+                    {{ closed_cases }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Police Stations
+                </div>
+
+                <div class="stat-number">
+                    {{ total_active_stations }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Criminal Offences
+                </div>
+
+                <div class="stat-number">
+                    {{ total_offences }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CASE STATUS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Case Status Statistics
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Case Status</th>
+                        <th>Total Cases</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in case_status_stats %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.label }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="3"
+                            class="empty-message"
+                        >
+                            No case statistics available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- OFFENCE STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Most Common Offences
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Offence Code</th>
+                        <th>Offence</th>
+                        <th>Total Cases</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in offence_stats %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.offence__code }}
+                        </td>
+
+                        <td>
+                            {{ item.offence__title }}
+                       </td>
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="4"
+                            class="empty-message"
+                        >
+                            No offence statistics available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DISTRICT CASE STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Cases by District
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>District</th>
+                        <th>Total Cases</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in district_case_stats %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.station__district__name }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="3"
+                            class="empty-message"
+                        >
+                            No district case statistics available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DISTRICT ARREST STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Arrests by District
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>District</th>
+                        <th>Total Arrests</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in district_arrest_stats %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.station__district__name }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="3"
+                            class="empty-message"
+                        >
+                            No district arrest statistics available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- POLICE STATION STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Police Station Activity
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Police Station</th>
+                        <th>District</th>
+                        <th>Cases</th>
+                        <th>Arrests</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in station_statistics %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.station }}
+                        </td>
+
+                        <td>
+                            {{ item.district }}
+                        </td>
+
+                        <td>
+                            {{ item.cases }}
+                        </td>
+
+                        <td>
+                            {{ item.arrests }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty-message"
+                        >
+                            No station statistics available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MONTHLY CASE STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Monthly Case Statistics
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Month</th>
+                        <th>Cases</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in monthly_case_data %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.month }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="3"
+                            class="empty-message"
+                        >
+                            No monthly case data available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MONTHLY ARREST STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Monthly Arrest Statistics
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Month</th>
+                        <th>Arrests</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in monthly_arrest_data %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ item.month }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="3"
+                            class="empty-message"
+                        >
+                            No monthly arrest data available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- RECENT ARRESTS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Recent Arrests
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Suspect</th>
+                        <th>Station</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for arrest in recent_arrests %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ arrest.arrest_datetime|date:"d M Y H:i" }}
+                        </td>
+
+                        <td>
+                            {{ arrest.suspect }}
+                        </td>
+
+                        <td>
+                            {{ arrest.station.name|default:"N/A" }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="4"
+                            class="empty-message"
+                        >
+                            No arrests recorded.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- RECENT CASES -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Recent Cases
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Case</th>
+                        <th>Suspect</th>
+                        <th>Station</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for case in recent_cases %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ case.case_number }}
+                        </td>
+
+                        <td>
+                            {{ case.suspect }}
+                        </td>
+
+                        <td>
+                            {{ case.station.name|default:"N/A" }}
+                        </td>
+
+                        <td>
+                            {{ case.get_status_display }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty-message"
+                        >
+                            No cases recorded.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- RECENT COMPLAINTS -->
+    <!-- ================================================= -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+            Recent Complaints
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Complaint Number</th>
+                        <th>Station</th>
+                        <th>Reported By</th>
+                        <th>Date</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for complaint in recent_complaints %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ complaint.complaint_number }}
+                        </td>
+
+                        <td>
+                            {{ complaint.station.name|default:"N/A" }}
+                        </td>
+
+                        <td>
+                            {{ complaint.reported_by }}
+                        </td>
+
+                        <td>
+                            {{ complaint.created_at|date:"d M Y H:i" }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty-message"
+                        >
+                            No complaints recorded.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

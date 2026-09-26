@@ -1,0 +1,1018 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Prepare Case File | BlueShield
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/prosecution.css' %}"
+    >
+
+</head>
+
+<body>
+
+<div class="container py-4">
+
+
+    <!-- Breadcrumb -->
+    <div class="mb-3">
+
+        <span class="text-muted small">
+            BlueShield
+        </span>
+
+        <span class="text-muted small mx-1">
+            /
+        </span>
+
+        <span class="text-muted small">
+            Case Management
+        </span>
+
+        <span class="text-muted small mx-1">
+            /
+        </span>
+
+        <span class="small fw-semibold">
+            Prepare Case File
+        </span>
+
+    </div>
+
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                Prepare Case File
+            </h2>
+
+            <p class="text-muted mb-0">
+                Review the completed case information before submitting
+                the case file to prosecution.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'cases:list' %}"
+            class="btn btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to My Cases
+        </a>
+
+    </div>
+
+
+    <!-- Case Header -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <div class="small opacity-75">
+                        Case File
+                    </div>
+
+                    <h4 class="mb-0">
+                        {{ case.case_number }}
+                    </h4>
+
+                </div>
+
+
+                <span class="badge bg-light text-dark">
+
+                    {{ case.get_status_display }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Case Summary -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-folder2-open me-2"></i>
+                Case Summary
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Case Number
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ case.case_number }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Case Title
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ case.title }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Offence
+                    </label>
+
+                    <div>
+                        {{ case.offence }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Station
+                    </label>
+
+                    <div>
+                        {{ case.station }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Incident Date
+                    </label>
+
+                    <div>
+                        {{ case.incident_date|date:"d M Y H:i" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Incident Location
+                    </label>
+
+                    <div>
+                        {{ case.location }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Priority
+                    </label>
+
+                    <div>
+
+                        {% if case.priority == "URGENT" %}
+
+                            <span class="badge bg-danger">
+                                Urgent
+                            </span>
+
+                        {% elif case.priority == "HIGH" %}
+
+                            <span class="badge bg-warning text-dark">
+                                High
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-secondary">
+                                Normal
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Current Status
+                    </label>
+
+                    <div>
+                        {{ case.get_status_display }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Completeness -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-semibold mb-1">
+
+                <i class="bi bi-check2-square me-2"></i>
+                Case File Completeness
+
+            </h5>
+
+            <p class="text-muted small mb-0">
+                Confirm that the required information has been completed
+                before preparing the case file.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+
+                <!-- Case -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_case %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Case Information
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Case Information
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Complaint -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_complaint %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Complaint
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Complaint
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Suspect -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_suspect %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Suspect
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Suspect
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Investigation -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_investigation %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Investigation
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Investigation
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Statements -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_statements %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Statements
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Statements
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Evidence -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_evidence %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Evidence
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Evidence
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Warrant -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_warrant %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Warrant
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Warrant
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Arrest -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_arrest %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Arrest
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Arrest
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Custody -->
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        {% if has_custody %}
+
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                            <strong>
+                                Custody
+                            </strong>
+
+                        {% else %}
+
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+
+                            <strong>
+                                Custody
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Ready Status -->
+            <div class="mt-4">
+
+                {% if case_file_ready %}
+
+                    <div class="alert alert-success mb-0">
+
+                        <i class="bi bi-check-circle-fill me-2"></i>
+
+                        <strong>
+                            Case file is ready.
+                        </strong>
+
+                        All required information has been recorded.
+
+                    </div>
+
+                {% else %}
+
+                    <div class="alert alert-warning mb-0">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                        <strong>
+                            Case file is incomplete.
+                        </strong>
+
+                        Complete the missing requirements before submitting
+                        the case file.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Complaint -->
+    {% if case.complaint %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Complaint
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {{ case.complaint }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Suspect -->
+    {% if case.suspect %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-person me-2"></i>
+                Suspect
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Suspect
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ case.suspect }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Investigation Records -->
+    {% if investigations %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-search me-2"></i>
+                Investigation Records
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for investigation in investigations %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    <div class="fw-semibold">
+                        {{ investigation.activity }}
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                        {{ investigation.investigation_date|date:"d M Y" }}
+                    </div>
+
+                    {% if investigation.findings %}
+
+                        <p class="mb-1">
+                            <strong>Findings:</strong>
+                            {{ investigation.findings }}
+                        </p>
+
+                    {% endif %}
+
+                    {% if investigation.action_taken %}
+
+                        <p class="mb-1">
+                            <strong>Action Taken:</strong>
+                            {{ investigation.action_taken }}
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Statements -->
+    {% if statements %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-chat-left-text me-2"></i>
+                Statements
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for statement in statements %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    <div class="fw-semibold">
+                        {{ statement.person }}
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                        {{ statement.statement_date|date:"d M Y" }}
+                    </div>
+
+                    <p class="mb-0">
+                        {{ statement.statement }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Evidence -->
+    {% if evidence %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-box-seam me-2"></i>
+                Evidence
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for item in evidence %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    <div class="fw-semibold">
+                        {{ item.evidence_type }}
+                    </div>
+
+                    {% if item.description %}
+
+                        <p class="mb-1">
+                            {{ item.description }}
+                        </p>
+
+                    {% endif %}
+
+                    {% if item.location_found %}
+
+                        <div class="small text-muted">
+                            Location Found:
+                            {{ item.location_found }}
+                        </div>
+
+                    {% endif %}
+
+                    {% if item.date_collected %}
+
+                        <div class="small text-muted">
+                            Date Collected:
+                            {{ item.date_collected|date:"d M Y" }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Arrest -->
+    {% if arrests %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-person-lock me-2"></i>
+                Arrest Records
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for arrest in arrests %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    {{ arrest }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Warrants -->
+    {% if warrants %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-file-earmark-check me-2"></i>
+                Warrant Records
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for warrant in warrants %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    {{ warrant }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Custody -->
+    {% if custody_records %}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+                <i class="bi bi-shield-lock me-2"></i>
+                Custody Records
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for custody in custody_records %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    {{ custody }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Final Case File Action -->
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-header bg-white">
+
+            <h5 class="fw-semibold mb-0">
+
+                <i class="bi bi-folder-check me-2"></i>
+                Final Case File Action
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if is_prepared %}
+
+                <div class="alert alert-success">
+
+                    <i class="bi bi-check-circle-fill me-2"></i>
+
+                    <strong>
+                        Case file prepared successfully.
+                    </strong>
+
+                    The case file can now be submitted to prosecution.
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="{% url 'prosecution:submit_case_file' case.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="d-flex justify-content-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success px-4"
+                            onclick="return confirm(
+                                'Are you sure you want to submit this case file to prosecution?'
+                            );"
+                        >
+
+                            <i class="bi bi-send me-1"></i>
+                            Submit Case File
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            {% else %}
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="d-flex justify-content-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4"
+                            {% if not case_file_ready %}
+                                disabled
+                            {% endif %}
+                        >
+
+                            <i class="bi bi-folder-check me-1"></i>
+                            Save Case File
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+</body>
+</html>
+

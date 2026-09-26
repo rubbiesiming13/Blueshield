@@ -1,0 +1,1385 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Verify OTP | BlueShield</title>
+
+
+    <!-- Bootstrap 5.3.3 -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Bootstrap Icons -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+
+    <style>
+
+        body {
+
+            min-height: 100vh;
+
+            margin: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    rgba(0, 35, 70, 0.88),
+                    rgba(0, 35, 70, 0.88)
+                ),
+                url("{% static 'images/jomba_icon.jpg' %}");
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            font-family: Arial, sans-serif;
+
+        }
+
+
+        .otp-container {
+
+            width: 100%;
+
+            max-width: 500px;
+
+            padding: 20px;
+
+        }
+
+
+        .otp-card {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.30);
+
+        }
+
+
+        .logo-icon {
+
+            width: 70px;
+
+            height: 70px;
+
+            margin: 0 auto 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #0d6efd;
+
+            color: white;
+
+            border-radius: 50%;
+
+            font-size: 32px;
+
+        }
+
+
+        .page-title {
+
+            text-align: center;
+
+            font-weight: 700;
+
+            color: #123;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .page-description {
+
+            text-align: center;
+
+            color: #6c757d;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .steps {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .step {
+
+            flex: 1;
+
+            text-align: center;
+
+            position: relative;
+
+        }
+
+
+        .step-circle {
+
+            width: 35px;
+
+            height: 35px;
+
+            margin: 0 auto 8px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #dee2e6;
+
+            color: #6c757d;
+
+            font-weight: bold;
+
+        }
+
+
+        .step.active .step-circle,
+        .step.completed .step-circle {
+
+            background: #0d6efd;
+
+            color: white;
+
+        }
+
+
+        .step-label {
+
+            font-size: 12px;
+
+            color: #6c757d;
+
+        }
+
+
+        .step.active .step-label,
+        .step.completed .step-label {
+
+            color: #0d6efd;
+
+            font-weight: 600;
+
+        }
+
+
+        .otp-label {
+
+            font-weight: 600;
+
+            color: #343a40;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .otp-input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            text-align: center;
+
+            font-size: 24px;
+
+            font-weight: 700;
+
+            letter-spacing: 8px;
+
+            border: 2px solid #dee2e6;
+
+            border-radius: 10px;
+
+        }
+
+
+        .otp-input:focus {
+
+            border-color: #0d6efd;
+
+            box-shadow:
+                0 0 0 0.2rem
+                rgba(13, 110, 253, 0.15);
+
+            outline: none;
+
+        }
+
+
+        .verify-button {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #0d6efd;
+
+            color: white;
+
+            font-weight: 600;
+
+            font-size: 16px;
+
+        }
+
+
+        .verify-button:hover {
+
+            background: #0b5ed7;
+
+        }
+
+
+        .verify-button:disabled {
+
+            background: #adb5bd;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .resend-section {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+        }
+
+
+        .resend-button {
+
+            border: none;
+
+            background: transparent;
+
+            color: #0d6efd;
+
+            font-weight: 600;
+
+        }
+
+
+        .resend-button:disabled {
+
+            color: #6c757d;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .security-box {
+
+            margin-top: 25px;
+
+            padding: 15px;
+
+            background: #f8f9fa;
+
+            border-left: 4px solid #0d6efd;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            color: #495057;
+
+        }
+
+
+        .firebase-status {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        .firebase-status.success {
+
+            display: block;
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+        }
+
+
+        .firebase-status.error {
+
+            display: block;
+
+            background: #f8d7da;
+
+            color: #842029;
+
+        }
+
+
+        #recaptcha-container {
+
+            margin-top: 15px;
+
+        }
+
+
+        .sms-status {
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            background: #e7f1ff;
+
+            color: #084298;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        .back-link {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #0d6efd;
+
+            text-decoration: none;
+
+        }
+
+
+        .back-link:hover {
+
+            text-decoration: underline;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="otp-container">
+
+
+    <div class="otp-card">
+
+
+        <!-- =====================================================
+             LOGO
+             ===================================================== -->
+
+        <div class="logo-icon">
+
+            <i class="bi bi-shield-lock-fill"></i>
+
+        </div>
+
+
+        <!-- =====================================================
+             TITLE
+             ===================================================== -->
+
+        <h2 class="page-title">
+
+            Verify Your Identity
+
+        </h2>
+
+
+        <p class="page-description">
+
+            Enter the verification code sent to your
+            registered phone number.
+
+        </p>
+
+
+        <!-- =====================================================
+             VERIFICATION STEPS
+             ===================================================== -->
+
+        <div class="steps">
+
+
+            <div class="step completed">
+
+                <div class="step-circle">
+
+                    <i class="bi bi-check"></i>
+
+                </div>
+
+                <div class="step-label">
+
+                    SevisPass
+
+                </div>
+
+            </div>
+
+
+            <div class="step active">
+
+                <div class="step-circle">
+
+                    2
+
+                </div>
+
+                <div class="step-label">
+
+                    OTP
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-circle">
+
+                    3
+
+                </div>
+
+                <div class="step-label">
+
+                    Login
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             DJANGO MESSAGES
+             ===================================================== -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div
+                    class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                    role="alert"
+                >
+
+                    {{ message }}
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                    ></button>
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <!-- =====================================================
+             FIREBASE ERROR FROM DJANGO
+             ===================================================== -->
+
+        {% if firebase_error %}
+
+            <div class="alert alert-danger">
+
+                {{ firebase_error }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =====================================================
+             SMS STATUS
+             ===================================================== -->
+
+        <div
+            id="smsStatus"
+            class="sms-status"
+        >
+
+            <i class="bi bi-phone me-2"></i>
+
+            Sending verification code to
+
+            <strong>
+                {{ masked_phone }}
+            </strong>
+
+        </div>
+
+
+        <!-- =====================================================
+             OTP FORM
+             ===================================================== -->
+
+        <form
+            method="POST"
+            id="otpForm"
+            autocomplete="off"
+        >
+
+            {% csrf_token %}
+
+
+            <input
+                type="hidden"
+                name="action"
+                value="verify_firebase"
+            >
+
+
+            <input
+                type="hidden"
+                name="firebase_token"
+                id="firebaseToken"
+            >
+
+
+            <div class="mb-3 mt-4">
+
+                <label
+                    for="{{ form.otp.id_for_label }}"
+                    class="otp-label"
+                >
+
+                    <i class="bi bi-key me-1"></i>
+
+                    Enter 6-digit verification code
+
+                </label>
+
+
+                {{ form.otp }}
+
+
+                {% if form.otp.errors %}
+
+                    <div class="alert alert-danger mt-2">
+
+                        {{ form.otp.errors }}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 FIREBASE reCAPTCHA
+                 ================================================= -->
+
+            <div id="recaptcha-container"></div>
+
+
+            <!-- =================================================
+                 FIREBASE STATUS
+                 ================================================= -->
+
+            <div
+                id="firebaseStatus"
+                class="firebase-status"
+            ></div>
+
+
+            <!-- =================================================
+                 VERIFY BUTTON
+                 ================================================= -->
+
+            <button
+                type="submit"
+                id="verifyButton"
+                class="verify-button"
+            >
+
+                <i class="bi bi-shield-check me-2"></i>
+
+                Verify OTP
+
+            </button>
+
+        </form>
+
+
+        <!-- =====================================================
+             RESEND OTP
+             ===================================================== -->
+
+        <div class="resend-section">
+
+            <button
+                type="button"
+                id="resendButton"
+                class="resend-button"
+            >
+
+                Resend OTP
+
+            </button>
+
+        </div>
+
+
+        <!-- =====================================================
+             SECURITY INFORMATION
+             ===================================================== -->
+
+        <div class="security-box">
+
+            <i class="bi bi-shield-check me-2"></i>
+
+            <strong>
+                Security Notice
+            </strong>
+
+            <br>
+
+            The verification code is sent by Firebase
+            to the registered mobile number.
+
+            Do not share your verification code with anyone.
+
+        </div>
+
+
+        <!-- =====================================================
+             BACK TO SEVISPASS
+             ===================================================== -->
+
+        <a
+            href="{% url 'accounts:sevispass_verify' %}"
+            class="back-link"
+        >
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back to SevisPass Verification
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     BOOTSTRAP
+     ========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+<!-- =========================================================
+     FIREBASE
+     ========================================================= -->
+
+<script type="module">
+
+    import {
+        initializeApp
+    }
+    from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+
+
+    import {
+        getAuth,
+        RecaptchaVerifier,
+        signInWithPhoneNumber
+    }
+    from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+
+    /* ========================================================
+       FIREBASE CONFIGURATION
+       ======================================================== */
+
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyABSoTTyyK2QHfUhaCycI2SI-KHaq97508",
+
+        authDomain:
+            "blueshield-sevispass.firebaseapp.com",
+
+        projectId:
+            "blueshield-sevispass",
+
+        storageBucket:
+            "blueshield-sevispass.firebasestorage.app",
+
+        messagingSenderId:
+            "679764318085",
+
+        appId:
+            "1:679764318085:web:ecb2afda5fa9f8f58456ec"
+
+    };
+
+
+    /* ========================================================
+       INITIALIZE FIREBASE
+       ======================================================== */
+
+    const app =
+        initializeApp(
+            firebaseConfig
+        );
+
+
+    const auth =
+        getAuth(
+            app
+        );
+
+
+    /* ========================================================
+       ELEMENTS
+       ======================================================== */
+
+    const otpForm =
+        document.getElementById(
+            "otpForm"
+        );
+
+
+    const otpInput =
+        document.getElementById(
+            "{{ form.otp.id_for_label }}"
+        );
+
+
+    const verifyButton =
+        document.getElementById(
+            "verifyButton"
+        );
+
+
+    const resendButton =
+        document.getElementById(
+            "resendButton"
+        );
+
+
+    const firebaseStatus =
+        document.getElementById(
+            "firebaseStatus"
+        );
+
+
+    const smsStatus =
+        document.getElementById(
+            "smsStatus"
+        );
+
+
+    const firebaseToken =
+        document.getElementById(
+            "firebaseToken"
+        );
+
+
+    /* ========================================================
+       REGISTERED PHONE NUMBER
+       ======================================================== */
+
+    const phoneNumber =
+        "{{ firebase_phone_number|escapejs }}";
+
+
+    /* ========================================================
+       FIREBASE VARIABLES
+       ======================================================== */
+
+    let confirmationResult = null;
+
+    let recaptchaVerifier = null;
+
+
+    /* ========================================================
+       SHOW STATUS
+       ======================================================== */
+
+    function showStatus(
+        message,
+        type
+    ) {
+
+        firebaseStatus.textContent =
+            message;
+
+        firebaseStatus.className =
+            "firebase-status " + type;
+
+    }
+
+
+    /* ========================================================
+       INITIALIZE reCAPTCHA
+       ======================================================== */
+
+    function initializeRecaptcha() {
+
+        if (recaptchaVerifier) {
+
+            return;
+
+        }
+
+
+        recaptchaVerifier =
+            new RecaptchaVerifier(
+                auth,
+                "recaptcha-container",
+                {
+                    size: "normal",
+
+                    callback: function () {
+
+                        console.log(
+                            "Firebase reCAPTCHA completed."
+                        );
+
+                    },
+
+                    "expired-callback":
+                        function () {
+
+                            showStatus(
+                                "The security check expired. Please try again.",
+                                "error"
+                            );
+
+                        }
+
+                }
+            );
+
+    }
+
+
+    /* ========================================================
+       SEND SMS OTP
+       ======================================================== */
+
+    async function sendOtp() {
+
+        try {
+
+            verifyButton.disabled =
+                true;
+
+
+            resendButton.disabled =
+                true;
+
+
+            smsStatus.innerHTML =
+                `
+                <i class="bi bi-hourglass-split me-2"></i>
+                Sending verification code to
+                <strong>{{ masked_phone }}</strong>
+                `;
+
+
+            initializeRecaptcha();
+
+
+            confirmationResult =
+                await signInWithPhoneNumber(
+                    auth,
+                    phoneNumber,
+                    recaptchaVerifier
+                );
+
+
+            showStatus(
+                "Verification code sent successfully. Check your mobile phone.",
+                "success"
+            );
+
+
+            smsStatus.innerHTML =
+                `
+                <i class="bi bi-check-circle me-2"></i>
+                Verification code sent to
+                <strong>{{ masked_phone }}</strong>
+                `;
+
+
+            verifyButton.disabled =
+                false;
+
+
+        } catch (error) {
+
+            console.error(
+                "Firebase SMS error:",
+                error
+            );
+
+
+            verifyButton.disabled =
+                false;
+
+
+            resendButton.disabled =
+                false;
+
+
+            let message =
+                "Unable to send the verification code.";
+
+
+            if (
+                error.code ===
+                "auth/invalid-phone-number"
+            ) {
+
+                message =
+                    "The registered phone number is invalid.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/too-many-requests"
+            ) {
+
+                message =
+                    "Too many SMS requests. Please wait before trying again.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/quota-exceeded"
+            ) {
+
+                message =
+                    "Firebase SMS quota has been reached. Please try again later.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/captcha-check-failed"
+            ) {
+
+                message =
+                    "The security verification failed. Please complete the reCAPTCHA again.";
+
+            }
+
+            showStatus(
+                message,
+                "error"
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       VERIFY OTP
+       ======================================================== */
+
+    otpForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const code =
+                otpInput.value.trim();
+
+
+            if (
+                !confirmationResult
+            ) {
+
+                showStatus(
+                    "Please wait for the SMS verification code to be sent.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !/^\d{6}$/.test(code)
+            ) {
+
+                showStatus(
+                    "Please enter the 6-digit verification code.",
+                    "error"
+                );
+
+                otpInput.focus();
+
+                return;
+
+            }
+
+
+            try {
+
+                verifyButton.disabled =
+                    true;
+
+
+                verifyButton.innerHTML =
+                    `
+                    <span
+                        class="spinner-border spinner-border-sm me-2"
+                    ></span>
+
+                    Verifying...
+                    `;
+
+
+                /* ---------------------------------------------
+                   FIREBASE VERIFIES THE SMS CODE
+                   --------------------------------------------- */
+
+                const result =
+                    await confirmationResult.confirm(
+                        code
+                    );
+
+
+                /* ---------------------------------------------
+                   GET FIREBASE ID TOKEN
+                   --------------------------------------------- */
+
+                const token =
+                    await result.user.getIdToken(
+                        true
+                    );
+
+
+                firebaseToken.value =
+                    token;
+
+
+                /* ---------------------------------------------
+                   SEND TOKEN TO DJANGO
+                   --------------------------------------------- */
+
+                const csrfToken =
+                    document.querySelector(
+                        "[name=csrfmiddlewaretoken]"
+                    ).value;
+
+
+                const response =
+                    await fetch(
+                        window.location.href,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+
+                                "X-CSRFToken":
+                                    csrfToken,
+
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            },
+
+                            body:
+                                new URLSearchParams(
+                                    {
+                                        csrfmiddlewaretoken:
+                                            csrfToken,
+
+                                        action:
+                                            "verify_firebase",
+
+                                        firebase_token:
+                                            token
+                                    }
+                                )
+                        }
+                    );
+
+
+                /* ---------------------------------------------
+                   DJANGO RESPONSE
+                   --------------------------------------------- */
+
+                if (
+                    response.redirected
+                ) {
+
+                    window.location.href =
+                        response.url;
+
+                    return;
+
+                }
+
+
+                const html =
+                    await response.text();
+
+
+                document.open();
+
+                document.write(
+                    html
+                );
+
+                document.close();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Firebase OTP verification error:",
+                    error
+                );
+
+
+                verifyButton.disabled =
+                    false;
+
+
+                verifyButton.innerHTML =
+                    `
+                    <i class="bi bi-shield-check me-2"></i>
+                    Verify OTP
+                    `;
+
+
+                let message =
+                    "Invalid verification code. Please try again.";
+
+
+                if (
+                    error.code ===
+                    "auth/invalid-verification-code"
+                ) {
+
+                    message =
+                        "The verification code is incorrect.";
+
+                }
+
+                else if (
+                    error.code ===
+                    "auth/code-expired"
+                ) {
+
+                    message =
+                        "The verification code has expired. Please request a new code.";
+
+                }
+
+
+                showStatus(
+                    message,
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ========================================================
+       OTP INPUT
+       ======================================================== */
+
+    if (otpInput) {
+
+        otpInput.setAttribute(
+            "inputmode",
+            "numeric"
+        );
+
+        otpInput.setAttribute(
+            "maxlength",
+            "6"
+        );
+
+        otpInput.setAttribute(
+            "autocomplete",
+            "one-time-code"
+        );
+
+
+        otpInput.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value
+                        .replace(
+                            /\D/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            6
+                        );
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       RESEND OTP
+       ======================================================== */
+
+    resendButton.addEventListener(
+        "click",
+        async function () {
+
+            try {
+
+                if (
+                    recaptchaVerifier
+                ) {
+
+                    recaptchaVerifier.clear();
+
+                    recaptchaVerifier =
+                        null;
+
+                }
+
+
+                showStatus(
+                    "Preparing a new verification code...",
+                    "success"
+                );
+
+
+                await sendOtp();
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ========================================================
+       START FIREBASE OTP
+       ======================================================== */
+
+    sendOtp();
+
+</script>
+
+
+</body>
+
+</html>

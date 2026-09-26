@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+```
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>{{ page_title }}</h2>
+        <p class="text-muted">
+            Create or update a prosecution record.
+        </p>
+    </div>
+
+    <a href="{% url 'prosecution:list' %}" class="btn btn-secondary">
+        Back to Prosecutions
+    </a>
+</div>
+
+{% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+    </div>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    <!-- ================================================= -->
+    <!-- PROSECUTION IDENTIFICATION -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Prosecution Identification</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.prosecution_number.id_for_label }}"
+                           class="form-label">
+                        Prosecution Number
+                    </label>
+
+                    {{ form.prosecution_number }}
+
+                    {% for error in form.prosecution_number.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.prosecutor.id_for_label }}"
+                           class="form-label">
+                        Prosecutor
+                    </label>
+
+                    {{ form.prosecutor }}
+
+                    {% for error in form.prosecutor.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CASE INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Case Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.case.id_for_label }}"
+                           class="form-label">
+                        Case
+                    </label>
+
+                    {{ form.case }}
+
+                    {% for error in form.case.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.investigation.id_for_label }}"
+                           class="form-label">
+                        Investigation
+                    </label>
+
+                    {{ form.investigation }}
+
+                    {% for error in form.investigation.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PROSECUTION STATUS -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Prosecution Status</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label for="{{ form.status.id_for_label }}"
+                       class="form-label">
+                    Status
+                </label>
+
+                {{ form.status }}
+
+                {% for error in form.status.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CASE FILE REVIEW -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Case File Review Checklist</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p class="text-muted">
+                Confirm that each component of the case file has
+                been reviewed before forwarding the case.
+            </p>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.case_file_complete }}
+                        <label class="form-check-label"
+                               for="{{ form.case_file_complete.id_for_label }}">
+                            Case File Complete
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.investigation_reviewed }}
+                        <label class="form-check-label"
+                               for="{{ form.investigation_reviewed.id_for_label }}">
+                            Investigation Reviewed
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.evidence_reviewed }}
+                        <label class="form-check-label"
+                               for="{{ form.evidence_reviewed.id_for_label }}">
+                            Evidence Reviewed
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.arrest_reviewed }}
+                        <label class="form-check-label"
+                               for="{{ form.arrest_reviewed.id_for_label }}">
+                            Arrest Reviewed
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.warrant_reviewed }}
+                        <label class="form-check-label"
+                               for="{{ form.warrant_reviewed.id_for_label }}">
+                            Warrant Reviewed
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        {{ form.custody_reviewed }}
+                        <label class="form-check-label"
+                               for="{{ form.custody_reviewed.id_for_label }}">
+                            Custody Reviewed
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- COMMITTAL PROCEEDINGS -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Committal Proceedings</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.committal_status.id_for_label }}"
+                           class="form-label">
+                        Committal Status
+                    </label>
+
+                    {{ form.committal_status }}
+
+                    {% for error in form.committal_status.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.committal_date.id_for_label }}"
+                           class="form-label">
+                        Committal Date
+                    </label>
+
+                    {{ form.committal_date }}
+
+                    {% for error in form.committal_date.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.committal_notes.id_for_label }}"
+                       class="form-label">
+                    Committal Notes
+                </label>
+
+                {{ form.committal_notes }}
+
+                {% for error in form.committal_notes.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SUMMARY TRIAL -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Summary Trial</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.summary_trial_status.id_for_label }}"
+                           class="form-label">
+                        Summary Trial Status
+                    </label>
+
+                    {{ form.summary_trial_status }}
+
+                    {% for error in form.summary_trial_status.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.summary_trial_date.id_for_label }}"
+                           class="form-label">
+                        Summary Trial Date
+                    </label>
+
+                    {{ form.summary_trial_date }}
+
+                    {% for error in form.summary_trial_date.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.summary_trial_notes.id_for_label }}"
+                       class="form-label">
+                    Summary Trial Notes
+                </label>
+
+                {{ form.summary_trial_notes }}
+
+                {% for error in form.summary_trial_notes.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PROSECUTION REVIEW -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Prosecution Review</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label for="{{ form.review_comments.id_for_label }}"
+                       class="form-label">
+                    Review Comments
+                </label>
+
+                {{ form.review_comments }}
+
+                {% for error in form.review_comments.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.return_reason.id_for_label }}"
+                       class="form-label">
+                    Return Reason
+                </label>
+
+                {{ form.return_reason }}
+
+                {% for error in form.return_reason.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.decision.id_for_label }}"
+                       class="form-label">
+                    Prosecution Decision
+                </label>
+
+                {{ form.decision }}
+
+                {% for error in form.decision.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- COURT REFERRAL -->
+    <!-- ================================================= -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Court Referral</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="form-check mb-3">
+                {{ form.forwarded_to_court }}
+
+                <label class="form-check-label"
+                       for="{{ form.forwarded_to_court.id_for_label }}">
+                    Forwarded to Court
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.forwarded_date.id_for_label }}"
+                       class="form-label">
+                    Forwarded Date
+                </label>
+
+                {{ form.forwarded_date }}
+
+                {% for error in form.forwarded_date.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FORM ACTIONS -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between mb-5">
+
+        <a href="{% url 'prosecution:list' %}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Save Prosecution Record
+        </button>
+
+    </div>
+
+</form>
+```
+
+</div>
+
+{% endblock %}

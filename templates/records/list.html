@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block page_title %}Arrest Records{% endblock %}
+
+{% block breadcrumb %}
+Arrest Records
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Arrest Records</h1>
+        <p>View and manage police arrest records.</p>
+    </div>
+
+    <div>
+        <a href="{% url 'records:create' %}" class="btn btn-primary">
+            + Create Arrest Record
+        </a>
+    </div>
+</div>
+
+
+<!-- Summary -->
+<div class="stats-grid">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="text-muted">Total Arrest Records</div>
+            <h2>{{ records|length }}</h2>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Records Table -->
+<div class="card">
+
+    <div class="card-header">
+        <div>
+            <h3>Arrest Records</h3>
+            <p>Registered arrest records in BlueShield.</p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Arrest ID</th>
+                    <th>OB Number</th>
+                    <th>Suspect</th>
+                    <th>Case</th>
+                    <th>Arresting Officer</th>
+                    <th>Station</th>
+                    <th>Custody Status</th>
+                    <th>Arrest Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for record in records %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ record.arrest_tracking_id }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ record.occurrence_book_no }}
+                    </td>
+
+                    <td>
+                        {{ record.suspect.full_name }}
+                    </td>
+
+                    <td>
+                        {% if record.case %}
+                            {{ record.case.case_number }}
+                        {% else %}
+                            <span class="text-muted">
+                                No Case
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ record.arresting_officer.get_full_name|default:record.arresting_officer.username }}
+                    </td>
+
+                    <td>
+                        {{ record.station }}
+                    </td>
+
+                    <td>
+                        {{ record.get_custody_status_display }}
+                    </td>
+
+                    <td>
+                        {{ record.arrest_datetime|date:"d M Y H:i" }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="8" class="text-center">
+
+                        <div style="padding: 40px;">
+
+                            <h3>No Arrest Records</h3>
+
+                            <p class="text-muted">
+                                No arrest records have been created yet.
+                            </p>
+
+                            <a
+                                href="{% url 'records:create' %}"
+                                class="btn btn-primary"
+                            >
+                                Create First Arrest Record
+                            </a>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

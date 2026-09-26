@@ -1,0 +1,1144 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block page_title %}
+Create Arrest Record
+{% endblock %}
+
+{% block breadcrumb %}
+Arrest Records / Create Arrest Record
+{% endblock %}
+
+
+{% block sidebar_nav %}
+
+<a href="{% url 'accounts:dashboard' %}" class="sidebar-nav-link">
+    <span class="nav-icon">⌂</span>
+    <span>Dashboard</span>
+</a>
+
+<a href="{% url 'records:list' %}" class="sidebar-nav-link active">
+    <span class="nav-icon">▣</span>
+    <span>Arrest Records</span>
+</a>
+
+<a href="{% url 'suspects:list' %}" class="sidebar-nav-link">
+    <span class="nav-icon">♙</span>
+    <span>Suspects</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="sidebar-nav-link">
+    <span class="nav-icon">▤</span>
+    <span>Cases</span>
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="arrest-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div>
+            <div class="page-eyebrow">
+                POLICE RECORDS
+            </div>
+
+            <h1>
+                Create Arrest Record
+            </h1>
+
+            <p>
+                Record an arrest, offence and custody information securely
+                in the BlueShield system.
+            </p>
+        </div>
+
+        <div class="header-status">
+            <span class="status-dot"></span>
+            Secure Record Entry
+        </div>
+
+    </div>
+
+
+    <!-- OFFICER ASSIGNMENT -->
+
+    <div class="assignment-card">
+
+        <div class="assignment-title">
+            <div class="assignment-icon">
+                ✓
+            </div>
+
+            <div>
+                <h2>Officer Assignment</h2>
+
+                <p>
+                    These details are automatically obtained from your
+                    BlueShield account.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="assignment-grid">
+
+            <!-- OFFICER -->
+
+            <div class="assignment-item">
+
+                <span class="assignment-label">
+                    Arresting Officer
+                </span>
+
+                <strong>
+                    {% if officer.get_full_name %}
+                        {{ officer.get_full_name }}
+                    {% else %}
+                        {{ officer.username }}
+                    {% endif %}
+                </strong>
+
+                <small>
+                    Logged-in officer
+                </small>
+
+            </div>
+
+
+            <!-- STATION -->
+
+            <div class="assignment-item">
+
+                <span class="assignment-label">
+                    Police Station
+                </span>
+
+                <strong>
+                    {% if station %}
+                        {{ station }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+                </strong>
+
+                <small>
+                    Automatically assigned
+                </small>
+
+            </div>
+
+
+            <!-- DISTRICT -->
+
+            <div class="assignment-item">
+
+                <span class="assignment-label">
+                    District
+                </span>
+
+                <strong>
+                    {% if district %}
+                        {{ district }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+                </strong>
+
+                <small>
+                    Automatically determined
+                </small>
+
+            </div>
+
+
+            <!-- PROVINCE -->
+
+            <div class="assignment-item">
+
+                <span class="assignment-label">
+                    Province
+                </span>
+
+                <strong>
+                    Madang
+                </strong>
+
+                <small>
+                    BlueShield Provincial Command
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM ERRORS -->
+
+    {% if form.non_field_errors %}
+
+    <div class="form-error-summary">
+
+        <strong>
+            Please correct the following:
+        </strong>
+
+        {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+
+    <form method="POST" class="arrest-form">
+
+        {% csrf_token %}
+
+
+        <!-- ================================================= -->
+        <!-- SECTION 1 - ARREST DETAILS -->
+        <!-- ================================================= -->
+
+        <section class="form-card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    01
+                </div>
+
+                <div>
+                    <h2>
+                        Arrest Details
+                    </h2>
+
+                    <p>
+                        Enter the basic information about the arrest.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- OB NUMBER -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.occurrence_book_no.id_for_label }}">
+                        Occurrence Book Number
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.occurrence_book_no }}
+
+                    {% for error in form.occurrence_book_no.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                    <small class="field-help">
+                        Enter the OB number associated with the arrest.
+                    </small>
+
+                </div>
+
+
+                <!-- TRACKING ID -->
+
+                <div class="form-group">
+
+                    <label>
+                        Arrest Tracking ID
+                    </label>
+
+                    <div class="readonly-input">
+                        Generated automatically
+                    </div>
+
+                    <small class="field-help">
+                        BlueShield generates this number when the record is saved.
+                    </small>
+
+                </div>
+
+
+                <!-- DATE/TIME -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.arrest_datetime.id_for_label }}">
+                        Arrest Date & Time
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.arrest_datetime }}
+
+                    {% for error in form.arrest_datetime.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.arrest_location.id_for_label }}">
+                        Arrest Location
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.arrest_location }}
+
+                    {% for error in form.arrest_location.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                    <small class="field-help">
+                        Example: Kalibobo, Modilon Road or Meiro Market.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SECTION 2 - SUSPECT & CASE -->
+        <!-- ================================================= -->
+
+        <section class="form-card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    02
+                </div>
+
+                <div>
+                    <h2>
+                        Suspect & Case
+                    </h2>
+
+                    <p>
+                        Link the arrest to an existing suspect and case.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- SUSPECT -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.suspect.id_for_label }}">
+                        Suspect
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.suspect }}
+
+                    {% for error in form.suspect.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                    <small class="field-help">
+                        Select the suspect being arrested.
+                    </small>
+
+                </div>
+
+
+                <!-- CASE -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.case.id_for_label }}">
+                        Case
+                    </label>
+
+                    {{ form.case }}
+
+                    {% for error in form.case.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                    <small class="field-help">
+                        Link this arrest to an existing case where applicable.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SECTION 3 - OFFENCES -->
+        <!-- ================================================= -->
+
+        <section class="form-card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    03
+                </div>
+
+                <div>
+                    <h2>
+                        Offence Information
+                    </h2>
+
+                    <p>
+                        Select the offence or offences associated with this arrest.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.offences.id_for_label }}">
+                    Offence(s)
+                    <span class="required">*</span>
+                </label>
+
+                {{ form.offences }}
+
+                {% for error in form.offences.errors %}
+                    <div class="field-error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+
+                <small class="field-help">
+                    Select all applicable offences. Hold Ctrl on Windows
+                    to select more than one.
+                </small>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SECTION 4 - ARREST CIRCUMSTANCES -->
+        <!-- ================================================= -->
+
+        <section class="form-card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    04
+                </div>
+
+                <div>
+                    <h2>
+                        Arrest Circumstances
+                    </h2>
+
+                    <p>
+                        Record the reason for the arrest and relevant observations.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- REASON -->
+
+            <div class="form-group">
+
+                <label for="{{ form.reason_for_arrest.id_for_label }}">
+                    Reason for Arrest
+                    <span class="required">*</span>
+                </label>
+
+                {{ form.reason_for_arrest }}
+
+                {% for error in form.reason_for_arrest.errors %}
+                    <div class="field-error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+
+                <small class="field-help">
+                    Clearly state why the person was arrested.
+                </small>
+
+            </div>
+
+
+            <!-- PROPERTY -->
+
+            <div class="form-group">
+
+                <label for="{{ form.property_seized.id_for_label }}">
+                    Property / Evidence Seized
+                </label>
+
+                {{ form.property_seized }}
+
+                {% for error in form.property_seized.errors %}
+                    <div class="field-error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+
+                <small class="field-help">
+                    List property or evidence seized during the arrest, if applicable.
+                </small>
+
+            </div>
+
+
+            <!-- CONDITION -->
+
+            <div class="form-group">
+
+                <label for="{{ form.physical_condition_at_intake.id_for_label }}">
+                    Physical Condition at Intake
+                </label>
+
+                {{ form.physical_condition_at_intake }}
+
+                {% for error in form.physical_condition_at_intake.errors %}
+                    <div class="field-error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+
+                <small class="field-help">
+                    Record visible injuries or relevant medical observations.
+                </small>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SECTION 5 - CUSTODY -->
+        <!-- ================================================= -->
+
+        <section class="form-card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    05
+                </div>
+
+                <div>
+                    <h2>
+                        Custody Information
+                    </h2>
+
+                    <p>
+                        Record the person's custody status following the arrest.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.custody_status.id_for_label }}">
+                        Custody Status
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.custody_status }}
+
+                    {% for error in form.custody_status.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- CELL -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.cell_number.id_for_label }}">
+                        Cell Number
+                    </label>
+
+                    {{ form.cell_number }}
+
+                    {% for error in form.cell_number.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                    <small class="field-help">
+                        Enter the holding cell number if applicable.
+                    </small>
+
+                </div>
+
+
+                <!-- BAIL -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.bail_amount_pgk.id_for_label }}">
+                        Bail Amount (PGK)
+                    </label>
+
+                    {{ form.bail_amount_pgk }}
+
+                    {% for error in form.bail_amount_pgk.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- RECEIPT -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.bail_receipt_no.id_for_label }}">
+                        Bail Receipt Number
+                    </label>
+
+                    {{ form.bail_receipt_no }}
+
+                    {% for error in form.bail_receipt_no.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- RECORD SECURITY -->
+        <!-- ================================================= -->
+
+        <div class="record-security">
+
+            <div class="security-check">
+                ✓
+            </div>
+
+            <div>
+
+                <strong>
+                    Secure BlueShield Record
+                </strong>
+
+                <p>
+                    This record will be linked to your authenticated
+                    BlueShield account and automatically recorded under
+                    your assigned police station and district.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'records:list' %}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Save Arrest Record
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.arrest-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.page-eyebrow {
+    color: var(--bs-primary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    margin-bottom: 6px;
+}
+
+.page-header h1 {
+    margin: 0 0 7px;
+    color: var(--bs-text);
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.page-header p {
+    margin: 0;
+    color: var(--bs-text-secondary);
+    font-size: 14px;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border: 1px solid var(--bs-border);
+    border-radius: 999px;
+    background: var(--bs-surface);
+    color: var(--bs-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bs-success);
+}
+
+
+/* =========================================
+   ASSIGNMENT CARD
+========================================= */
+
+.assignment-card {
+    background: var(--bs-primary-light);
+    border: 1px solid #d6e5f3;
+    border-radius: var(--bs-radius);
+    padding: 20px;
+    margin-bottom: 22px;
+}
+
+.assignment-title {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.assignment-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+}
+
+.assignment-title h2 {
+    margin: 0 0 3px;
+    color: var(--bs-primary-dark);
+    font-size: 16px;
+}
+
+.assignment-title p {
+    margin: 0;
+    color: var(--bs-text-secondary);
+    font-size: 12px;
+}
+
+.assignment-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.assignment-item {
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-radius-sm);
+    padding: 14px;
+}
+
+.assignment-label {
+    display: block;
+    color: var(--bs-text-muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 6px;
+}
+
+.assignment-item strong {
+    display: block;
+    color: var(--bs-text);
+    font-size: 14px;
+}
+
+.assignment-item small {
+    display: block;
+    color: var(--bs-text-muted);
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+
+/* =========================================
+   FORM ERROR
+========================================= */
+
+.form-error-summary {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    color: var(--bs-danger);
+    padding: 14px 16px;
+    border-radius: var(--bs-radius);
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+
+/* =========================================
+   FORM CARD
+========================================= */
+
+.form-card {
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--bs-shadow-sm);
+}
+
+.section-heading {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+    padding-bottom: 17px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--bs-border-light);
+}
+
+.section-number {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--bs-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.section-heading h2 {
+    margin: 0 0 4px;
+    color: var(--bs-text);
+    font-size: 18px;
+}
+
+.section-heading p {
+    margin: 0;
+    color: var(--bs-text-secondary);
+    font-size: 13px;
+}
+
+
+/* =========================================
+   FORM GRID
+========================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-grid .form-group {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    color: var(--bs-text);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.required {
+    color: var(--bs-danger);
+}
+
+.field-help {
+    display: block;
+    color: var(--bs-text-muted);
+    font-size: 11px;
+    line-height: 1.5;
+    margin-top: 6px;
+}
+
+.field-error {
+    color: var(--bs-danger);
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+
+/* =========================================
+   READ ONLY FIELD
+========================================= */
+
+.readonly-input {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 10px 13px;
+    background: var(--bs-surface-soft);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-radius-sm);
+    color: var(--bs-text-muted);
+    font-size: 13px;
+}
+
+
+/* =========================================
+   FORM CONTROLS
+========================================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-radius-sm);
+    background: var(--bs-surface);
+    color: var(--bs-text);
+    font-size: 14px;
+    padding: 10px 12px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(23, 63, 107, .10);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group select[multiple] {
+    min-height: 145px;
+}
+
+
+/* =========================================
+   SECURITY NOTICE
+========================================= */
+
+.record-security {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+    background: var(--bs-primary-light);
+    border: 1px solid #d6e5f3;
+    border-radius: var(--bs-radius);
+    padding: 17px;
+    margin-bottom: 20px;
+}
+
+.security-check {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-primary);
+    color: white;
+    border-radius: 50%;
+    font-weight: 800;
+}
+
+.record-security strong {
+    display: block;
+    color: var(--bs-primary-dark);
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.record-security p {
+    margin: 0;
+    color: var(--bs-text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-bottom: 30px;
+}
+
+.form-actions .btn {
+    min-width: 150px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .assignment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 760px) {
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .assignment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card {
+        padding: 18px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .page-header h1 {
+        font-size: 23px;
+    }
+
+    .header-status {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+

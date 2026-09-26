@@ -1,0 +1,636 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Register New Case | BlueShield</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/cases.css' %}"
+    >
+
+</head>
+
+<body>
+
+<main class="case-page">
+
+    <!-- HEADER -->
+    <header class="case-header">
+
+        <div class="header-content">
+
+            <div class="header-title">
+
+                <div class="header-icon">
+                    <span></span>
+                </div>
+
+                <div>
+
+                    <span class="page-eyebrow">
+                        CASE MANAGEMENT
+                    </span>
+
+                    <h1>
+                        Register New Case
+                    </h1>
+
+                    <p>
+                        Create a formal police case from an existing
+                        complaint or register a new case record.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="header-back"
+            >
+                ← Back to Cases
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- SUCCESS MESSAGE -->
+    {% if messages %}
+
+        <div class="message-container">
+
+            {% for message in messages %}
+
+                <div class="alert alert-success">
+
+                    <div class="alert-icon">
+                        ✓
+                    </div>
+
+                    <div class="alert-content">
+
+                        <strong>
+                            Case Registered Successfully
+                        </strong>
+
+                        <p>
+                            {{ message }}
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="alert-close"
+                        aria-label="Close notification"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- FORM -->
+    {% if not messages %}
+
+    <section class="case-form-card">
+
+        <!-- FORM HEADER -->
+        <div class="form-header">
+
+            <div>
+
+                <span class="form-label">
+                    CASE RECORD
+                </span>
+
+                <h2>
+                    Case Information
+                </h2>
+
+                <p>
+                    Complete the information below to formally
+                    register the police case.
+                </p>
+
+            </div>
+
+            <div class="required-indicator">
+                <span>*</span>
+                Required fields
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            id="case-form"
+            novalidate
+        >
+
+            {% csrf_token %}
+
+
+            <!-- FORM ERRORS -->
+            {% if form.non_field_errors %}
+
+                <div class="form-error-summary">
+
+                    <div class="error-summary-icon">
+                        !
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Please correct the following errors:
+                        </strong>
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- SECTION 01 -->
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-number">
+                        01
+                    </div>
+
+                    <div class="section-title">
+
+                        <h3>
+                            Case Identification
+                        </h3>
+
+                        <p>
+                            Identify the complaint and provide
+                            the basic case information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <!-- COMPLAINT -->
+                    <div class="form-group full-width">
+
+                        <label
+                            for="{{ form.complaint.id_for_label }}"
+                        >
+                            Related Complaint
+                        </label>
+
+                        {{ form.complaint }}
+
+                        <small class="field-hint">
+                            Select the complaint from which this
+                            case originated.
+                        </small>
+
+                        {% for error in form.complaint.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- CASE TITLE -->
+                    <div class="form-group full-width">
+
+                        <label
+                            for="{{ form.title.id_for_label }}"
+                        >
+                            Case Title
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.title }}
+
+                        <small class="field-hint">
+                            Enter a short and meaningful name
+                            for the case.
+                        </small>
+
+                        {% for error in form.title.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECTION 02 -->
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-number">
+                        02
+                    </div>
+
+                    <div class="section-title">
+
+                        <h3>
+                            Incident Details
+                        </h3>
+
+                        <p>
+                            Record the essential information about
+                            the reported incident.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <!-- INCIDENT DATE -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.incident_date.id_for_label }}"
+                        >
+                            Incident Date & Time
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.incident_date }}
+
+                        <small class="field-hint">
+                            Enter when the incident occurred.
+                        </small>
+
+                        {% for error in form.incident_date.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.location.id_for_label }}"
+                        >
+                            Incident Location
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.location }}
+
+                        <small class="field-hint">
+                            Enter the village, town, street or
+                            identifiable location.
+                        </small>
+
+                        {% for error in form.location.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+                    <div class="form-group full-width">
+
+                        <label
+                            for="{{ form.description.id_for_label }}"
+                        >
+                            Case Description
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.description }}
+
+                        <small class="field-hint">
+                            Provide a clear and factual summary
+                            of the incident and circumstances.
+                        </small>
+
+                        {% for error in form.description.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECTION 03 -->
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-number">
+                        03
+                    </div>
+
+                    <div class="section-title">
+
+                        <h3>
+                            Offence & Suspect
+                        </h3>
+
+                        <p>
+                            Identify the offence and suspect
+                            associated with this case.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <!-- OFFENCE -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.offence.id_for_label }}"
+                        >
+                            Criminal Offence
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.offence }}
+
+                        <small class="field-hint">
+                            Select the applicable criminal offence.
+                        </small>
+
+                        {% for error in form.offence.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- SUSPECT -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.suspect.id_for_label }}"
+                        >
+                            Suspect
+                        </label>
+
+                        {{ form.suspect }}
+
+                        <small class="field-hint">
+                            Select the suspect if one has been
+                            identified.
+                        </small>
+
+                        {% for error in form.suspect.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECTION 04 -->
+            <div class="form-section">
+
+                <div class="section-header">
+
+                    <div class="section-number">
+                        04
+                    </div>
+
+                    <div class="section-title">
+
+                        <h3>
+                            Investigation Assignment
+                        </h3>
+
+                        <p>
+                            Assign the case to the responsible
+                            police station and investigating officer.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <!-- STATION -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.station.id_for_label }}"
+                        >
+                            Police Station
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.station }}
+
+                        <small class="field-hint">
+                            Select the station responsible for
+                            the case.
+                        </small>
+
+                        {% for error in form.station.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- INVESTIGATING OFFICER -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.investigating_officer.id_for_label }}"
+                        >
+                            Investigating Officer
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.investigating_officer }}
+
+                        <small class="field-hint">
+                            Select the officer assigned to
+                            investigate the case.
+                        </small>
+
+                        {% for error in form.investigating_officer.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PRIORITY -->
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.priority.id_for_label }}"
+                        >
+                            Case Priority
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.priority }}
+
+                        <small class="field-hint">
+                            Select the urgency level of the case.
+                        </small>
+
+                        {% for error in form.priority.errors %}
+                            <small class="field-error">
+                                {{ error }}
+                            </small>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SYSTEM INFORMATION -->
+            <div class="system-note">
+
+                <div class="system-note-icon">
+                    i
+                </div>
+
+                <div class="system-note-content">
+
+                    <strong>
+                        System-Generated Information
+                    </strong>
+
+                    <p>
+                        BlueShield will automatically generate
+                        the case number, registration date and
+                        initial case status. New cases begin with
+                        the status <strong>OPEN</strong>.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'cases:list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="submit-button"
+                >
+
+                    <span class="button-text">
+                        Register Case
+                    </span>
+
+                    <span
+                        class="button-loading"
+                        hidden
+                    >
+                        Registering...
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- FOOTER -->
+    <footer class="case-footer">
+
+        <p>
+            &copy; 2026 BlueShield. All rights reserved.
+        </p>
+
+    </footer>
+
+</main>
+
+
+<script src="{% static 'js/cases.js' %}"></script>
+
+</body>
+
+</html>

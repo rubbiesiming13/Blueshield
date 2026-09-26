@@ -1,0 +1,613 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Complaints | BlueShield</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #fbfbfb;
+            color: #222;
+            font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+        }
+
+        .page-container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 35px 25px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb-text {
+            color: #727272;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .page-title {
+            color: #222;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .page-description {
+            color: #727272;
+            margin: 0;
+        }
+
+        .content-panel {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .panel-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: #fafafa;
+            color: #555;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 13px 14px;
+            border-bottom: 1px solid #e5e5e5;
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 14px;
+            vertical-align: middle;
+            color: #333;
+        }
+
+        .table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        /* =========================================
+           STATUS
+        ========================================== */
+
+        .status {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 4px;
+            background: #eef4fa;
+            color: #164a7a;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           ROLE
+        ========================================== */
+
+        .role {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 4px;
+            background: #f1f3f5;
+            color: #555;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           WITNESS COUNT
+        ========================================== */
+
+        .witness-count {
+            color: #555;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .witness-count i {
+            color: #164a7a;
+            margin-right: 4px;
+        }
+
+        /* =========================================
+           ACTION BUTTONS
+        ========================================== */
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .action-btn {
+            width: 34px;
+            height: 34px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #ddd;
+            border-radius: 5px;
+
+            background: #fff;
+            color: #555;
+
+            text-decoration: none;
+
+            transition: 0.15s ease;
+        }
+
+        .action-btn:hover {
+            background: #f3f7fb;
+            color: #164a7a;
+            border-color: #c8d6e5;
+        }
+
+        .action-btn.view:hover {
+            color: #0d6efd;
+        }
+
+        .action-btn.edit:hover {
+            color: #198754;
+        }
+
+        /* =========================================
+           EMPTY STATE
+        ========================================== */
+
+        .empty-state {
+            padding: 45px 20px;
+            text-align: center;
+            color: #727272;
+        }
+
+        .empty-state i {
+            font-size: 35px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            .page-container {
+                padding: 25px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
+
+            .table {
+                min-width: 1050px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page-container">
+
+
+    <!-- =================================================
+         PAGE HEADER
+    ================================================== -->
+
+    <div
+        class="d-flex justify-content-between align-items-start flex-wrap gap-3 page-header"
+    >
+
+        <div>
+
+            <div class="breadcrumb-text">
+                BlueShield / Case Management
+            </div>
+
+            <h1 class="page-title">
+                My Complaints
+            </h1>
+
+            <p class="page-description">
+                View complaints you have registered in BlueShield.
+            </p>
+
+        </div>
+
+
+        <div class="d-flex gap-2">
+
+            <!-- BACK TO DASHBOARD -->
+
+            <a
+                href="{% url 'accounts:dashboard' %}"
+                class="btn btn-outline-secondary"
+            >
+
+                <i class="bi bi-arrow-left me-1"></i>
+
+                Back to Dashboard
+
+            </a>
+
+
+            <!-- CREATE COMPLAINT -->
+
+            <a
+                href="{% url 'complaints:create_complaint' %}"
+                class="btn btn-primary"
+            >
+
+                <i class="bi bi-plus-circle me-1"></i>
+
+                Create Complaint
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         COMPLAINT PANEL
+    ================================================== -->
+
+    <div class="content-panel">
+
+
+        <div class="panel-header">
+
+            <h5>
+                Complaint Records
+            </h5>
+
+        </div>
+
+
+        {% if complaints %}
+
+
+            <div class="table-responsive">
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Complaint Number
+                            </th>
+
+                            <th>
+                                Complainant
+                            </th>
+
+                            <th>
+                                Role
+                            </th>
+
+                            <th>
+                                Complaint Type
+                            </th>
+
+                            <th>
+                                Incident Date
+                            </th>
+
+                            <th>
+                                Location
+                            </th>
+
+                            <th>
+                                Witnesses
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Registered
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for complaint in complaints %}
+
+
+                            <tr>
+
+
+                                <!-- =================================
+                                     COMPLAINT NUMBER
+                                ================================== -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ complaint.complaint_number }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- =================================
+                                     COMPLAINANT
+                                ================================== -->
+
+                                <td>
+
+                                    {{ complaint.complainant_name }}
+
+                                    {% if complaint.complainant_phone %}
+
+                                        <div
+                                            class="text-muted small mt-1"
+                                        >
+
+                                            <i class="bi bi-telephone"></i>
+
+                                            {{ complaint.complainant_phone }}
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     ROLE
+                                ================================== -->
+
+                                <td>
+
+                                    <span class="role">
+
+                                        {{ complaint.get_complainant_role_display }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================
+                                     COMPLAINT TYPE
+                                ================================== -->
+
+                                <td>
+
+                                    {{ complaint.complaint_type }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     INCIDENT DATE
+                                ================================== -->
+
+                                <td>
+
+                                    {{ complaint.incident_date|date:"d M Y" }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     LOCATION
+                                ================================== -->
+
+                                <td>
+
+                                    {{ complaint.incident_location }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     WITNESSES
+                                ================================== -->
+
+                                <td>
+
+                                    <span class="witness-count">
+
+                                        <i class="bi bi-people"></i>
+
+                                        {{ complaint.witnesses.all|length }}
+
+                                        {% if complaint.witnesses.all|length == 1 %}
+                                            Witness
+                                        {% else %}
+                                            Witnesses
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================
+                                     STATUS
+                                ================================== -->
+
+                                <td>
+
+                                    <span class="status">
+
+                                        {{ complaint.get_status_display }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================
+                                     REGISTERED
+                                ================================== -->
+
+                                <td>
+
+                                    {{ complaint.created_at|date:"d M Y" }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     ACTIONS
+                                ================================== -->
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+
+                                        <!-- VIEW COMPLAINT -->
+
+                                        <a
+                                            href="{% url 'complaints:detail' complaint.pk %}"
+                                            class="action-btn view"
+                                            title="View Complaint"
+                                        >
+
+                                            <i class="bi bi-eye"></i>
+
+                                        </a>
+
+
+                                        <!-- EDIT COMPLAINT -->
+
+                                        <a
+                                            href="{% url 'complaints:edit' complaint.pk %}"
+                                            class="action-btn edit"
+                                            title="Edit Complaint"
+                                        >
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =========================================
+                 EMPTY STATE
+            ========================================== -->
+
+            <div class="empty-state">
+
+                <i class="bi bi-megaphone"></i>
+
+                <h6>
+                    No complaints found
+                </h6>
+
+                <p class="mb-3">
+                    You have not registered any complaints yet.
+                </p>
+
+                <a
+                    href="{% url 'complaints:create_complaint' %}"
+                    class="btn btn-primary"
+                >
+
+                    <i class="bi bi-plus-circle me-1"></i>
+
+                    Create Complaint
+
+                </a>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

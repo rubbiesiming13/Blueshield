@@ -1,0 +1,1991 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}
+PPC / System Administrator Dashboard
+{% endblock %}
+
+{% block breadcrumb %}
+System Administration
+{% endblock %}
+
+{% block sidebar_nav %}
+
+<div class="nav-section-title">Dashboard</div>
+
+<a href="{% url 'accounts:dashboard' %}" class="nav-link active">
+    <i class="bi bi-grid-1x2-fill"></i>
+    <span>Dashboard</span>
+</a>
+
+
+<div class="nav-section-title">Records Management</div>
+
+<a href="{% url 'suspects:list' %}" class="nav-link">
+    <i class="bi bi-person-vcard"></i>
+    <span>Suspects</span>
+</a>
+
+<a href="{% url 'records:list' %}" class="nav-link">
+    <i class="bi bi-file-earmark-text"></i>
+    <span>Arrest Records</span>
+</a>
+
+<a href="#" class="nav-link">
+    <i class="bi bi-journal-text"></i>
+    <span>Criminal Offences</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-folder2-open"></i>
+    <span>Cases</span>
+</a>
+
+<a href="{% url 'warrant:create' %}" class="nav-link">
+    <i class="bi bi-file-earmark-lock"></i>
+    <span>Warrants</span>
+</a>
+
+
+<div class="nav-section-title">Operations</div>
+
+<a href="#" class="nav-link">
+    <i class="bi bi-person-badge-fill"></i>
+    <span>Police Officers</span>
+</a>
+
+<a href="#" class="nav-link">
+    <i class="bi bi-building"></i>
+    <span>Police Stations</span>
+</a>
+
+<a href="#" class="nav-link">
+    <i class="bi bi-geo-alt-fill"></i>
+    <span>Districts</span>
+</a>
+
+
+<a href="{% url 'accounts:overall_crime_summary' %}" class="dashboard-button">
+    <i class="bi bi-bar-chart-line"></i>
+    View Intelligence
+</a>
+
+<a href="#" class="nav-link">
+    <i class="bi bi-geo-fill"></i>
+    <span>Crime Hotspots</span>
+</a>
+
+<a href="{% url 'accounts:overall_crime_summary' %}" class="dashboard-button">
+    <i class="bi bi-bar-chart-line-fill"></i>
+    View Statistics
+</a>
+
+<a href="{% url 'accounts:overall_crime_summary' %}" class="nav-link">
+    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+    <span>Reports</span>
+</a>
+
+
+<div class="nav-section-title">Administration</div>
+
+<a href="{% url 'accounts:admin_users' %}" class="nav-link">
+    <i class="bi bi-person-gear"></i>
+    <span>User Management</span>
+</a>
+
+<a href="{% url 'accounts:admin_audit_logs' %}" class="nav-link">
+    <i class="bi bi-shield-check"></i>
+    <span>Audit Logs</span>
+</a>
+
+<a href="{% url 'accounts:admin_settings' %}" class="nav-link">
+    <i class="bi bi-sliders2"></i>
+    <span>System Settings</span>
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="admin-dashboard">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="admin-header">
+
+        <div>
+
+            <div class="admin-eyebrow">
+                BLUESHIELD PROVINCIAL COMMAND
+            </div>
+
+            <h1>
+                System Administrator Dashboard
+            </h1>
+
+            <p>
+                Province-wide overview of police activities,
+                criminal records, cases, suspects and crime
+                intelligence across Madang Province.
+            </p>
+
+        </div>
+
+        <div class="verified-badge">
+            <i class="bi bi-patch-check-fill"></i>
+            SevisPass Verified
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SYSTEM STATISTICS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>
+                    Provincial System Overview
+                </h2>
+
+                <p>
+                    Current records and operational information
+                    across Madang Province.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        TOTAL ARRESTS
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_arrests|default:"0" }}
+                    </div>
+
+                    <p>
+                        All recorded arrests
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        TOTAL CASES
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_cases|default:"0" }}
+                    </div>
+
+                    <p>
+                        Registered criminal cases
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-vcard"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        TOTAL SUSPECTS
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_suspects|default:"0" }}
+                    </div>
+
+                    <p>
+                        Registered suspects
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-file-earmark-lock"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        ACTIVE WARRANTS
+                    </div>
+
+                    <div class="stat-number">
+                        {{ active_warrants|default:"0" }}
+                    </div>
+
+                    <p>
+                        Outstanding warrants
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        POLICE OFFICERS
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_officers|default:"0" }}
+                    </div>
+
+                    <p>
+                        Registered officers
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        POLICE STATIONS
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_stations|default:"0" }}
+                    </div>
+
+                    <p>
+                        Stations in the system
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        PENDING CASES
+                    </div>
+
+                    <div class="stat-number">
+                        {{ pending_cases|default:"0" }}
+                    </div>
+
+                    <p>
+                        Awaiting approval
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+
+                <div>
+                    <div class="stat-title">
+                        CRIMINAL OFFENCES
+                    </div>
+
+                    <div class="stat-number">
+                        {{ total_offences|default:"0" }}
+                    </div>
+
+                    <p>
+                        Recorded offence types
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DISTRICT SUMMARY
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>
+                    Madang Province — District Summary
+                </h2>
+
+                <p>
+                    Province-wide activity by district.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="district-grid">
+
+            {% for district in district_stats %}
+
+            <div class="dashboard-card district-card">
+
+                <div class="district-header">
+
+                    <div class="district-icon">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+
+                    <h3>
+                        {{ district.name }}
+                    </h3>
+
+                </div>
+
+
+                <div class="district-stat">
+                    <span>Arrests</span>
+                    <strong>{{ district.arrests }}</strong>
+                </div>
+
+                <div class="district-stat">
+                    <span>Cases</span>
+                    <strong>{{ district.cases }}</strong>
+                </div>
+
+                <div class="district-stat">
+                    <span>Suspects</span>
+                    <strong>{{ district.suspects }}</strong>
+                </div>
+
+                <div class="district-stat">
+                    <span>Warrants</span>
+                    <strong>{{ district.warrants }}</strong>
+                </div>
+
+                <div class="district-stat">
+                    <span>Offences</span>
+                    <strong>{{ district.offences }}</strong>
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="dashboard-card empty-state">
+
+                <i class="bi bi-bar-chart"></i>
+
+                <p>
+                    No district statistics available.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CRIME INTELLIGENCE
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Crime Intelligence
+                </h2>
+
+                <p>
+                    Locations and offences requiring attention.
+                </p>
+
+            </div>
+
+            <a href="#" class="dashboard-button">
+                <i class="bi bi-bar-chart-line"></i>
+                View Intelligence
+            </a>
+
+        </div>
+
+
+        <div class="intelligence-grid">
+
+            <!-- CRIME HOTSPOTS -->
+
+            <div class="dashboard-card">
+
+                <div class="card-heading">
+
+                    <div class="card-heading-icon">
+                        <i class="bi bi-geo-fill"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Highest Crime Locations
+                        </h3>
+
+                        <p>
+                            Locations with recorded incidents.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                {% for hotspot in crime_hotspots %}
+
+                <div class="hotspot">
+
+                    <div class="hotspot-main">
+
+                        <div class="hotspot-name">
+                            {{ hotspot.location }}
+                        </div>
+
+                        <div class="hotspot-district">
+                            {{ hotspot.district }}
+                        </div>
+
+                    </div>
+
+                    <div class="hotspot-count">
+                        {{ hotspot.crime_count }}
+                        incidents
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-state small">
+
+                    <i class="bi bi-geo-alt"></i>
+
+                    <p>
+                        No hotspot information available.
+                    </p>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- COMMON OFFENCES -->
+
+            <div class="dashboard-card">
+
+                <div class="card-heading">
+
+                    <div class="card-heading-icon">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Most Common Offences
+                        </h3>
+
+                        <p>
+                            Frequently recorded offence types.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                {% for offence in common_offences %}
+
+                <div class="offence-row">
+
+                    <div class="offence-name">
+                        {{ offence.name }}
+                    </div>
+
+                    <div class="offence-count">
+                        {{ offence.count }}
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-state small">
+
+                    <i class="bi bi-journal-x"></i>
+
+                    <p>
+                        No offence statistics available.
+                    </p>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CRIME SUMMARY
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Crime Summary
+                </h2>
+
+                <p>
+                    Consolidated province-wide crime statistics.
+                </p>
+
+            </div>
+
+            <a href="#" class="dashboard-button">
+                <i class="bi bi-bar-chart-line-fill"></i>
+                View Statistics
+            </a>
+
+        </div>
+
+
+        <div class="table-card">
+
+            <div class="table-responsive">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Offence</th>
+                            <th>Cases</th>
+                            <th>Arrests</th>
+                            <th>Suspects</th>
+                            <th>Warrants</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for crime in crime_summary %}
+
+                        <tr>
+
+                            <td class="primary-cell">
+                                {{ crime.offence }}
+                            </td>
+
+                            <td>
+                                {{ crime.cases }}
+                            </td>
+
+                            <td>
+                                {{ crime.arrests }}
+                            </td>
+
+                            <td>
+                                {{ crime.suspects }}
+                            </td>
+
+                            <td>
+                                {{ crime.warrants }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="5" class="empty-table">
+                                No crime summary available.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         REPORTS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Reports
+                </h2>
+
+                <p>
+                    Generate and access official BlueShield reports.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-grid">
+
+            <!-- ARREST REPORT -->
+
+            <div class="report-card">
+
+                <div class="report-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+
+                <h3>
+                    Arrest Report
+                </h3>
+
+                <p>
+                    View and filter recorded arrests across Madang Province.
+                </p>
+
+                <a href="{% url 'accounts:arrest_report' %}"
+                   class="report-button">
+
+                    <i class="bi bi-eye me-1"></i>
+                    View Report
+
+                </a>
+
+            </div>
+
+
+            <!-- OVERALL CRIME SUMMARY -->
+
+            <div class="report-card">
+
+                <div class="report-icon">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+
+                <h3>
+                    Overall Crime Summary
+                </h3>
+
+                <p>
+                    Provincial summary of crimes, offences, arrests and cases.
+                </p>
+
+                <a href="{% url 'accounts:overall_crime_summary' %}"
+                   class="report-button">
+
+                    <i class="bi bi-eye me-1"></i>
+                    View Report
+
+                </a>
+
+            </div>
+
+
+            <!-- DISTRICT REPORT -->
+
+            <div class="report-card">
+
+                <div class="report-icon">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+
+                <h3>
+                    District Report
+                </h3>
+
+                <p>
+                    Compare crime and police activity across all districts.
+                </p>
+
+                <a href="{% url 'accounts:district_report' %}"
+                   class="report-button">
+
+                    <i class="bi bi-eye me-1"></i>
+                    View Report
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SYSTEM ADMINISTRATION
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    System Administration
+                </h2>
+
+                <p>
+                    Manage users, operational records, security and BlueShield system configuration.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-grid">
+
+
+            <!-- USER MANAGEMENT -->
+
+            <a href="{% url 'accounts:admin_users' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-person-gear"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        User Management
+                    </div>
+
+                    <div class="admin-card-description">
+                        Manage system users, roles and access permissions.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- POLICE OFFICERS -->
+
+            <a href="{% url 'accounts:admin_officers' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Police Officers
+                    </div>
+
+                    <div class="admin-card-description">
+                        Manage registered police officers and assignments.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- POLICE STATIONS -->
+
+            <a href="{% url 'accounts:admin_stations' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-building-fill"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Police Stations
+                    </div>
+
+                    <div class="admin-card-description">
+                        Manage stations, districts and station assignments.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- CRIMINAL OFFENCES -->
+
+            <a href="{% url 'accounts:admin_offences' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Criminal Offences
+                    </div>
+
+                    <div class="admin-card-description">
+                        Manage offence types recorded in BlueShield.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- ARREST RECORDS -->
+
+            <a href="{% url 'accounts:admin_arrests' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-person-vcard-fill"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Arrest Records
+                    </div>
+
+                    <div class="admin-card-description">
+                        Review and manage province-wide arrest records.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- CASES -->
+
+            <a href="{% url 'accounts:admin_cases' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Cases
+                    </div>
+
+                    <div class="admin-card-description">
+                        Monitor and manage registered criminal cases.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- SUSPECTS -->
+
+            <a href="{% url 'accounts:admin_suspects' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-person-vcard"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Suspects
+                    </div>
+
+                    <div class="admin-card-description">
+                        Review registered suspects and related records.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- AUDIT LOGS -->
+
+            <a href="{% url 'accounts:admin_audit_logs' %}" class="admin-card">
+
+                <div class="admin-card-icon security">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Audit Logs
+                    </div>
+
+                    <div class="admin-card-description">
+                        Track user activity and system security events.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- STATISTICS -->
+
+            <a href="{% url 'accounts:admin_statistics' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        Statistics
+                    </div>
+
+                    <div class="admin-card-description">
+                        View provincial crime and operational statistics.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+            <!-- SYSTEM SETTINGS -->
+
+            <a href="{% url 'accounts:admin_settings' %}" class="admin-card">
+
+                <div class="admin-card-icon">
+                    <i class="bi bi-sliders2"></i>
+                </div>
+
+                <div class="admin-card-content">
+
+                    <div class="admin-card-title">
+                        System Settings
+                    </div>
+
+                    <div class="admin-card-description">
+                        Configure BlueShield system preferences and controls.
+                    </div>
+
+                </div>
+
+                <div class="admin-card-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SECURITY NOTICE
+    ====================================================== -->
+
+    <section class="security-notice">
+
+        <div class="security-icon">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+
+        <div>
+
+            <strong>
+                Provincial Administrative Access
+            </strong>
+
+            <p>
+                This dashboard provides PPC / System Administrator
+                access to province-wide BlueShield records,
+                operational information, reporting and system
+                administration functions.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="dashboard-footer">
+
+        BlueShield • Madang Provincial Police
+        <br>
+
+        Secure Police Records and Case Management System
+
+    </footer>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.admin-dashboard {
+    width: 100%;
+    max-width: 1500px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.admin-eyebrow {
+    color: var(--bs-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+}
+
+.admin-header h1 {
+    color: var(--bs-text);
+    font-size: 29px;
+    line-height: 1.2;
+    margin-bottom: 9px;
+}
+
+.admin-header p {
+    max-width: 850px;
+    color: var(--bs-text-secondary);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    background: #ecfdf3;
+    color: #087443;
+    border: 1px solid #b7ebca;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.verified-badge i {
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    color: var(--bs-text);
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.section-header p {
+    color: var(--bs-text-muted);
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.dashboard-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 13px;
+    border-radius: 7px;
+    background: var(--bs-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+.dashboard-button:hover {
+    background: var(--bs-primary-dark);
+    color: white;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: 11px;
+    padding: 18px;
+    box-shadow: var(--bs-shadow-sm);
+    border-left: 4px solid var(--bs-primary);
+}
+
+.stat-icon {
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.stat-title {
+    color: var(--bs-text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    margin-bottom: 5px;
+}
+
+.stat-number {
+    color: var(--bs-text);
+    font-size: 27px;
+    font-weight: 750;
+    line-height: 1;
+}
+
+.stat-card p {
+    color: var(--bs-text-muted);
+    font-size: 10px;
+    margin-top: 6px;
+}
+
+
+/* =========================================================
+   GENERIC DASHBOARD CARD
+========================================================= */
+
+.dashboard-card {
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: 11px;
+    padding: 20px;
+    box-shadow: var(--bs-shadow-sm);
+}
+
+
+/* =========================================================
+   DISTRICTS
+========================================================= */
+
+.district-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 17px;
+}
+
+.district-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.district-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.district-header h3 {
+    color: var(--bs-text);
+    font-size: 15px;
+}
+
+.district-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bs-border-light);
+    font-size: 12px;
+}
+
+.district-stat:last-child {
+    border-bottom: none;
+}
+
+.district-stat span {
+    color: var(--bs-text-secondary);
+}
+
+.district-stat strong {
+    color: var(--bs-text);
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   INTELLIGENCE
+========================================================= */
+
+.intelligence-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 17px;
+}
+
+.card-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 12px;
+}
+
+.card-heading-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-heading h3 {
+    color: var(--bs-text);
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.card-heading p {
+    color: var(--bs-text-muted);
+    font-size: 10px;
+}
+
+.hotspot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--bs-border-light);
+}
+
+.hotspot:last-child {
+    border-bottom: none;
+}
+
+.hotspot-name {
+    color: var(--bs-text);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hotspot-district {
+    color: var(--bs-text-muted);
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.hotspot-count {
+    color: var(--bs-danger);
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.offence-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--bs-border-light);
+}
+
+.offence-row:last-child {
+    border-bottom: none;
+}
+
+.offence-name {
+    color: var(--bs-text);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.offence-count {
+    min-width: 30px;
+    padding: 4px 7px;
+    border-radius: 5px;
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-card {
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: 11px;
+    overflow: hidden;
+    box-shadow: var(--bs-shadow-sm);
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background: var(--bs-primary-dark);
+    color: white;
+    padding: 13px 15px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.admin-table td {
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--bs-border-light);
+    color: var(--bs-text-secondary);
+    font-size: 12px;
+}
+
+.admin-table tbody tr:hover {
+    background: var(--bs-surface-soft);
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table .primary-cell {
+    color: var(--bs-text);
+    font-weight: 700;
+}
+
+.empty-table {
+    text-align: center !important;
+    padding: 28px !important;
+    color: var(--bs-text-muted) !important;
+}
+
+
+/* =========================================================
+   REPORTS
+========================================================= */
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.report-card {
+    background: var(--bs-surface);
+    border: 1px solid var(--bs-border);
+    border-radius: 11px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--bs-shadow-sm);
+    transition: all .2s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-2px);
+    border-color: #b7c8dc;
+}
+
+.report-icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 9px;
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.report-card h3 {
+    color: var(--bs-text);
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.report-card p {
+    min-height: 31px;
+    color: var(--bs-text-muted);
+    font-size: 10px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.report-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: var(--bs-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.report-button:hover {
+    background: var(--bs-primary-dark);
+    color: white;
+}
+
+
+/* =========================================================
+   SYSTEM ADMINISTRATION
+========================================================= */
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+
+/* =========================================================
+   ADMIN CARD
+========================================================= */
+
+.admin-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    min-height: 92px;
+    padding: 16px;
+
+    background: var(--bs-surface);
+
+    border: 1px solid var(--bs-border);
+    border-radius: 11px;
+
+    color: var(--bs-text);
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+/* =========================================================
+   ADMIN CARD HOVER
+========================================================= */
+
+.admin-card:hover {
+    transform: translateY(-2px);
+
+    background: var(--bs-primary-light);
+
+    border-color: var(--bs-primary);
+
+    color: var(--bs-text);
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+}
+
+
+/* =========================================================
+   ADMIN ICON
+========================================================= */
+
+.admin-card-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+
+    border: 1px solid var(--bs-border);
+
+    font-size: 19px;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.admin-card:hover .admin-card-icon {
+    background: var(--bs-primary);
+    color: white;
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   SECURITY ICON
+========================================================= */
+
+.admin-card-icon.security {
+    background: #ecfdf3;
+    color: #087443;
+    border-color: #b7ebca;
+}
+
+.admin-card:hover .admin-card-icon.security {
+    background: #087443;
+    color: white;
+}
+
+
+/* =========================================================
+   ADMIN CARD CONTENT
+========================================================= */
+
+.admin-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.admin-card-title {
+    color: var(--bs-text);
+
+    font-size: 12px;
+    font-weight: 750;
+
+    margin-bottom: 4px;
+
+    line-height: 1.3;
+}
+
+
+.admin-card-description {
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+    line-height: 1.45;
+
+    max-width: 230px;
+}
+
+
+.admin-card:hover .admin-card-title {
+    color: var(--bs-primary-dark);
+}
+
+
+/* =========================================================
+   ADMIN CARD ARROW
+========================================================= */
+
+.admin-card-arrow {
+    width: 27px;
+    height: 27px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: var(--bs-surface-soft);
+    color: var(--bs-text-muted);
+
+    font-size: 12px;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.admin-card:hover .admin-card-arrow {
+    background: var(--bs-primary);
+    color: white;
+
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   KEYBOARD ACCESSIBILITY
+========================================================= */
+
+.admin-card:focus-visible {
+    outline: 3px solid rgba(0, 90, 150, .20);
+    outline-offset: 2px;
+
+    border-color: var(--bs-primary);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--bs-text-muted);
+}
+
+.empty-state i {
+    font-size: 25px;
+}
+
+.empty-state p {
+    font-size: 11px;
+}
+
+.empty-state.small {
+    min-height: 100px;
+}
+
+
+/* =========================================================
+   SECURITY NOTICE
+========================================================= */
+
+.security-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px 19px;
+    margin-bottom: 25px;
+    background: var(--bs-primary-light);
+    border: 1px solid #cbdceb;
+    border-radius: 10px;
+}
+
+.security-icon {
+    width: 37px;
+    height: 37px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: white;
+    color: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.security-notice strong {
+    display: block;
+    color: var(--bs-primary-dark);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.security-notice p {
+    color: var(--bs-text-secondary);
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.dashboard-footer {
+    text-align: center;
+    color: var(--bs-text-muted);
+    font-size: 10px;
+    line-height: 1.6;
+    padding: 8px 0 25px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .district-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .report-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .admin-header {
+        flex-direction: column;
+    }
+
+    .intelligence-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .stats-grid,
+    .district-grid,
+    .report-grid,
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-header h1 {
+        font-size: 24px;
+    }
+
+    .verified-badge {
+        align-self: flex-start;
+    }
+
+    .security-notice {
+        flex-direction: column;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-number {
+        font-size: 24px;
+    }
+
+    .dashboard-card {
+        padding: 16px;
+    }
+
+    .admin-card {
+        padding: 14px;
+    }
+
+    .admin-card-description {
+        font-size: 9px;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+

@@ -1,0 +1,2100 @@
+{% extends "base.html" %}
+
+
+{% block page_title %}
+    Division Admin / Prosecution Dashboard
+{% endblock %}
+
+
+{% block breadcrumb %}
+    Division Admin / Prosecution
+{% endblock %}
+
+
+{% block sidebar_nav %}
+
+<div class="nav-section-title">
+    DASHBOARD
+</div>
+
+<a
+    href="{% url 'accounts:dashboard' %}"
+    class="nav-link active"
+>
+    <i class="bi bi-speedometer2"></i>
+    <span>Dashboard</span>
+</a>
+
+
+<div class="nav-section-title">
+    CASE REVIEW
+</div>
+
+<a
+    href="{% url 'cases:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-inbox"></i>
+    <span>Submitted Cases</span>
+</a>
+
+<a
+    href="{% url 'cases:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-folder2-open"></i>
+    <span>Review Case Files</span>
+</a>
+
+<a
+    href="{% url 'evidence:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-box-seam"></i>
+    <span>Review Evidence</span>
+</a>
+
+
+<div class="nav-section-title">
+    PROSECUTION
+</div>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-file-earmark-text"></i>
+    <span>Prosecution Cases</span>
+</a>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-arrow-return-left"></i>
+    <span>Returned Cases</span>
+</a>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-bank"></i>
+    <span>Court Processing</span>
+</a>
+
+
+<div class="nav-section-title">
+    COURT
+</div>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-clipboard-check"></i>
+    <span>Committal</span>
+</a>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-journal-text"></i>
+    <span>Summary Trial</span>
+</a>
+
+<a
+    href="{% url 'prosecution:list' %}"
+    class="nav-link"
+>
+    <i class="bi bi-graph-up"></i>
+    <span>Prosecution Status</span>
+</a>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="division-dashboard">
+
+
+    <!-- =====================================================
+         WELCOME HEADER
+    ====================================================== -->
+
+    <section class="division-welcome">
+
+        <div class="welcome-content">
+
+            <span class="division-eyebrow">
+                BLUESHIELD PROSECUTION WORKSPACE
+            </span>
+
+            <h1>
+                Division Admin Dashboard
+            </h1>
+
+            <p>
+                Review submitted case files, manage prosecution
+                processing and prepare cases for court proceedings.
+            </p>
+
+        </div>
+
+
+        <div class="secure-role">
+
+            <i class="bi bi-shield-check"></i>
+
+            <div>
+
+                <span>
+                    SYSTEM ROLE
+                </span>
+
+                <strong>
+                    Division Admin
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         USER ASSIGNMENT
+    ====================================================== -->
+
+    <section class="assignment-panel">
+
+        <div class="assignment-item">
+
+            <span class="assignment-label">
+                User
+            </span>
+
+            <strong>
+                {% if request.user.get_full_name %}
+                    {{ request.user.get_full_name }}
+                {% else %}
+                    {{ request.user.username }}
+                {% endif %}
+            </strong>
+
+        </div>
+
+
+        <div class="assignment-item">
+
+            <span class="assignment-label">
+                Role
+            </span>
+
+            <strong>
+                Division Admin / Prosecution
+            </strong>
+
+        </div>
+
+
+        <div class="assignment-item">
+
+            <span class="assignment-label">
+                Division
+            </span>
+
+            <strong>
+
+                {% if request.user.division %}
+                    {{ request.user.division }}
+                {% else %}
+                    Prosecution Division
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="assignment-item">
+
+            <span class="assignment-label">
+                District / Area
+            </span>
+
+            <strong>
+
+                {% if request.user.district %}
+                    {{ request.user.district }}
+                {% else %}
+                    Provincial
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         WORK QUEUE
+    ====================================================== -->
+
+    <section>
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    PROSECUTION WORKFLOW
+                </span>
+
+                <h2 class="section-title">
+                    Work Queue
+                </h2>
+
+                <p class="section-subtitle">
+                    Case files requiring review or prosecution action.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="queue-grid">
+
+
+            <!-- SUBMITTED -->
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="queue-card"
+            >
+
+                <div class="queue-icon">
+
+                    <i class="bi bi-inbox"></i>
+
+                </div>
+
+
+                <div class="queue-info">
+
+                    <span class="queue-label">
+                        Submitted
+                    </span>
+
+                    <strong>
+                        {{ submitted_cases|default:"0" }}
+                    </strong>
+
+                    <p>
+                        Awaiting case-file review
+                    </p>
+
+                </div>
+
+
+                <i class="bi bi-arrow-up-right queue-arrow"></i>
+
+            </a>
+
+
+
+            <!-- UNDER REVIEW -->
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="queue-card"
+            >
+
+                <div class="queue-icon">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+
+                <div class="queue-info">
+
+                    <span class="queue-label">
+                        Under Review
+                    </span>
+
+                    <strong>
+                        {{ under_review_cases|default:"0" }}
+                    </strong>
+
+                    <p>
+                        Cases being reviewed
+                    </p>
+
+                </div>
+
+
+                <i class="bi bi-arrow-up-right queue-arrow"></i>
+
+            </a>
+
+
+
+            <!-- RETURNED -->
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="queue-card returned-card"
+            >
+
+                <div class="queue-icon returned">
+
+                    <i class="bi bi-arrow-return-left"></i>
+
+                </div>
+
+
+                <div class="queue-info">
+
+                    <span class="queue-label">
+                        Returned
+                    </span>
+
+                    <strong>
+                        {{ returned_cases|default:"0" }}
+                    </strong>
+
+                    <p>
+                        Cases requiring correction
+                    </p>
+
+                </div>
+
+
+                <i class="bi bi-arrow-up-right queue-arrow"></i>
+
+            </a>
+
+
+
+            <!-- READY FOR COURT -->
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="queue-card"
+            >
+
+                <div class="queue-icon court">
+
+                    <i class="bi bi-bank"></i>
+
+                </div>
+
+
+                <div class="queue-info">
+
+                    <span class="queue-label">
+                        Ready for Court
+                    </span>
+
+                    <strong>
+                        {{ ready_for_court|default:"0" }}
+                    </strong>
+
+                    <p>
+                        Cases ready for court
+                    </p>
+
+                </div>
+
+
+                <i class="bi bi-arrow-up-right queue-arrow"></i>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CASE REVIEW
+    ====================================================== -->
+
+    <section>
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    REVIEW
+                </span>
+
+                <h2 class="section-title">
+                    Case File Review
+                </h2>
+
+                <p class="section-subtitle">
+                    Check submitted information before prosecution processing.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="workflow-grid">
+
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="workflow-card"
+            >
+
+                <div class="workflow-icon">
+
+                    <i class="bi bi-folder2-open"></i>
+
+                </div>
+
+                <div class="workflow-content">
+
+                    <h3>
+                        Review Case File
+                    </h3>
+
+                    <p>
+                        Examine the case information, suspect details,
+                        investigation records and case-file contents.
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right workflow-arrow"></i>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'evidence:list' %}"
+                class="workflow-card"
+            >
+
+                <div class="workflow-icon">
+
+                    <i class="bi bi-box-seam"></i>
+
+                </div>
+
+                <div class="workflow-content">
+
+                    <h3>
+                        Review Evidence
+                    </h3>
+
+                    <p>
+                        Check statements, evidence and supporting
+                        investigative information.
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right workflow-arrow"></i>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="workflow-card"
+            >
+
+                <div class="workflow-icon">
+
+                    <i class="bi bi-file-earmark-check"></i>
+
+                </div>
+
+                <div class="workflow-content">
+
+                    <h3>
+                        Check Case Requirements
+                    </h3>
+
+                    <p>
+                        Confirm that the submitted case contains
+                        the required information before processing.
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right workflow-arrow"></i>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="workflow-card"
+            >
+
+                <div class="workflow-icon return-icon">
+
+                    <i class="bi bi-arrow-return-left"></i>
+
+                </div>
+
+                <div class="workflow-content">
+
+                    <h3>
+                        Return Case
+                    </h3>
+
+                    <p>
+                        Return an incomplete case file to the responsible
+                        officer with a reason for correction.
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right workflow-arrow"></i>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PROSECUTION PROCESS
+    ====================================================== -->
+
+    <section>
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    CASE PROCESSING
+                </span>
+
+                <h2 class="section-title">
+                    Prosecution Process
+                </h2>
+
+                <p class="section-subtitle">
+                    Continue reviewed cases through prosecution and court preparation.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="process-grid">
+
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="process-card"
+            >
+
+                <div class="process-icon">
+
+                    <i class="bi bi-check-circle"></i>
+
+                </div>
+
+                <h3>
+                    Accept Case
+                </h3>
+
+                <p>
+                    Continue a reviewed case into prosecution processing.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="process-card"
+            >
+
+                <div class="process-icon">
+
+                    <i class="bi bi-file-earmark-text"></i>
+
+                </div>
+
+                <h3>
+                    Court Information
+                </h3>
+
+                <p>
+                    Record information required for court proceedings.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="process-card"
+            >
+
+                <div class="process-icon">
+
+                    <i class="bi bi-clipboard-check"></i>
+
+                </div>
+
+                <h3>
+                    Committal
+                </h3>
+
+                <p>
+                    Manage committal requirements and prosecution status.
+                </p>
+
+            </a>
+
+
+
+            <a
+                href="{% url 'prosecution:list' %}"
+                class="process-card"
+            >
+
+                <div class="process-icon">
+
+                    <i class="bi bi-journal-text"></i>
+
+                </div>
+
+                <h3>
+                    Summary Trial
+                </h3>
+
+                <p>
+                    Record and manage summary-trial prosecution information.
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         COURT PROGRESSION
+    ====================================================== -->
+
+    <section class="court-panel">
+
+        <div class="court-icon">
+
+            <i class="bi bi-bank2"></i>
+
+        </div>
+
+
+        <div class="court-content">
+
+            <span>
+                COURT PROGRESSION
+            </span>
+
+            <h2>
+                Cases Moving Toward Court
+            </h2>
+
+            <p>
+                Approved prosecution files can progress toward
+                the appropriate court process according to the
+                case requirements.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'prosecution:list' %}"
+            class="court-button"
+        >
+
+            View Prosecution Cases
+
+            <i class="bi bi-arrow-right"></i>
+
+        </a>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RECENT ACTIVITY
+    ====================================================== -->
+
+    <section>
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    ACTIVITY LOG
+                </span>
+
+                <h2 class="section-title">
+                    Recent Activity
+                </h2>
+
+                <p class="section-subtitle">
+                    Recent case-review and prosecution actions.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="activity-panel">
+
+            {% if recent_activity %}
+
+                <div class="activity-list">
+
+                    {% for activity in recent_activity %}
+
+                        <div class="activity-row">
+
+                            <div class="activity-icon">
+
+                                <i class="bi bi-activity"></i>
+
+                            </div>
+
+
+                            <div class="activity-text">
+
+                                <strong>
+                                    {{ activity.title }}
+                                </strong>
+
+                                <span>
+                                    {{ activity.description }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-clock-history"></i>
+
+                    </div>
+
+                    <h3>
+                        No Recent Activity
+                    </h3>
+
+                    <p>
+                        Recent prosecution and case-review activities
+                        will appear here.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SECURITY NOTICE
+    ====================================================== -->
+
+    <div class="security-notice">
+
+        <i class="bi bi-shield-lock-fill"></i>
+
+        <div>
+
+            <strong>
+                Secure Prosecution Workspace
+            </strong>
+
+            <p>
+                Access to submitted case records is controlled
+                according to your assigned role, division and
+                operational permissions. System activities are
+                subject to audit controls.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   DIVISION ADMIN DASHBOARD
+   ========================================================= */
+
+.division-dashboard {
+
+    width: 100%;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   WELCOME HEADER
+   ========================================================= */
+
+.division-welcome {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.welcome-content {
+
+    min-width: 0;
+
+}
+
+
+.division-eyebrow {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: var(--bs-primary);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.division-welcome h1 {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 26px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+}
+
+
+.division-welcome p {
+
+    max-width: 700px;
+
+    margin: 8px 0 0;
+
+    color: var(--bs-text-secondary);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   ROLE BADGE
+   ========================================================= */
+
+.secure-role {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+
+    padding: 10px 14px;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+}
+
+
+.secure-role > i {
+
+    font-size: 20px;
+
+}
+
+
+.secure-role span {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.7px;
+
+}
+
+
+.secure-role strong {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--bs-primary-dark);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   ASSIGNMENT PANEL
+   ========================================================= */
+
+.assignment-panel {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    margin-bottom: 30px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.assignment-item {
+
+    min-width: 0;
+
+    padding: 15px 18px;
+
+    border-right:
+        1px solid var(--bs-border);
+
+}
+
+
+.assignment-item:last-child {
+
+    border-right: none;
+
+}
+
+
+.assignment-label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+
+    text-transform: uppercase;
+
+}
+
+
+.assignment-item strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    color: var(--bs-text);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.section-heading {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin: 30px 0 14px;
+
+}
+
+
+.section-eyebrow {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--bs-primary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.section-title {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.section-subtitle {
+
+    margin: 4px 0 0;
+
+    color: var(--bs-text-secondary);
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   WORK QUEUE
+   ========================================================= */
+
+.queue-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.queue-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+
+    padding: 16px;
+
+    border:
+        1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.queue-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #bfdbfe;
+
+    box-shadow: var(--bs-shadow-md);
+
+}
+
+
+.queue-icon {
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 17px;
+
+}
+
+
+.queue-icon.returned {
+
+    background: #fff7ed;
+
+    color: #c2410c;
+
+}
+
+
+.queue-icon.court {
+
+    background: #eef8f3;
+
+    color: var(--bs-success);
+
+}
+
+
+.queue-info {
+
+    min-width: 0;
+
+}
+
+
+.queue-label {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+}
+
+
+.queue-info strong {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: var(--bs-text);
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+}
+
+
+.queue-info p {
+
+    margin: 2px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+}
+
+
+.queue-arrow {
+
+    position: absolute;
+
+    top: 14px;
+
+    right: 14px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   WORKFLOW
+   ========================================================= */
+
+.workflow-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.workflow-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    min-width: 0;
+
+    padding: 17px;
+
+    border:
+        1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.workflow-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #bfdbfe;
+
+    box-shadow: var(--bs-shadow-md);
+
+}
+
+
+.workflow-icon {
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 16px;
+
+}
+
+
+.workflow-icon.return-icon {
+
+    background: #fff7ed;
+
+    color: #c2410c;
+
+}
+
+
+.workflow-content {
+
+    min-width: 0;
+
+}
+
+
+.workflow-content h3 {
+
+    margin: 1px 0 5px;
+
+    color: var(--bs-text);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+.workflow-content p {
+
+    margin: 0;
+
+    padding-right: 18px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.55;
+
+}
+
+
+.workflow-arrow {
+
+    position: absolute;
+
+    top: 18px;
+
+    right: 15px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   PROSECUTION PROCESS
+   ========================================================= */
+
+.process-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.process-card {
+
+    display: block;
+
+    padding: 18px;
+
+    border:
+        1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+
+.process-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #bfdbfe;
+
+    box-shadow: var(--bs-shadow-md);
+
+}
+
+
+.process-icon {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 12px;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 16px;
+
+}
+
+
+.process-card h3 {
+
+    margin: 0 0 5px;
+
+    color: var(--bs-text);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+.process-card p {
+
+    margin: 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   COURT PANEL
+   ========================================================= */
+
+.court-panel {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-top: 30px;
+
+    padding: 18px 20px;
+
+    border:
+        1px solid #bfdbfe;
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #f8fbff;
+
+}
+
+
+.court-icon {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #dbeafe;
+
+    color: var(--bs-primary);
+
+    font-size: 19px;
+
+}
+
+
+.court-content {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+.court-content > span {
+
+    display: block;
+
+    color: var(--bs-primary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.7px;
+
+}
+
+
+.court-content h2 {
+
+    margin: 3px 0;
+
+    color: var(--bs-text);
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.court-content p {
+
+    margin: 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+}
+
+
+.court-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+
+    padding: 9px 13px;
+
+    border-radius: 8px;
+
+    background: var(--bs-primary);
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+}
+
+
+.court-button:hover {
+
+    background: var(--bs-primary-dark);
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   ACTIVITY
+   ========================================================= */
+
+.activity-panel {
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.activity-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.activity-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    border-bottom:
+        1px solid var(--bs-border);
+
+}
+
+
+.activity-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.activity-icon {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 13px;
+
+}
+
+
+.activity-text {
+
+    min-width: 0;
+
+}
+
+
+.activity-text strong {
+
+    display: block;
+
+    color: var(--bs-text);
+
+    font-size: 11px;
+
+}
+
+
+.activity-text span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+}
+
+
+.empty-state-icon {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 10px;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: var(--bs-text-muted);
+
+    font-size: 18px;
+
+}
+
+
+.empty-state h3 {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 13px;
+
+}
+
+
+.empty-state p {
+
+    margin: 4px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   SECURITY NOTICE
+   ========================================================= */
+
+.security-notice {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 24px;
+
+    padding: 15px 17px;
+
+    border:
+        1px solid #bfdbfe;
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #f8fbff;
+
+}
+
+
+.security-notice > i {
+
+    color: var(--bs-primary);
+
+    font-size: 18px;
+
+}
+
+
+.security-notice strong {
+
+    display: block;
+
+    color: var(--bs-text);
+
+    font-size: 11px;
+
+}
+
+
+.security-notice p {
+
+    margin: 3px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .queue-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .process-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .assignment-panel {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .assignment-item:nth-child(2) {
+
+        border-right: none;
+
+    }
+
+
+    .assignment-item:nth-child(-n+2) {
+
+        border-bottom:
+            1px solid var(--bs-border);
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .division-welcome {
+
+        flex-direction: column;
+
+    }
+
+
+    .workflow-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .court-panel {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .court-button {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .queue-grid,
+    .process-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .assignment-panel {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .assignment-item {
+
+        border-right: none;
+
+        border-bottom:
+            1px solid var(--bs-border);
+
+    }
+
+
+    .assignment-item:last-child {
+
+        border-bottom: none;
+
+    }
+
+
+    .division-welcome h1 {
+
+        font-size: 22px;
+
+    }
+
+
+    .secure-role {
+
+        width: 100%;
+
+    }
+
+
+    .security-notice {
+
+        padding: 14px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,2353 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+{% block page_title %}
+Station Commander Dashboard
+{% endblock %}
+
+
+{% block breadcrumb %}
+Station Commander
+{% endblock %}
+
+
+{% block sidebar_nav %}
+
+<div class="nav-section-title">
+    DASHBOARD
+</div>
+
+<a href="{% url 'accounts:dashboard' %}" class="nav-link active">
+    <i class="bi bi-speedometer2"></i>
+    <span>Dashboard</span>
+</a>
+
+
+<div class="nav-section-title">
+    STATION SUPERVISION
+</div>
+
+<a href="{% url 'accounts:dashboard' %}" class="nav-link">
+    <i class="bi bi-people"></i>
+    <span>Station Officers</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-folder2-open"></i>
+    <span>Station Cases</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-search"></i>
+    <span>Investigations</span>
+</a>
+
+
+<div class="nav-section-title">
+    CASE REVIEW
+</div>
+
+<a href="{% url 'records:list' %}" class="nav-link">
+    <i class="bi bi-person-badge"></i>
+    <span>Arrests</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-file-earmark-check"></i>
+    <span>Case Files</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-check2-square"></i>
+    <span>Cases for Review</span>
+</a>
+
+
+<div class="nav-section-title">
+    REPORTING
+</div>
+
+<a href="{% url 'reports:commander_reports' %}" class="nav-link">
+    <i class="bi bi-clipboard-data"></i>
+    <span>Monthly Reports</span>
+</a>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="commander-dashboard">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="commander-header">
+
+        <div class="commander-header-content">
+
+            <span class="dashboard-eyebrow">
+                BLUESHIELD STATION COMMAND
+            </span>
+
+            <h1>
+                Station Commander Dashboard
+            </h1>
+
+            <p>
+                Supervise station operations, monitor officers,
+                review case activities and manage station reporting.
+            </p>
+
+        </div>
+
+
+        <div class="commander-role">
+
+            <i class="bi bi-shield-check"></i>
+
+            <div>
+
+                <span>
+                    SYSTEM ROLE
+                </span>
+
+                <strong>
+                    Station Commander
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         STATION ASSIGNMENT
+    ====================================================== -->
+
+    <section class="station-profile">
+
+        <div class="station-profile-card">
+
+
+            <div class="station-profile-main">
+
+                <span class="profile-label">
+                    ASSIGNED POLICE STATION
+                </span>
+
+                <h2>
+                    {{ station_name|default:"Not Assigned" }}
+                </h2>
+
+            </div>
+
+
+            <div class="station-profile-item">
+
+                <span class="profile-label">
+                    DISTRICT
+                </span>
+
+                <strong>
+                    {{ district_name|default:"Not Assigned" }}
+                </strong>
+
+            </div>
+
+
+            <div class="station-profile-item">
+
+                <span class="profile-label">
+                    PROVINCE
+                </span>
+
+                <strong>
+                    {{ province_name|default:"Madang Province" }}
+                </strong>
+
+            </div>
+
+
+            <div class="station-profile-item">
+
+                <span class="profile-label">
+                    ACCESS SCOPE
+                </span>
+
+                <strong>
+                    Station Supervision
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         OPERATIONAL OVERVIEW
+    ====================================================== -->
+
+    <section class="supervision-summary">
+
+        <div class="section-heading">
+
+            <span class="section-eyebrow">
+                STATION SUPERVISION
+            </span>
+
+            <h2>
+                Operational Overview
+            </h2>
+
+            <p>
+                Current activity and workload within your assigned station.
+            </p>
+
+        </div>
+
+
+        <div class="summary-grid">
+
+
+            <!-- OFFICERS -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Station Officers
+                    </span>
+
+                    <strong>
+                        {{ total_officers|default:0 }}
+                    </strong>
+
+                    <p>
+                        Officers assigned to this station
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CASES -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Station Cases
+                    </span>
+
+                    <strong>
+                        {{ total_cases|default:0 }}
+                    </strong>
+
+                    <p>
+                        Cases recorded at this station
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- INVESTIGATIONS -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Investigations
+                    </span>
+
+                    <strong>
+                        {{ active_investigations|default:0 }}
+                    </strong>
+
+                    <p>
+                        Investigations in progress
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ARRESTS -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Arrest Records
+                    </span>
+
+                    <strong>
+                        {{ total_arrests|default:0 }}
+                    </strong>
+
+                    <p>
+                        Arrests recorded at this station
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SUPERVISION WORK QUEUE
+    ====================================================== -->
+
+    <section class="supervision-section">
+
+        <div class="section-heading">
+
+            <span class="section-eyebrow">
+                SUPERVISORY WORK
+            </span>
+
+            <h2>
+                Supervision Work Queue
+            </h2>
+
+            <p>
+                Station activities requiring review or supervisory attention.
+            </p>
+
+        </div>
+
+
+        <div class="supervision-grid">
+
+
+            <!-- CASES FOR REVIEW -->
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="supervision-card"
+            >
+
+                <div class="supervision-icon">
+
+                    <i class="bi bi-check2-square"></i>
+
+                </div>
+
+                <div class="supervision-content">
+
+                    <span>
+                        Cases for Review
+                    </span>
+
+                    <strong>
+                        {{ cases_for_review|default:0 }}
+                    </strong>
+
+                    <p>
+                        Cases requiring commander review
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right supervision-arrow"></i>
+
+            </a>
+
+
+            <!-- CASE FILES -->
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="supervision-card"
+            >
+
+                <div class="supervision-icon">
+
+                    <i class="bi bi-file-earmark-check"></i>
+
+                </div>
+
+                <div class="supervision-content">
+
+                    <span>
+                        Case Files
+                    </span>
+
+                    <strong>
+                        {{ case_files_for_review|default:0 }}
+                    </strong>
+
+                    <p>
+                        Prepared files awaiting review
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right supervision-arrow"></i>
+
+            </a>
+
+
+            <!-- INVESTIGATIONS -->
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="supervision-card"
+            >
+
+                <div class="supervision-icon">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+                <div class="supervision-content">
+
+                    <span>
+                        Active Investigations
+                    </span>
+
+                    <strong>
+                        {{ active_investigations|default:0 }}
+                    </strong>
+
+                    <p>
+                        Investigations requiring monitoring
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right supervision-arrow"></i>
+
+            </a>
+
+
+            <!-- OFFICER ACTIVITY -->
+
+            <a
+                href="{% url 'accounts:dashboard' %}"
+                class="supervision-card"
+            >
+
+                <div class="supervision-icon">
+
+                    <i class="bi bi-activity"></i>
+
+                </div>
+
+                <div class="supervision-content">
+
+                    <span>
+                        Officer Activity
+                    </span>
+
+                    <strong>
+                        {{ officer_activity_count|default:0 }}
+                    </strong>
+
+                    <p>
+                        Recent station officer activities
+                    </p>
+
+                </div>
+
+                <i class="bi bi-chevron-right supervision-arrow"></i>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RECENT STATION ACTIVITY
+    ====================================================== -->
+
+    <section class="activity-section">
+
+        <div class="section-heading">
+
+            <span class="section-eyebrow">
+                MONITORING
+            </span>
+
+            <h2>
+                Recent Station Activity
+            </h2>
+
+            <p>
+                Recent operational actions recorded by station officers.
+            </p>
+
+        </div>
+
+
+        <div class="activity-panel">
+
+            {% if recent_activity %}
+
+                <div class="activity-list">
+
+                    {% for activity in recent_activity %}
+
+                        <div class="activity-row">
+
+                            <div class="activity-icon">
+
+                                <i class="bi bi-activity"></i>
+
+                            </div>
+
+
+                            <div class="activity-details">
+
+                                <strong>
+                                    {{ activity.title }}
+                                </strong>
+
+                                <span>
+                                    {{ activity.description }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-clock-history"></i>
+
+                    </div>
+
+                    <h3>
+                        No Recent Activity
+                    </h3>
+
+                    <p>
+                        Recent station officer activities will appear here.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RECENT ARRESTS
+    ====================================================== -->
+
+    <section class="arrest-section">
+
+        <div class="section-heading">
+
+            <span class="section-eyebrow">
+                ARREST SUPERVISION
+            </span>
+
+            <h2>
+                Recent Arrests
+            </h2>
+
+            <p>
+                Latest arrest records from your assigned police station.
+            </p>
+
+        </div>
+
+
+        <div class="arrest-panel">
+
+            {% if recent_arrests %}
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Tracking ID
+                                </th>
+
+                                <th>
+                                    Suspect
+                                </th>
+
+                                <th>
+                                    Case
+                                </th>
+
+                                <th>
+                                    Arrest Date
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for arrest in recent_arrests %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <span class="arrest-id">
+                                            {{ arrest.arrest_tracking_id|default:"—" }}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="person-name">
+
+                                            {% if arrest.suspect %}
+                                                {{ arrest.suspect.full_name }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if arrest.case %}
+                                            {{ arrest.case.case_number }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if arrest.arrest_datetime %}
+                                            {{ arrest.arrest_datetime|date:"d M Y, H:i" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="status-badge">
+
+                                            {% if arrest.custody_status %}
+                                                {{ arrest.custody_status }}
+                                            {% else %}
+                                                Recorded
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </div>
+
+                    <h3>
+                        No Recent Arrests
+                    </h3>
+
+                    <p>
+                        No arrest records have been recorded
+                        for this station yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         COMMAND ACTIONS
+    ====================================================== -->
+
+    <section class="command-actions">
+
+        <div class="section-heading">
+
+            <span class="section-eyebrow">
+                COMMAND TOOLS
+            </span>
+
+            <h2>
+                Command Actions
+            </h2>
+
+            <p>
+                Access the main station supervisory and reporting functions.
+            </p>
+
+        </div>
+
+
+        <div class="command-actions-grid">
+
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="command-action"
+            >
+
+                <div class="command-action-icon">
+                    <i class="bi bi-folder-check"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review Cases
+                    </strong>
+
+                    <span>
+                        Review station cases
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="command-action"
+            >
+
+                <div class="command-action-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review Investigations
+                    </strong>
+
+                    <span>
+                        Monitor investigations
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="{% url 'records:list' %}"
+                class="command-action"
+            >
+
+                <div class="command-action-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review Arrests
+                    </strong>
+
+                    <span>
+                        Monitor station arrests
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="{% url 'cases:list' %}"
+                class="command-action"
+            >
+
+                <div class="command-action-icon">
+                    <i class="bi bi-file-earmark-check"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review Case Files
+                    </strong>
+
+                    <span>
+                        Check prepared case files
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="{% url 'reports:commander_reports' %}"
+                class="command-action"
+            >
+
+                <div class="command-action-icon">
+                    <i class="bi bi-clipboard-data"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Monthly Reports
+                    </strong>
+
+                    <span>
+                        Prepare station reports
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MONTHLY REPORTING
+    ====================================================== -->
+
+    <section class="reporting-panel">
+
+        <div class="reporting-icon">
+
+            <i class="bi bi-clipboard-data"></i>
+
+        </div>
+
+
+        <div class="reporting-content">
+
+            <span>
+                STATION REPORTING
+            </span>
+
+            <h2>
+                Monthly Station Report
+            </h2>
+
+            <p>
+                Prepare the monthly operational report for your
+                station and submit it through the reporting workflow.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'reports:commander_reports' %}"
+            class="reporting-button"
+        >
+
+            Open Reports
+
+            <i class="bi bi-arrow-right"></i>
+
+        </a>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SECURITY NOTICE
+    ====================================================== -->
+
+    <div class="security-notice">
+
+        <i class="bi bi-shield-lock-fill"></i>
+
+        <div>
+
+            <strong>
+                Secure Station Command Workspace
+            </strong>
+
+            <p>
+                Station Commander access is limited to operational
+                records and activities within the assigned police
+                station and district. System actions are recorded
+                for accountability and audit purposes.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   STATION COMMANDER DASHBOARD
+   ========================================================= */
+
+.commander-dashboard {
+
+    width: 100%;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.commander-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.commander-header-content {
+
+    min-width: 0;
+
+}
+
+
+.dashboard-eyebrow {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--bs-primary);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.commander-header h1 {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 26px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+}
+
+
+.commander-header p {
+
+    max-width: 720px;
+
+    margin: 8px 0 0;
+
+    color: var(--bs-text-secondary);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   ROLE BADGE
+   ========================================================= */
+
+.commander-role {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+
+    padding: 10px 14px;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+}
+
+
+.commander-role > i {
+
+    font-size: 20px;
+
+}
+
+
+.commander-role span {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .7px;
+
+}
+
+
+.commander-role strong {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--bs-primary-dark);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   STATION PROFILE
+   ========================================================= */
+
+.station-profile {
+
+    margin-bottom: 30px;
+
+}
+
+
+.station-profile-card {
+
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr 1fr 1fr;
+
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.station-profile-main {
+
+    padding: 20px;
+
+    background: #f8fbff;
+
+}
+
+
+.profile-label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+
+}
+
+
+.station-profile-main h2 {
+
+    margin: 0;
+
+    color: var(--bs-primary-dark);
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+}
+
+
+.station-profile-item {
+
+    padding: 20px;
+
+    border-left: 1px solid var(--bs-border);
+
+}
+
+
+.station-profile-item strong {
+
+    color: var(--bs-text);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.section-heading {
+
+    margin-bottom: 14px;
+
+}
+
+
+.section-eyebrow {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--bs-primary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.section-heading h2 {
+
+    margin: 0 0 4px;
+
+    color: var(--bs-text);
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.section-heading p {
+
+    margin: 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   OPERATIONAL SUMMARY
+   ========================================================= */
+
+.supervision-summary {
+
+    margin-bottom: 30px;
+
+}
+
+
+.summary-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.summary-card {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.summary-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 16px;
+
+}
+
+
+.summary-content {
+
+    min-width: 0;
+
+}
+
+
+.summary-label {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+}
+
+
+.summary-content strong {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: var(--bs-text);
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+}
+
+
+.summary-content p {
+
+    margin: 2px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   SUPERVISION QUEUE
+   ========================================================= */
+
+.supervision-section {
+
+    margin-bottom: 30px;
+
+}
+
+
+.supervision-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.supervision-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    min-width: 0;
+
+    padding: 17px;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    color: var(--bs-text);
+
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+
+}
+
+
+.supervision-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #bfdbfe;
+
+    color: var(--bs-text);
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.supervision-icon {
+
+    width: 39px;
+
+    height: 39px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 16px;
+
+}
+
+
+.supervision-content {
+
+    min-width: 0;
+
+}
+
+
+.supervision-content span {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+}
+
+
+.supervision-content strong {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color: var(--bs-text);
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+}
+
+
+.supervision-content p {
+
+    margin: 2px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+}
+
+
+.supervision-arrow {
+
+    position: absolute;
+
+    top: 18px;
+
+    right: 15px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   ACTIVITY
+   ========================================================= */
+
+.activity-section {
+
+    margin-bottom: 30px;
+
+}
+
+
+.activity-panel {
+
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.activity-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.activity-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid var(--bs-border);
+
+}
+
+
+.activity-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.activity-icon {
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 13px;
+
+}
+
+
+.activity-details {
+
+    min-width: 0;
+
+}
+
+
+.activity-details strong {
+
+    display: block;
+
+    color: var(--bs-text);
+
+    font-size: 11px;
+
+}
+
+
+.activity-details span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   ARREST TABLE
+   ========================================================= */
+
+.arrest-section {
+
+    margin-bottom: 30px;
+
+}
+
+
+.arrest-panel {
+
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.arrest-panel table {
+
+    width: 100%;
+
+    min-width: 700px;
+
+    border-collapse: collapse;
+
+}
+
+
+.arrest-panel th {
+
+    padding: 12px 15px;
+
+    background: #f8fafc;
+
+    border-bottom: 1px solid var(--bs-border);
+
+    color: var(--bs-text-secondary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+
+}
+
+
+.arrest-panel td {
+
+    padding: 13px 15px;
+
+    border-bottom: 1px solid var(--bs-border);
+
+    color: var(--bs-text-secondary);
+
+    font-size: 11px;
+
+    vertical-align: middle;
+
+}
+
+
+.arrest-panel tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.arrest-panel tbody tr:hover {
+
+    background: #f8fafc;
+
+}
+
+
+.arrest-id {
+
+    color: var(--bs-primary);
+
+    font-weight: 600;
+
+}
+
+
+.person-name {
+
+    color: var(--bs-text);
+
+    font-weight: 600;
+
+}
+
+
+.status-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   COMMAND ACTIONS
+   ========================================================= */
+
+.command-actions {
+
+    margin-bottom: 30px;
+
+}
+
+
+.command-actions-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.command-action {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    min-height: 82px;
+
+    padding: 15px;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #ffffff;
+
+    color: var(--bs-text);
+
+    text-decoration: none;
+
+    box-shadow: var(--bs-shadow-sm);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+
+}
+
+
+.command-action:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #bfdbfe;
+
+    color: var(--bs-text);
+
+    box-shadow: var(--bs-shadow-sm);
+
+}
+
+
+.command-action-icon {
+
+    width: 37px;
+
+    height: 37px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: var(--bs-primary);
+
+    font-size: 15px;
+
+}
+
+
+.command-action strong {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--bs-text);
+
+    font-size: 11px;
+
+}
+
+
+.command-action span {
+
+    display: block;
+
+    color: var(--bs-text-muted);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   REPORTING
+   ========================================================= */
+
+.reporting-panel {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 24px;
+
+    padding: 18px 20px;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #f8fbff;
+
+}
+
+
+.reporting-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #dbeafe;
+
+    color: var(--bs-primary);
+
+    font-size: 18px;
+
+}
+
+
+.reporting-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.reporting-content > span {
+
+    display: block;
+
+    color: var(--bs-primary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .7px;
+
+}
+
+
+.reporting-content h2 {
+
+    margin: 3px 0;
+
+    color: var(--bs-text);
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.reporting-content p {
+
+    margin: 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+}
+
+
+.reporting-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+
+    padding: 9px 13px;
+
+    border-radius: 7px;
+
+    background: var(--bs-primary);
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+}
+
+
+.reporting-button:hover {
+
+    background: var(--bs-primary-dark);
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+}
+
+
+.empty-state-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 auto 10px;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: var(--bs-text-muted);
+
+    font-size: 17px;
+
+}
+
+
+.empty-state h3 {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 13px;
+
+}
+
+
+.empty-state p {
+
+    margin: 4px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   SECURITY NOTICE
+   ========================================================= */
+
+.security-notice {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px 17px;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: var(--bs-radius-lg);
+
+    background: #f8fbff;
+
+}
+
+
+.security-notice > i {
+
+    color: var(--bs-primary);
+
+    font-size: 18px;
+
+}
+
+
+.security-notice strong {
+
+    display: block;
+
+    color: var(--bs-text);
+
+    font-size: 11px;
+
+}
+
+
+.security-notice p {
+
+    margin: 3px 0 0;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 1150px) {
+
+    .summary-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .command-actions-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    }
+
+
+    .station-profile-card {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .station-profile-main {
+
+        grid-column: span 2;
+
+    }
+
+
+    .station-profile-item:nth-child(3),
+    .station-profile-item:nth-child(4) {
+
+        border-top:
+            1px solid var(--bs-border);
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .commander-header {
+
+        flex-direction: column;
+
+    }
+
+
+    .commander-role {
+
+        align-self: flex-start;
+
+    }
+
+
+    .supervision-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .command-actions-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .reporting-panel {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .reporting-button {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .summary-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .command-actions-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .station-profile-card {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .station-profile-main {
+
+        grid-column: auto;
+
+    }
+
+
+    .station-profile-item {
+
+        border-top:
+            1px solid var(--bs-border);
+
+        border-left: none;
+
+    }
+
+
+    .commander-header h1 {
+
+        font-size: 22px;
+
+    }
+
+
+    .commander-role {
+
+        width: 100%;
+
+    }
+
+
+    .security-notice {
+
+        padding: 14px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

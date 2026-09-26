@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ prosecution.prosecution_number }} - BlueShield</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        h1, h2 {
+            color: #1f2937;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .item {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #475569;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            color: white;
+            background: #1d4ed8;
+            margin-left: 5px;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .check {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 5px;
+        }
+
+        .yes {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .no {
+            color: #dc2626;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+            <h1>{{ prosecution.prosecution_number }}</h1>
+            <p>{{ prosecution.case.case_number }} - {{ prosecution.case.title }}</p>
+        </div>
+
+        <div>
+            <a href="{% url 'prosecution:list' %}" class="btn">
+                Back
+            </a>
+
+            <a href="{% url 'prosecution:update' prosecution.pk %}" class="btn">
+                Edit
+            </a>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Prosecution Information</h2>
+
+        <div class="grid">
+
+            <div class="item">
+                <span class="label">Prosecution Number</span>
+                {{ prosecution.prosecution_number }}
+            </div>
+
+            <div class="item">
+                <span class="label">Status</span>
+                {{ prosecution.get_status_display }}
+            </div>
+
+            <div class="item">
+                <span class="label">Case Number</span>
+                {{ prosecution.case.case_number }}
+            </div>
+
+            <div class="item">
+                <span class="label">Case Title</span>
+                {{ prosecution.case.title }}
+            </div>
+
+            <div class="item">
+                <span class="label">Prosecutor</span>
+                {{ prosecution.prosecutor.get_full_name|default:prosecution.prosecutor.username }}
+            </div>
+
+            <div class="item">
+                <span class="label">Submission Date</span>
+                {{ prosecution.submission_date|date:"d M Y H:i" }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Case File Review</h2>
+
+        <div class="check">
+            Case File Complete:
+
+            {% if prosecution.case_file_complete %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+        <div class="check">
+            Investigation Reviewed:
+
+            {% if prosecution.investigation_reviewed %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+        <div class="check">
+            Evidence Reviewed:
+
+            {% if prosecution.evidence_reviewed %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+        <div class="check">
+            Arrest Reviewed:
+
+            {% if prosecution.arrest_reviewed %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+        <div class="check">
+            Warrant Reviewed:
+
+            {% if prosecution.warrant_reviewed %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+        <div class="check">
+            Custody Reviewed:
+
+            {% if prosecution.custody_reviewed %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Committal Proceedings</h2>
+
+        <div class="grid">
+
+            <div class="item">
+                <span class="label">Status</span>
+                {{ prosecution.get_committal_status_display }}
+            </div>
+
+            <div class="item">
+                <span class="label">Date</span>
+                {{ prosecution.committal_date|default:"Not scheduled" }}
+            </div>
+
+        </div>
+
+        {% if prosecution.committal_notes %}
+            <p><strong>Notes:</strong></p>
+            <p>{{ prosecution.committal_notes }}</p>
+        {% endif %}
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Summary Trial</h2>
+
+        <div class="grid">
+
+            <div class="item">
+                <span class="label">Status</span>
+                {{ prosecution.get_summary_trial_status_display }}
+            </div>
+
+            <div class="item">
+                <span class="label">Date</span>
+                {{ prosecution.summary_trial_date|default:"Not scheduled" }}
+            </div>
+
+        </div>
+
+        {% if prosecution.summary_trial_notes %}
+            <p><strong>Notes:</strong></p>
+            <p>{{ prosecution.summary_trial_notes }}</p>
+        {% endif %}
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Prosecution Review</h2>
+
+        {% if prosecution.review_comments %}
+            <p><strong>Review Comments:</strong></p>
+            <p>{{ prosecution.review_comments }}</p>
+        {% endif %}
+
+        {% if prosecution.return_reason %}
+            <p><strong>Return Reason:</strong></p>
+            <p>{{ prosecution.return_reason }}</p>
+        {% endif %}
+
+        {% if prosecution.decision %}
+            <p><strong>Decision:</strong></p>
+            <p>{{ prosecution.decision }}</p>
+        {% endif %}
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Court Referral</h2>
+
+        <p>
+            Forwarded to Court:
+
+            {% if prosecution.forwarded_to_court %}
+                <span class="yes">YES</span>
+            {% else %}
+                <span class="no">NO</span>
+            {% endif %}
+        </p>
+
+        {% if prosecution.forwarded_date %}
+            <p>
+                <strong>Forwarded Date:</strong>
+                {{ prosecution.forwarded_date|date:"d M Y H:i" }}
+            </p>
+        {% endif %}
+
+    </div>
+
+
+    <div class="card">
+
+        <a href="{% url 'prosecution:update' prosecution.pk %}" class="btn">
+            Edit Prosecution
+        </a>
+
+        <a href="{% url 'prosecution:delete' prosecution.pk %}" class="btn btn-danger">
+            Delete
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Prosecution - BlueShield</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 50px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,.1);
+        }
+
+        .danger {
+            color: #dc2626;
+        }
+
+        button, a {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button {
+            background: #dc2626;
+            color: white;
+        }
+
+        .cancel {
+            background: #64748b;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1 class="danger">Delete Prosecution Record</h1>
+
+    <p>
+        Are you sure you want to delete:
+    </p>
+
+    <h2>{{ prosecution.prosecution_number }}</h2>
+
+    <p>
+        Case: {{ prosecution.case.case_number }}
+    </p>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'prosecution:detail' prosecution.pk %}"
+           class="cancel">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
+

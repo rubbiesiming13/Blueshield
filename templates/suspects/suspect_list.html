@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>BlueShield | Suspect Records</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+
+        <span class="navbar-brand fw-bold">
+            BlueShield
+        </span>
+
+        <div>
+            <a
+                href="{% url 'accounts:dashboard' %}"
+                class="btn btn-light btn-sm"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{% url 'suspects:create' %}"
+                class="btn btn-success btn-sm"
+            >
+                + Register Suspect
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="container mt-4">
+
+    <!-- Messages -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- Page Heading -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+                Suspect Records
+            </h2>
+
+            <p class="text-muted mb-0">
+                Registered suspects in the BlueShield system
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Suspect Table -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            {% if suspects %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>ID</th>
+
+                                <th>Name</th>
+
+                                <th>Gender</th>
+
+                                <th>Date of Birth</th>
+
+                                <th>Village / Province</th>
+
+                                <th>Registered</th>
+
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for suspect in suspects %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ suspect.id }}
+                                    </td>
+
+                                    <td>
+
+                                        <strong>
+                                            {{ suspect.full_name }}
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+                                        {{ suspect.get_gender_display }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if suspect.date_of_birth %}
+                                            {{ suspect.date_of_birth }}
+                                        {% else %}
+                                            Not provided
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+                                        {{ suspect.village_province }}
+                                    </td>
+
+                                    <td>
+                                        {{ suspect.created_at|date:"d M Y" }}
+                                    </td>
+
+                                    <td>
+
+                                        <a
+                                            href="{% url 'suspects:detail' suspect.id %}"
+                                            class="btn btn-primary btn-sm"
+                                        >
+                                            View
+                                        </a>
+
+                                        {% if user.role == "OFFICER" %}
+
+                                            <a
+                                                href="{% url 'suspects:edit' suspect.id %}"
+                                                class="btn btn-warning btn-sm"
+                                            >
+                                                Edit
+                                            </a>
+
+                                            <a
+                                                href="{% url 'suspects:delete' suspect.id %}"
+                                                class="btn btn-danger btn-sm"
+                                            >
+                                                Delete
+                                            </a>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <h5>
+                        No suspect records found.
+                    </h5>
+
+                    <p class="text-muted">
+                        There are currently no suspects registered
+                        in the system.
+                    </p>
+
+                    {% if user.role == "OFFICER" %}
+
+                        <a
+                            href="{% url 'suspects:create' %}"
+                            class="btn btn-primary"
+                        >
+                            Register First Suspect
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

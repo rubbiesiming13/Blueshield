@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BlueShield | Warrants</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Warrant Management</h2>
+            <p class="text-muted mb-0">
+                Review submitted warrant requests
+            </p>
+        </div>
+
+        <a
+            href="{% url 'warrant:create' %}"
+            class="btn btn-primary"
+        >
+            Request Warrant
+        </a>
+
+    </div>
+
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            {% if warrants %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Warrant Number</th>
+                            <th>Type</th>
+                            <th>Suspect</th>
+                            <th>Case</th>
+                            <th>Station</th>
+                            <th>Status</th>
+                            <th>Issue Date</th>
+                            <th>Expiry Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for warrant in warrants %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ warrant.warrant_number }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ warrant.get_warrant_type_display }}
+                            </td>
+
+                            <td>
+                                {{ warrant.suspect.full_name }}
+                            </td>
+
+                            <td>
+                                {% if warrant.case %}
+                                    {{ warrant.case.case_number }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ warrant.station }}
+                            </td>
+
+                            <td>
+
+                                {% if warrant.status == "PENDING" %}
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif warrant.status == "APPROVED" %}
+                                    <span class="badge bg-success">
+                                        Approved
+                                    </span>
+
+                                {% elif warrant.status == "EXECUTED" %}
+                                    <span class="badge bg-primary">
+                                        Executed
+                                    </span>
+
+                                {% elif warrant.status == "CANCELLED" %}
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+
+                                {% elif warrant.status == "EXPIRED" %}
+                                    <span class="badge bg-secondary">
+                                        Expired
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        {{ warrant.status }}
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ warrant.issue_date }}
+                            </td>
+
+                            <td>
+                                {% if warrant.expiry_date %}
+                                    {{ warrant.expiry_date }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <h5>No warrants found</h5>
+
+                    <p class="text-muted">
+                        There are currently no warrant requests in the system.
+                    </p>
+
+                    <a
+                        href="{% url 'warrant:create' %}"
+                        class="btn btn-primary"
+                    >
+                        Request First Warrant
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="mt-4">
+
+        <a
+            href="{% url 'accounts:dashboard' %}"
+            class="btn btn-secondary"
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

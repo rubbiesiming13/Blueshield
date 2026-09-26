@@ -1,0 +1,1893 @@
+{% extends "base.html" %}
+
+{% block page_title %}Officer Dashboard{% endblock %}
+
+{% block breadcrumb %}Officer Dashboard{% endblock %}
+
+{% block sidebar_nav %}
+
+<div class="nav-section-title">
+    CASE MANAGEMENT
+</div>
+
+<a href="{% url 'complaints:create_complaint' %}" class="nav-link">
+    <i class="bi bi-megaphone"></i>
+    <span>Create Complaint</span>
+</a>
+
+<a href="{% url 'suspects:create' %}" class="nav-link">
+    <i class="bi bi-person-plus"></i>
+    <span>Register Suspect</span>
+</a>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-folder"></i>
+    <span>My Cases</span>
+</a>
+
+<div class="nav-section-title">
+    INVESTIGATION
+</div>
+
+<a href="{% url 'investigation:list' %}" class="nav-link">
+    <i class="bi bi-search"></i>
+    <span>Investigate Case</span>
+</a>
+
+<div class="nav-section-title">
+    ARREST &amp; CUSTODY
+</div>
+
+<a href="{% url 'warrant:create' %}" class="nav-link">
+    <i class="bi bi-file-earmark-check"></i>
+    <span>Request Warrant</span>
+</a>
+
+<a href="{% url 'records:list' %}" class="nav-link">
+    <i class="bi bi-person-badge"></i>
+    <span>Record Arrest</span>
+</a>
+
+<a href="{% url 'custody:list' %}" class="nav-link">
+    <i class="bi bi-building-lock"></i>
+    <span>Record Custody</span>
+</a>
+
+<div class="nav-section-title">
+    CASE FILE
+</div>
+
+<a href="{% url 'cases:list' %}" class="nav-link">
+    <i class="bi bi-file-earmark-text"></i>
+    <span>Prepare Case File</span>
+</a>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="officer-dashboard">
+
+```
+<!-- =====================================================
+     PROFESSIONAL PAGE HEADER
+     ===================================================== -->
+
+<div class="dashboard-header">
+
+    <div class="header-left">
+
+        <div class="header-icon">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+
+        <div class="dashboard-title">
+
+            <div class="title-label">
+                BLUESHIELD POLICE SYSTEM
+            </div>
+
+            <h1>
+                Officer Dashboard
+            </h1>
+
+            <p>
+                Manage complaints, cases, investigations, arrests and case files.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-status">
+
+        <span class="status-dot"></span>
+
+        <span>
+            Secure Session
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     OFFICER INFORMATION
+     ===================================================== -->
+
+<section class="officer-profile">
+
+    <div class="profile-heading">
+
+        <div>
+            <span class="eyebrow">
+                OFFICER ASSIGNMENT
+            </span>
+
+            <h2>
+                Current Duty Assignment
+            </h2>
+        </div>
+
+        <div class="role-badge">
+            <i class="bi bi-person-badge-fill"></i>
+            Police Officer
+        </div>
+
+    </div>
+
+
+    <div class="assignment-grid">
+
+
+        <!-- OFFICER -->
+
+        <div class="assignment-card">
+
+            <div class="assignment-icon">
+                <i class="bi bi-person-fill"></i>
+            </div>
+
+            <div class="assignment-content">
+
+                <span class="assignment-label">
+                    Officer
+                </span>
+
+                <strong class="assignment-value">
+
+                    {{ request.user.get_full_name|default:request.user.username }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- POLICE STATION -->
+
+        <div class="assignment-card">
+
+            <div class="assignment-icon">
+                <i class="bi bi-building-fill"></i>
+            </div>
+
+            <div class="assignment-content">
+
+                <span class="assignment-label">
+                    Police Station
+                </span>
+
+                <strong class="assignment-value">
+
+                    {% if request.user.station %}
+                        {{ request.user.station.name }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISTRICT -->
+
+        <div class="assignment-card">
+
+            <div class="assignment-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+            </div>
+
+            <div class="assignment-content">
+
+                <span class="assignment-label">
+                    District
+                </span>
+
+                <strong class="assignment-value">
+
+                    {% if request.user.district %}
+
+                        {{ request.user.district.name }}
+
+                    {% elif request.user.station and request.user.station.district %}
+
+                        {{ request.user.station.district.name }}
+
+                    {% else %}
+
+                        Not Assigned
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     OPERATIONAL SUMMARY
+     ===================================================== -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                WORKSPACE OVERVIEW
+            </span>
+
+            <h2>
+                Operational Summary
+            </h2>
+
+            <p>
+                Overview of records associated with your assigned station.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+
+        <!-- COMPLAINTS -->
+
+        <a
+            href="{% url 'complaints:list' %}"
+            class="stat-card"
+        >
+
+            <div class="stat-top">
+
+                <div class="stat-icon complaints">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+
+                <i class="bi bi-arrow-up-right stat-arrow"></i>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-title">
+                    Complaints
+                </span>
+
+                <strong class="stat-number">
+                    {{ total_complaints|default:"0" }}
+                </strong>
+
+                <span class="stat-description">
+                    Recorded complaints
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <!-- CASES -->
+
+        <a
+            href="{% url 'cases:list' %}"
+            class="stat-card"
+        >
+
+            <div class="stat-top">
+
+                <div class="stat-icon cases">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+
+                <i class="bi bi-arrow-up-right stat-arrow"></i>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-title">
+                    My Cases
+                </span>
+
+                <strong class="stat-number">
+                    {{ total_cases|default:"0" }}
+                </strong>
+
+                <span class="stat-description">
+                    Cases assigned to your station
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <!-- SUSPECTS -->
+
+        <a
+            href="{% url 'suspects:list' %}"
+            class="stat-card"
+        >
+
+            <div class="stat-top">
+
+                <div class="stat-icon suspects">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+                <i class="bi bi-arrow-up-right stat-arrow"></i>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-title">
+                    Suspects
+                </span>
+
+                <strong class="stat-number">
+                    {{ total_suspects|default:"0" }}
+                </strong>
+
+                <span class="stat-description">
+                    Registered suspects
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <!-- ARRESTS -->
+
+        <a
+            href="{% url 'records:list' %}"
+            class="stat-card"
+        >
+
+            <div class="stat-top">
+
+                <div class="stat-icon arrests">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+
+                <i class="bi bi-arrow-up-right stat-arrow"></i>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-title">
+                    Arrest Records
+                </span>
+
+                <strong class="stat-number">
+                    {{ total_arrests|default:"0" }}
+                </strong>
+
+                <span class="stat-description">
+                    Recorded arrests
+                </span>
+
+            </div>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     QUICK ACTIONS + RECENT ACTIVITY
+     ===================================================== -->
+
+<section class="workspace-grid">
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="workspace-card">
+
+        <div class="workspace-card-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    COMMON TASKS
+                </span>
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="quick-actions">
+
+
+            <a
+                href="{% url 'complaints:create_complaint' %}"
+                class="quick-action"
+            >
+
+                <div class="quick-icon">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+
+                <div>
+                    <strong>
+                        Create Complaint
+                    </strong>
+
+                    <span>
+                        Register a new complaint
+                    </span>
+                </div>
+
+                <i class="bi bi-chevron-right"></i>
+
+            </a>
+
+
+            <a
+                href="{% url 'suspects:create' %}"
+                class="quick-action"
+            >
+
+                <div class="quick-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+
+                <div>
+                    <strong>
+                        Register Suspect
+                    </strong>
+
+                    <span>
+                        Add suspect information
+                    </span>
+                </div>
+
+                <i class="bi bi-chevron-right"></i>
+
+            </a>
+
+
+            <a
+                href="{% url 'warrant:create' %}"
+                class="quick-action"
+            >
+
+                <div class="quick-icon">
+                    <i class="bi bi-file-earmark-check-fill"></i>
+                </div>
+
+                <div>
+                    <strong>
+                        Request Warrant
+                    </strong>
+
+                    <span>
+                        Submit a warrant request
+                    </span>
+                </div>
+
+                <i class="bi bi-chevron-right"></i>
+
+            </a>
+
+
+            <a
+                href="{% url 'records:list' %}"
+                class="quick-action"
+            >
+
+                <div class="quick-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+
+                <div>
+                    <strong>
+                        Record Arrest
+                    </strong>
+
+                    <span>
+                        Manage arrest records
+                    </span>
+                </div>
+
+                <i class="bi bi-chevron-right"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECENT ACTIVITY -->
+
+    <div class="workspace-card">
+
+        <div class="workspace-card-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    ACTIVITY LOG
+                </span>
+
+                <h2>
+                    Recent Activity
+                </h2>
+
+            </div>
+
+            <span class="activity-count">
+                Latest
+            </span>
+
+        </div>
+
+
+        <div class="activity-list">
+
+            {% if recent_activity %}
+
+                {% for activity in recent_activity %}
+
+                    <div class="activity-row">
+
+                        <div class="activity-icon">
+                            <i class="bi bi-folder-fill"></i>
+                        </div>
+
+                        <div class="activity-details">
+
+                            <strong>
+                                {{ activity.title }}
+                            </strong>
+
+                            <span>
+                                {{ activity.description }}
+                            </span>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right activity-arrow"></i>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-activity">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            No recent activity
+                        </strong>
+
+                        <p>
+                            Your recent case activities will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SECURITY INFORMATION
+     ===================================================== -->
+
+<div class="security-notice">
+
+    <div class="security-icon">
+        <i class="bi bi-shield-check"></i>
+    </div>
+
+    <div class="security-content">
+
+        <strong>
+            BlueShield Secure Workspace
+        </strong>
+
+        <p>
+            Your access is restricted according to your assigned
+            role, station and district. All activities within the
+            system are subject to security and audit controls.
+        </p>
+
+    </div>
+
+    <div class="security-status">
+        <span></span>
+        Protected
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   BLUESHIELD OFFICER DASHBOARD
+   ========================================================= */
+
+.officer-dashboard {
+
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+
+    color: #1f2937;
+
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.dashboard-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+.header-left {
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+}
+
+
+.header-icon {
+
+    width: 54px;
+    height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 54px;
+
+    border-radius: 10px;
+
+    background: #17395c;
+    color: #ffffff;
+
+    font-size: 23px;
+
+    box-shadow: 0 3px 8px rgba(23, 57, 92, 0.15);
+
+}
+
+
+.dashboard-title {
+
+    min-width: 0;
+
+}
+
+
+.title-label {
+
+    margin-bottom: 4px;
+
+    color: #2878b8;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+.dashboard-title h1 {
+
+    margin: 0;
+
+    color: #17395c;
+
+    font-size: 29px;
+    line-height: 1.2;
+
+    font-weight: 700;
+
+}
+
+
+.dashboard-title p {
+
+    margin: 6px 0 0;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+}
+
+
+.header-status {
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #dce9e1;
+    border-radius: 20px;
+
+    background: #f4faf6;
+
+    color: #3c6e51;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+.status-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #4d9569;
+
+}
+
+
+/* =========================================================
+   OFFICER PROFILE
+   ========================================================= */
+
+.officer-profile {
+
+    margin-bottom: 32px;
+
+}
+
+
+.profile-heading {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 13px;
+
+}
+
+
+.eyebrow {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #7b8794;
+
+    font-size: 9px;
+    line-height: 1.3;
+
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.profile-heading h2,
+.section-heading h2,
+.workspace-card-header h2 {
+
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 18px;
+    line-height: 1.3;
+
+    font-weight: 700;
+
+}
+
+
+.role-badge {
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #d8e6f2;
+    border-radius: 6px;
+
+    background: #f2f7fb;
+
+    color: #245c85;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+.assignment-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+}
+
+
+.assignment-card {
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 17px;
+
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+}
+
+
+.assignment-icon {
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 42px;
+
+    border-radius: 7px;
+
+    background: #eef5fb;
+
+    color: #2878b8;
+
+    font-size: 17px;
+
+}
+
+
+.assignment-content {
+
+    min-width: 0;
+    flex: 1;
+
+}
+
+
+.assignment-label {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #8993a0;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+
+    text-transform: uppercase;
+
+}
+
+
+.assignment-value {
+
+    display: block;
+
+    overflow: hidden;
+
+    color: #26384a;
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   GENERAL SECTION
+   ========================================================= */
+
+.dashboard-section {
+
+    margin-bottom: 32px;
+
+}
+
+
+.section-heading {
+
+    margin-bottom: 13px;
+
+}
+
+
+.section-heading p {
+
+    margin: 5px 0 0;
+
+    color: #7b8794;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+
+}
+
+
+.stat-card {
+
+    min-width: 0;
+
+    min-height: 170px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 18px;
+
+    border: 1px solid #e0e5ea;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    text-decoration: none;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.025);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+
+}
+
+
+.stat-card:hover {
+
+    border-color: #b9d2e5;
+
+    box-shadow: 0 7px 18px rgba(31, 41, 55, 0.07);
+
+    transform: translateY(-2px);
+
+}
+
+
+.stat-top {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+
+}
+
+
+.stat-icon {
+
+    width: 43px;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #eef5fb;
+    color: #2878b8;
+
+    font-size: 18px;
+
+}
+
+
+.stat-icon.complaints {
+    background: #eef5fb;
+    color: #2878b8;
+}
+
+
+.stat-icon.cases {
+    background: #f0f3f7;
+    color: #425b75;
+}
+
+
+.stat-icon.suspects {
+    background: #f4f1f8;
+    color: #685477;
+}
+
+
+.stat-icon.arrests {
+    background: #f3f6f3;
+    color: #50705b;
+}
+
+
+.stat-arrow {
+
+    color: #a1aab5;
+
+    font-size: 14px;
+
+}
+
+
+.stat-content {
+
+    margin-top: auto;
+
+}
+
+
+.stat-title {
+
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 12px;
+    line-height: 1.4;
+
+    font-weight: 600;
+
+}
+
+
+.stat-number {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #17395c;
+
+    font-size: 31px;
+    line-height: 1.1;
+
+    font-weight: 700;
+
+}
+
+
+.stat-description {
+
+    display: block;
+
+    margin-top: 7px;
+
+    color: #9aa3ad;
+
+    font-size: 10px;
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   WORKSPACE GRID
+   ========================================================= */
+
+.workspace-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 0.9fr)
+        minmax(0, 1.1fr);
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.workspace-card {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #e0e5ea;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.025);
+
+}
+
+
+.workspace-card-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 17px 18px;
+
+    border-bottom: 1px solid #edf0f2;
+
+}
+
+
+.activity-count {
+
+    padding: 5px 8px;
+
+    border-radius: 4px;
+
+    background: #f3f5f7;
+
+    color: #7b8794;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.quick-actions {
+
+    padding: 4px 0;
+
+}
+
+
+.quick-action {
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 13px 18px;
+
+    border-bottom: 1px solid #f0f2f4;
+
+    color: #1f2937;
+
+    text-decoration: none;
+
+    transition: background 0.15s ease;
+
+}
+
+
+.quick-action:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.quick-action:hover {
+
+    background: #f8fafc;
+
+}
+
+
+.quick-icon {
+
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 35px;
+
+    border-radius: 6px;
+
+    background: #eef5fb;
+
+    color: #2878b8;
+
+    font-size: 14px;
+
+}
+
+
+.quick-action > div:nth-child(2) {
+
+    min-width: 0;
+    flex: 1;
+
+}
+
+
+.quick-action strong {
+
+    display: block;
+
+    color: #344454;
+
+    font-size: 11px;
+    line-height: 1.4;
+
+    font-weight: 600;
+
+}
+
+
+.quick-action span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #929ca7;
+
+    font-size: 9px;
+    line-height: 1.4;
+
+}
+
+
+.quick-action > i:last-child {
+
+    color: #a7b0ba;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   ACTIVITY LIST
+   ========================================================= */
+
+.activity-list {
+
+    min-height: 235px;
+
+}
+
+
+.activity-row {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px 18px;
+
+    border-bottom: 1px solid #f0f2f4;
+
+}
+
+
+.activity-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.activity-icon {
+
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 35px;
+
+    border-radius: 6px;
+
+    background: #eef5fb;
+
+    color: #2878b8;
+
+    font-size: 13px;
+
+}
+
+
+.activity-details {
+
+    min-width: 0;
+    flex: 1;
+
+}
+
+
+.activity-details strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    color: #344454;
+
+    font-size: 11px;
+    line-height: 1.4;
+
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+
+.activity-details span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #929ca7;
+
+    font-size: 9px;
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+
+.activity-arrow {
+
+    color: #b1b8c0;
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   EMPTY ACTIVITY
+   ========================================================= */
+
+.empty-activity {
+
+    min-height: 235px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 25px;
+
+    text-align: left;
+
+}
+
+
+.empty-icon {
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 40px;
+
+    border-radius: 7px;
+
+    background: #f3f5f7;
+
+    color: #8d98a3;
+
+}
+
+
+.empty-activity strong {
+
+    display: block;
+
+    color: #475569;
+
+    font-size: 11px;
+
+}
+
+
+.empty-activity p {
+
+    margin: 3px 0 0;
+
+    color: #9aa3ad;
+
+    font-size: 9px;
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   SECURITY NOTICE
+   ========================================================= */
+
+.security-notice {
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 13px 16px;
+
+    border: 1px solid #dfe8e2;
+    border-radius: 7px;
+
+    background: #f8fbf9;
+
+}
+
+
+.security-icon {
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 36px;
+
+    border-radius: 6px;
+
+    background: #eaf4ed;
+
+    color: #4d795c;
+
+}
+
+
+.security-content {
+
+    min-width: 0;
+    flex: 1;
+
+}
+
+
+.security-content strong {
+
+    display: block;
+
+    color: #3f5f4a;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+}
+
+
+.security-content p {
+
+    margin: 3px 0 0;
+
+    color: #7b8c81;
+
+    font-size: 9px;
+    line-height: 1.5;
+
+}
+
+
+.security-status {
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color: #5c8067;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+}
+
+
+.security-status span {
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #5c986f;
+
+}
+
+
+/* =========================================================
+   LARGE TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .workspace-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .dashboard-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .header-status {
+
+        align-self: flex-start;
+
+    }
+
+
+    .assignment-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .profile-heading {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .role-badge {
+
+        align-self: flex-start;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .officer-dashboard {
+
+        padding-bottom: 20px;
+
+    }
+
+
+    .dashboard-header {
+
+        gap: 15px;
+
+        margin-bottom: 22px;
+        padding-bottom: 18px;
+
+    }
+
+
+    .header-left {
+
+        align-items: flex-start;
+
+    }
+
+
+    .header-icon {
+
+        width: 46px;
+        height: 46px;
+
+        flex-basis: 46px;
+
+        font-size: 19px;
+
+    }
+
+
+    .dashboard-title h1 {
+
+        font-size: 24px;
+
+    }
+
+
+    .dashboard-title p {
+
+        font-size: 11px;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .stat-card {
+
+        min-height: 150px;
+
+    }
+
+
+    .security-notice {
+
+        align-items: flex-start;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .security-status {
+
+        margin-left: 49px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .header-left {
+
+        gap: 10px;
+
+    }
+
+
+    .header-icon {
+
+        width: 42px;
+        height: 42px;
+
+        flex-basis: 42px;
+
+    }
+
+
+    .dashboard-title h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .assignment-card {
+
+        padding: 14px;
+
+    }
+
+
+    .stat-card {
+
+        padding: 16px;
+
+    }
+
+
+    .workspace-card-header {
+
+        padding: 15px;
+
+    }
+
+
+    .quick-action {
+
+        padding: 12px 15px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

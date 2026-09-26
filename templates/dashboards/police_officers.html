@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+
+{% block page_title %}Police Officers{% endblock %}
+
+{% block breadcrumb %} <span>Administration</span> <span class="mx-2">/</span> <span>Police Officers</span>
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+        margin-bottom: 6px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+    .officer-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .officer-card-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .officer-card-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .officer-count {
+        background: #eef4fb;
+        color: #173f6b;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .officer-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
+    }
+
+    .officer-table th {
+        background: #f8f9fa;
+        color: #495057;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    .officer-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf0f2;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .officer-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .officer-name {
+        font-weight: 600;
+        color: #173f6b;
+    }
+
+    .officer-id {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 3px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge-inactive {
+        background: #f5f5f5;
+        color: #616161;
+    }
+
+    .badge-role {
+        background: #eef4fb;
+        color: #173f6b;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+        color: #adb5bd;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 6px;
+        font-size: 18px;
+        color: #495057;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .summary-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .summary-box {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 16px 20px;
+        min-width: 180px;
+    }
+
+    .summary-label {
+        color: #6c757d;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        color: #173f6b;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 24px;
+        }
+
+        .officer-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .summary-box {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block sidebar_nav %} <a href="{% url 'accounts:dashboard' %}" class="sidebar-link"> <span>Dashboard</span> </a>
+
+```
+<div class="sidebar-section-title">Records Management</div>
+
+<a href="#" class="sidebar-link">
+    <span>Suspects</span>
+</a>
+
+<a href="{% url 'records:list' %}" class="sidebar-link">
+    <span>Arrest Records</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Criminal Offences</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Cases</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Warrants</span>
+</a>
+
+<div class="sidebar-section-title">Operations</div>
+
+<a href="{% url 'accounts:police_officers' %}" class="sidebar-link active">
+    <span>Police Officers</span>
+</a>
+
+<a href="{% url 'accounts:police_stations' %}" class="sidebar-link">
+    <span>Police Stations</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Districts</span>
+</a>
+
+<div class="sidebar-section-title">Intelligence & Analytics</div>
+
+<a href="#" class="sidebar-link">
+    <span>Crime Hotspots</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Statistics</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Reports</span>
+</a>
+
+<div class="sidebar-section-title">Administration</div>
+
+<a href="{% url 'accounts:police_officers' %}" class="sidebar-link active">
+    <span>User Management</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>Audit Logs</span>
+</a>
+
+<a href="#" class="sidebar-link">
+    <span>System Settings</span>
+</a>
+```
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Police Officers</h1>
+    <p>View police officers registered in the BlueShield system.</p>
+</div>
+
+<div class="summary-row">
+    <div class="summary-box">
+        <div class="summary-label">Total Officers</div>
+        <div class="summary-value">{{ officers|length }}</div>
+    </div>
+</div>
+
+<div class="officer-card">
+
+```
+<div class="officer-card-header">
+    <h2>Officer Directory</h2>
+
+    <span class="officer-count">
+        {{ officers|length }} Officer{{ officers|length|pluralize }}
+    </span>
+</div>
+
+{% if officers %}
+
+<div class="table-wrapper">
+
+    <table class="officer-table">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Police Officer</th>
+                <th>Role</th>
+                <th>Division</th>
+                <th>District</th>
+                <th>Police Station</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for officer in officers %}
+
+            <tr>
+
+                <td>
+                    {{ forloop.counter }}
+                </td>
+
+                <td>
+                    <div class="officer-name">
+                        {{ officer.get_full_name|default:officer.username }}
+                    </div>
+
+                    {% if officer.username %}
+                    <div class="officer-id">
+                        Username: {{ officer.username }}
+                    </div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <span class="badge badge-role">
+                        {{ officer.get_role_display|default:"Police Officer" }}
+                    </span>
+                </td>
+
+                <td>
+                    {% if officer.division %}
+                        {{ officer.division }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if officer.district %}
+                        {{ officer.district }}
+                    {% elif officer.station and officer.station.district %}
+                        {{ officer.station.district }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if officer.station %}
+                        {{ officer.station }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if officer.is_active %}
+                        <span class="badge badge-active">
+                            Active
+                        </span>
+                    {% else %}
+                        <span class="badge badge-inactive">
+                            Inactive
+                        </span>
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-state-icon">
+        👮
+    </div>
+
+    <h3>No Police Officers Found</h3>
+
+    <p>
+        There are currently no police officers registered in BlueShield.
+    </p>
+
+</div>
+
+{% endif %}
+```
+
+</div>
+
+{% endblock %}

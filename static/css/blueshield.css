@@ -1,0 +1,1247 @@
+/* =========================================================
+   BLUESHIELD
+   MADANG PROVINCIAL POLICE
+   GLOBAL APPLICATION STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   1. ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    /* Brand */
+    --bs-primary: #173f6b;
+    --bs-primary-dark: #0f2d4d;
+    --bs-primary-light: #eaf2f9;
+
+    /* Background */
+    --bs-background: #f5f7fb;
+    --bs-surface: #ffffff;
+    --bs-surface-soft: #f8fafc;
+
+    /* Text */
+    --bs-text: #172033;
+    --bs-text-secondary: #64748b;
+    --bs-text-muted: #94a3b8;
+
+    /* Borders */
+    --bs-border: #e2e8f0;
+    --bs-border-light: #edf1f5;
+
+    /* Status */
+    --bs-success: #2f855a;
+    --bs-warning: #b7791f;
+    --bs-danger: #c53030;
+    --bs-info: #2b6cb0;
+
+    /* Layout */
+    --bs-sidebar-width: 270px;
+
+    /* Radius */
+    --bs-radius-sm: 7px;
+    --bs-radius-md: 10px;
+    --bs-radius-lg: 14px;
+
+    /* Shadows */
+    --bs-shadow-sm:
+        0 2px 8px rgba(15, 23, 42, 0.05);
+
+    --bs-shadow-md:
+        0 8px 24px rgba(15, 23, 42, 0.08);
+
+}
+
+
+/* =========================================================
+   2. GLOBAL RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+
+html {
+    margin: 0;
+    padding: 0;
+
+    scroll-behavior: smooth;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100vh;
+
+    background: var(--bs-background);
+
+    color: var(--bs-text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+a {
+    color: inherit;
+}
+
+
+/* =========================================================
+   3. SIDEBAR
+   ========================================================= */
+
+.sidebar {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: var(--bs-sidebar-width);
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        linear-gradient(
+            180deg,
+            #0b1f3a 0%,
+            #102a4c 100%
+        );
+
+    color: #ffffff;
+
+    z-index: 1000;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-shadow:
+        4px 0 20px rgba(15, 23, 42, 0.10);
+
+}
+
+
+/* =========================================================
+   4. SIDEBAR BRAND
+   ========================================================= */
+
+.sidebar-logo {
+
+    min-height: 88px;
+
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.10);
+
+}
+
+
+.brand-icon {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.12);
+
+    color: #ffffff;
+
+    font-size: 21px;
+
+}
+
+
+.brand-text {
+
+    min-width: 0;
+
+}
+
+
+.brand-text h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    font-weight: 750;
+
+    line-height: 1.1;
+
+}
+
+
+.brand-text span {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color:
+        rgba(255, 255, 255, 0.65);
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    line-height: 1.3;
+
+}
+
+
+/* =========================================================
+   5. SIDEBAR USER
+   ========================================================= */
+
+.sidebar-user {
+    display: none;
+}
+
+
+/* =========================================================
+   6. SIDEBAR NAVIGATION
+   ========================================================= */
+
+.sidebar-navigation {
+
+    flex: 1;
+
+    padding: 20px 13px 25px;
+
+}
+
+
+.nav-section-title {
+
+    margin: 18px 10px 8px;
+
+    color:
+        rgba(255, 255, 255, 0.42);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.nav-section-title:first-child {
+    margin-top: 2px;
+}
+
+
+.sidebar .nav-link {
+
+    min-height: 45px;
+
+    width: 100%;
+
+    margin-bottom: 4px;
+
+    padding: 11px 13px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    border-radius: 9px;
+
+    color:
+        rgba(255, 255, 255, 0.72);
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+.sidebar .nav-link i {
+
+    width: 21px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+
+    font-size: 17px;
+
+}
+
+
+.sidebar .nav-link:hover {
+
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, 0.09);
+
+    transform:
+        translateX(2px);
+
+}
+
+
+.sidebar .nav-link.active {
+
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    box-shadow:
+        inset 3px 0 0 #ffffff;
+
+}
+
+
+/* =========================================================
+   7. SIDEBAR BOTTOM
+   ========================================================= */
+
+.sidebar-bottom {
+
+    margin-top: auto;
+
+    padding: 15px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.10);
+
+}
+
+
+.sidebar-bottom form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   8. LOGOUT
+   ========================================================= */
+
+.sidebar-bottom .logout {
+
+    width: 100%;
+
+    min-height: 45px;
+
+    padding: 11px 13px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color:
+        rgba(255, 255, 255, 0.70);
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    text-align: left;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
+
+}
+
+
+.sidebar-bottom .logout:hover {
+
+    background:
+        rgba(255, 255, 255, 0.09);
+
+    color: #ffffff;
+
+}
+
+
+.sidebar-bottom .logout:active {
+
+    transform: scale(0.98);
+
+}
+
+
+.sidebar-bottom .logout i {
+
+    width: 21px;
+
+    text-align: center;
+
+    font-size: 17px;
+
+}
+
+
+/* =========================================================
+   9. MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+
+    min-height: 100vh;
+
+    margin-left:
+        var(--bs-sidebar-width);
+
+    background:
+        var(--bs-background);
+
+}
+
+
+.content {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    padding:
+        28px 32px 40px;
+
+}
+
+
+/* =========================================================
+   10. APPLICATION HEADER
+   ========================================================= */
+
+.application-header {
+
+    min-height: 64px;
+
+    margin-bottom: 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.application-header-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.mobile-menu-button {
+
+    width: 42px;
+    height: 42px;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--bs-border);
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: var(--bs-primary);
+
+    font-size: 19px;
+
+}
+
+
+.page-heading {
+    min-width: 0;
+}
+
+
+.page-heading .page-label {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--bs-text-secondary);
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.page-heading h1 {
+
+    margin: 0;
+
+    color: var(--bs-text);
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+}
+
+
+/* =========================================================
+   11. HEADER RIGHT
+   ========================================================= */
+
+.application-header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.secure-session {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #dfe7df;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    color: #49624e;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.secure-session-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background:
+        var(--bs-success);
+
+}
+
+
+.user-identity {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding-left: 12px;
+
+    border-left:
+        1px solid var(--bs-border);
+
+}
+
+
+.user-avatar {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        var(--bs-primary-light);
+
+    color:
+        var(--bs-primary);
+
+    font-size: 17px;
+
+}
+
+
+.user-details {
+    min-width: 0;
+}
+
+
+.user-details strong {
+
+    display: block;
+
+    max-width: 180px;
+
+    overflow: hidden;
+
+    color: #263445;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.user-details span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--bs-text-muted);
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   12. SYSTEM MESSAGES
+   ========================================================= */
+
+.system-messages {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-bottom: 22px;
+
+}
+
+
+.system-messages .alert {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    margin: 0;
+
+    padding: 12px 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+}
+
+
+.system-messages .alert-success {
+
+    background: #edf8f1;
+
+    border-color: #ccebd6;
+
+    color: #276749;
+
+}
+
+
+.system-messages .alert-warning {
+
+    background: #fff8e8;
+
+    border-color: #f3dfad;
+
+    color: #805d13;
+
+}
+
+
+.system-messages .alert-danger {
+
+    background: #fff0f0;
+
+    border-color: #f0cccc;
+
+    color: #9b2c2c;
+
+}
+
+
+.system-messages .alert-info {
+
+    background: #eef6ff;
+
+    border-color: #cfe2f7;
+
+    color: #28577d;
+
+}
+
+
+.alert-close {
+
+    margin-left: auto;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: inherit;
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    opacity: 0.65;
+
+}
+
+
+.alert-close:hover {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   13. GENERAL CARDS
+   ========================================================= */
+
+.bs-card {
+
+    background: var(--bs-surface);
+
+    border:
+        1px solid var(--bs-border);
+
+    border-radius:
+        var(--bs-radius-md);
+
+    box-shadow:
+        var(--bs-shadow-sm);
+
+}
+
+
+.bs-card-header {
+
+    padding: 18px 20px;
+
+    border-bottom:
+        1px solid var(--bs-border-light);
+
+}
+
+
+.bs-card-body {
+
+    padding: 20px;
+
+}
+
+
+/* =========================================================
+   14. GENERAL BUTTONS
+   ========================================================= */
+
+.bs-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 40px;
+
+    padding: 9px 16px;
+
+    border: 1px solid transparent;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+.bs-btn:hover {
+    transform: translateY(-1px);
+}
+
+
+.bs-btn-primary {
+
+    background:
+        var(--bs-primary);
+
+    color: #ffffff;
+
+}
+
+
+.bs-btn-primary:hover {
+
+    background:
+        var(--bs-primary-dark);
+
+    color: #ffffff;
+
+}
+
+
+.bs-btn-secondary {
+
+    background: #ffffff;
+
+    border-color:
+        var(--bs-border);
+
+    color:
+        var(--bs-text);
+
+}
+
+
+.bs-btn-secondary:hover {
+
+    background:
+        var(--bs-surface-soft);
+
+}
+
+
+/* =========================================================
+   15. GENERAL FORM STYLING
+   ========================================================= */
+
+.form-control,
+.form-select {
+
+    border-color:
+        var(--bs-border);
+
+    border-radius: 8px;
+
+}
+
+
+.form-control:focus,
+.form-select:focus {
+
+    border-color:
+        #7da3c7;
+
+    box-shadow:
+        0 0 0 3px rgba(23, 63, 107, 0.10);
+
+}
+
+
+/* =========================================================
+   16. TABLES
+   ========================================================= */
+
+.bs-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: #ffffff;
+
+}
+
+
+.bs-table th {
+
+    padding: 12px 14px;
+
+    background:
+        var(--bs-surface-soft);
+
+    border-bottom:
+        1px solid var(--bs-border);
+
+    color:
+        var(--bs-text-secondary);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.4px;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+}
+
+
+.bs-table td {
+
+    padding: 13px 14px;
+
+    border-bottom:
+        1px solid var(--bs-border-light);
+
+    color:
+        var(--bs-text);
+
+    font-size: 13px;
+
+}
+
+
+.bs-table tbody tr:hover {
+
+    background:
+        #fafcff;
+
+}
+
+
+/* =========================================================
+   17. SIDEBAR OVERLAY
+   ========================================================= */
+
+.sidebar-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999;
+
+    display: none;
+
+    background:
+        rgba(15, 23, 42, 0.50);
+
+}
+
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+
+/* =========================================================
+   18. SIDEBAR SCROLLBAR
+   ========================================================= */
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.sidebar::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.15);
+
+}
+
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+
+    background:
+        rgba(255, 255, 255, 0.25);
+
+}
+
+
+/* =========================================================
+   19. UTILITY CLASSES
+   ========================================================= */
+
+.text-muted {
+    color: var(--bs-text-secondary) !important;
+}
+
+
+.text-danger {
+    color: var(--bs-danger) !important;
+}
+
+
+.text-success {
+    color: var(--bs-success) !important;
+}
+
+
+.text-warning {
+    color: var(--bs-warning) !important;
+}
+
+
+.bg-light {
+    background:
+        var(--bs-surface-soft) !important;
+}
+
+
+/* =========================================================
+   20. RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .content {
+
+        padding:
+            24px;
+
+    }
+
+
+    .secure-session {
+        display: none;
+    }
+
+
+    .user-details {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   21. RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+
+        width:
+            var(--bs-sidebar-width);
+
+        transform:
+            translateX(-100%);
+
+        transition:
+            transform 0.25s ease;
+
+    }
+
+
+    .sidebar.mobile-open {
+
+        transform:
+            translateX(0);
+
+    }
+
+
+    .main-content {
+
+        margin-left: 0;
+
+    }
+
+
+    .content {
+
+        padding:
+            18px 16px 30px;
+
+    }
+
+
+    .mobile-menu-button {
+
+        display: flex;
+
+    }
+
+
+    .application-header-right {
+
+        display: none;
+
+    }
+
+
+    .application-header {
+
+        min-height: 54px;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .page-heading h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .page-heading .page-label {
+
+        font-size: 9px;
+
+    }
+
+}
+
+
+/* =========================================================
+   22. SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .content {
+
+        padding:
+            15px 12px 25px;
+
+    }
+
+
+    .sidebar {
+
+        width: 270px;
+
+    }
+
+
+    .sidebar-logo {
+
+        padding:
+            18px 16px;
+
+    }
+
+}

@@ -1,0 +1,914 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Complaint | BlueShield</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+        body {
+            margin: 0;
+            background: #f7f9fc;
+            color: #222;
+            font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 35px 25px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb-text {
+            color: #727272;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .page-title {
+            color: #222;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .page-description {
+            color: #727272;
+            margin: 0;
+        }
+
+        .form-panel {
+            background: #fff;
+            border: 1px solid #e2e6ea;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 17px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            background: #fff;
+        }
+
+        .panel-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .panel-header p {
+            margin: 4px 0 0;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .panel-body {
+            padding: 22px 20px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 7px;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #d8dde3;
+            border-radius: 5px;
+            min-height: 42px;
+            font-size: 14px;
+        }
+
+        textarea.form-control {
+            min-height: auto;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.10);
+        }
+
+        .field-help {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .witness-card {
+            border: 1px solid #dfe4ea;
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: #fafbfd;
+        }
+
+        .witness-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .witness-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #164a7a;
+            margin: 0;
+        }
+
+        .witness-number {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #eaf2fb;
+            color: #164a7a;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .remove-witness {
+            color: #dc3545;
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .remove-witness:hover {
+            color: #a71d2a;
+        }
+
+        .add-witness-box {
+            border: 1px dashed #b9c7d6;
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            background: #fbfdff;
+            margin-top: 10px;
+        }
+
+        .add-witness-box button {
+            border: 1px solid #164a7a;
+            background: #fff;
+            color: #164a7a;
+            border-radius: 5px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .add-witness-box button:hover {
+            background: #164a7a;
+            color: #fff;
+        }
+
+        .info-box {
+            background: #f5f8fb;
+            border: 1px solid #dce5ee;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            display: inline-block;
+            width: 130px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .action-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            border-radius: 5px;
+            font-size: 14px;
+            padding: 9px 16px;
+        }
+
+        .btn-primary {
+            background: #164a7a;
+            border-color: #164a7a;
+        }
+
+        .btn-primary:hover {
+            background: #123c63;
+            border-color: #123c63;
+        }
+
+        .delete-box {
+            background: #fff4f4;
+            border: 1px solid #f1caca;
+            border-radius: 5px;
+            padding: 9px 12px;
+            margin-top: 10px;
+        }
+
+        .delete-box label {
+            color: #b02a37;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .delete-box input {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 25px 15px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-right {
+                justify-content: flex-end;
+            }
+
+            .info-label {
+                display: block;
+                width: auto;
+                margin-bottom: 2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div class="breadcrumb-text">
+            BlueShield / Case Management / My Complaints / Edit
+        </div>
+
+        <h1 class="page-title">
+            Edit Complaint
+        </h1>
+
+        <p class="page-description">
+            Update the complaint information and witness records.
+        </p>
+
+    </div>
+
+
+    <!-- COMPLAINT INFORMATION -->
+    <div class="info-box">
+
+        <div class="info-item">
+            <span class="info-label">Complaint Number:</span>
+
+            <span class="info-value">
+                {{ complaint.complaint_number }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">Registered:</span>
+
+            <span class="info-value">
+                {{ complaint.created_at|date:"d M Y H:i" }}
+            </span>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">Status:</span>
+
+            <span class="info-value">
+                {{ complaint.get_status_display }}
+            </span>
+        </div>
+
+    </div>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- COMPLAINT DETAILS -->
+        <div class="form-panel">
+
+            <div class="panel-header">
+
+                <h5>
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    Complaint Information
+                </h5>
+
+                <p>
+                    Update the main information about the complaint.
+                </p>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <div class="row g-4">
+
+                    <!-- COMPLAINANT NAME -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Reporting Person Full Name
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.complainant_name }}
+
+                        {% for error in form.complainant_name.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PHONE -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        {{ form.complainant_phone }}
+
+                        {% for error in form.complainant_phone.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- ADDRESS -->
+                    <div class="col-12">
+
+                        <label class="form-label">
+                            Address
+                        </label>
+
+                        {{ form.complainant_address }}
+
+                        {% for error in form.complainant_address.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- ROLE -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Reporting Person Role
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.complainant_role }}
+
+                        {% for error in form.complainant_role.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- COMPLAINT TYPE -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Complaint Type
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.complaint_type }}
+
+                        {% for error in form.complaint_type.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- INCIDENT DATE -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Incident Date
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.incident_date }}
+
+                        {% for error in form.incident_date.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- INCIDENT LOCATION -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Incident Location
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.incident_location }}
+
+                        {% for error in form.incident_location.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+                    <div class="col-12">
+
+                        <label class="form-label">
+                            Incident Description
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.description }}
+
+                        {% for error in form.description.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- REPORTING PERSON STATEMENT -->
+                    <div class="col-12">
+
+                        <label class="form-label">
+                            Reporting Person Statement
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.complainant_statement }}
+
+                        <div class="field-help">
+                            Record what the reporting person personally
+                            saw, heard, experienced, or knows about the incident.
+                        </div>
+
+                        {% for error in form.complainant_statement.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WITNESSES -->
+        <div class="form-panel">
+
+            <div class="panel-header">
+
+                <h5>
+                    <i class="bi bi-people me-2"></i>
+                    Witnesses
+                </h5>
+
+                <p>
+                    Review existing witnesses and add or remove witnesses
+                    connected to this complaint.
+                </p>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                {{ witness_formset.management_form }}
+
+
+                <div id="witness-container">
+
+                    {% for witness_form in witness_formset %}
+
+                        <div class="witness-card">
+
+                            <!-- Hidden ID -->
+                            {{ witness_form.id }}
+
+                            <div class="witness-header">
+
+                                <h6 class="witness-title">
+
+                                    <span class="witness-number">
+                                        {{ forloop.counter }}
+                                    </span>
+
+                                    Witness {{ forloop.counter }}
+
+                                </h6>
+
+                                {% if witness_form.instance.pk %}
+
+                                    <div class="delete-box">
+
+                                        <label>
+                                            {{ witness_form.DELETE }}
+                                            Remove this witness
+                                        </label>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="row g-4">
+
+                                <!-- NAME -->
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Witness Full Name
+                                    </label>
+
+                                    {{ witness_form.full_name }}
+
+                                    {% for error in witness_form.full_name.errors %}
+                                        <div class="error-message">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+
+                                <!-- PHONE -->
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Phone Number
+                                    </label>
+
+                                    {{ witness_form.phone }}
+
+                                    {% for error in witness_form.phone.errors %}
+                                        <div class="error-message">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+
+                                <!-- ADDRESS -->
+                                <div class="col-12">
+
+                                    <label class="form-label">
+                                        Address
+                                    </label>
+
+                                    {{ witness_form.address }}
+
+                                    {% for error in witness_form.address.errors %}
+                                        <div class="error-message">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+
+                                <!-- STATEMENT -->
+                                <div class="col-12">
+
+                                    <label class="form-label">
+                                        Witness Statement
+                                    </label>
+
+                                    {{ witness_form.statement }}
+
+                                    <div class="field-help">
+                                        Record exactly what the witness
+                                        personally saw or heard.
+                                    </div>
+
+                                    {% for error in witness_form.statement.errors %}
+                                        <div class="error-message">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="text-center text-muted py-4">
+
+                            <i class="bi bi-people fs-3"></i>
+
+                            <p class="mt-2 mb-0">
+                                No witnesses have been recorded for this complaint.
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- ADD WITNESS -->
+                <div class="add-witness-box">
+
+                    <button
+                        type="button"
+                        id="add-witness-btn"
+                    >
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Add Witness
+                    </button>
+
+                    <div class="field-help">
+                        Add another witness connected to this complaint.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-bar">
+
+            <a
+                href="{% url 'complaints:detail' complaint.pk %}"
+                class="btn btn-outline-secondary"
+            >
+                <i class="bi bi-arrow-left me-1"></i>
+                Cancel
+            </a>
+
+
+            <div class="action-right">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    <i class="bi bi-check-circle me-1"></i>
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const addButton = document.getElementById("add-witness-btn");
+    const container = document.getElementById("witness-container");
+
+    const totalFormsInput = document.querySelector(
+        "#id_witnesses-TOTAL_FORMS"
+    );
+
+    if (!addButton || !container || !totalFormsInput) {
+        return;
+    }
+
+
+    addButton.addEventListener("click", function () {
+
+        const formIndex = parseInt(
+            totalFormsInput.value
+        );
+
+        const witnessCard = document.createElement("div");
+
+        witnessCard.className = "witness-card";
+
+        witnessCard.innerHTML = `
+            <div class="witness-header">
+
+                <h6 class="witness-title">
+
+                    <span class="witness-number">
+                        ${formIndex + 1}
+                    </span>
+
+                    Witness ${formIndex + 1}
+
+                </h6>
+
+                <a href="#"
+                   class="remove-witness"
+                   onclick="removeNewWitness(this); return false;">
+
+                    <i class="bi bi-x-circle me-1"></i>
+                    Remove
+
+                </a>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Witness Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="witnesses-${formIndex}-full_name"
+                        class="form-control"
+                        placeholder="Witness full name"
+                    >
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="witnesses-${formIndex}-phone"
+                        class="form-control"
+                        placeholder="Witness phone number"
+                    >
+
+                </div>
+
+
+                <div class="col-12">
+
+                    <label class="form-label">
+                        Address
+                    </label>
+
+                    <textarea
+                        name="witnesses-${formIndex}-address"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Witness address"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="col-12">
+
+                    <label class="form-label">
+                        Witness Statement
+                    </label>
+
+                    <textarea
+                        name="witnesses-${formIndex}-statement"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Record exactly what the witness personally saw or heard."
+                    ></textarea>
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(witnessCard);
+
+        totalFormsInput.value = formIndex + 1;
+
+    });
+
+});
+
+
+function removeNewWitness(button) {
+
+    const card = button.closest(".witness-card");
+
+    if (card) {
+        card.remove();
+    }
+
+}
+
+</script>
+
+
+</body>
+</html>
