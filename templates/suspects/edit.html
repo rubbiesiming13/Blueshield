@@ -1,0 +1,850 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Edit Suspect | BlueShield</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            background: #f5f7fa;
+        }
+
+        .page-header {
+            background: #0d47a1;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            background: #0d47a1;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .card {
+            border: none;
+        }
+
+        .required {
+            color: red;
+        }
+
+        .current-photo {
+            width: 150px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-dark bg-primary">
+
+    <div class="container">
+
+        <span class="navbar-brand fw-bold">
+            BlueShield
+        </span>
+
+        <div>
+
+            <a
+                href="{% url 'suspects:list' %}"
+                class="btn btn-light btn-sm"
+            >
+                Back to Suspects
+            </a>
+
+            <a
+                href="{% url 'accounts:dashboard' %}"
+                class="btn btn-outline-light btn-sm"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<div class="container mt-4 mb-5">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <h2 class="fw-bold mb-1">
+            Edit Suspect
+        </h2>
+
+        <p class="mb-0">
+            Update the suspect information below.
+        </p>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- FORM -->
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        {% csrf_token %}
+
+
+        <!-- FORM ERRORS -->
+
+        {% if form.non_field_errors %}
+
+            <div class="alert alert-danger">
+
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- IDENTIFICATION -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Identification
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.id_type.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Identification Type
+                        </label>
+
+                        {{ form.id_type }}
+
+                        {% if form.id_type.errors %}
+                            <div class="text-danger small">
+                                {{ form.id_type.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.national_id_or_voter_no.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            National ID / Voter Number
+                        </label>
+
+                        {{ form.national_id_or_voter_no }}
+
+                        {% if form.national_id_or_voter_no.errors %}
+                            <div class="text-danger small">
+                                {{ form.national_id_or_voter_no.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PERSONAL INFORMATION -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Personal Information
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="{{ form.first_name.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            First Name <span class="required">*</span>
+                        </label>
+
+                        {{ form.first_name }}
+
+                        {% if form.first_name.errors %}
+                            <div class="text-danger small">
+                                {{ form.first_name.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="{{ form.middle_name.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Middle Name
+                        </label>
+
+                        {{ form.middle_name }}
+
+                        {% if form.middle_name.errors %}
+                            <div class="text-danger small">
+                                {{ form.middle_name.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="{{ form.last_name.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Last Name <span class="required">*</span>
+                        </label>
+
+                        {{ form.last_name }}
+
+                        {% if form.last_name.errors %}
+                            <div class="text-danger small">
+                                {{ form.last_name.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.alias.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Alias
+                        </label>
+
+                        {{ form.alias }}
+
+                        {% if form.alias.errors %}
+                            <div class="text-danger small">
+                                {{ form.alias.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label
+                            for="{{ form.gender.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Gender
+                        </label>
+
+                        {{ form.gender }}
+
+                        {% if form.gender.errors %}
+                            <div class="text-danger small">
+                                {{ form.gender.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label
+                            for="{{ form.date_of_birth.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Date of Birth
+                        </label>
+
+                        {{ form.date_of_birth }}
+
+                        {% if form.date_of_birth.errors %}
+                            <div class="text-danger small">
+                                {{ form.date_of_birth.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.nationality.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Nationality
+                        </label>
+
+                        {{ form.nationality }}
+
+                        {% if form.nationality.errors %}
+                            <div class="text-danger small">
+                                {{ form.nationality.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.occupation.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Occupation
+                        </label>
+
+                        {{ form.occupation }}
+
+                        {% if form.occupation.errors %}
+                            <div class="text-danger small">
+                                {{ form.occupation.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTACT & ADDRESS -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Contact & Home Address
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.phone_number.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Phone Number
+                        </label>
+
+                        {{ form.phone_number }}
+
+                        {% if form.phone_number.errors %}
+                            <div class="text-danger small">
+                                {{ form.phone_number.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.village.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Village
+                        </label>
+
+                        {{ form.village }}
+
+                        {% if form.village.errors %}
+                            <div class="text-danger small">
+                                {{ form.village.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="{{ form.province.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Province
+                        </label>
+
+                        {{ form.province }}
+
+                        {% if form.province.errors %}
+                            <div class="text-danger small">
+                                {{ form.province.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-12 mb-3">
+
+                        <label
+                            for="{{ form.residential_address.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Residential Address
+                        </label>
+
+                        {{ form.residential_address }}
+
+                        {% if form.residential_address.errors %}
+                            <div class="text-danger small">
+                                {{ form.residential_address.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PHOTO & IDENTIFYING FEATURES -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Photograph & Identifying Features
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-4">
+
+                        <label class="form-label fw-semibold">
+                            Current Photograph
+                        </label>
+
+                        <div>
+
+                            {% if suspect.mugshot %}
+
+                                <img
+                                    src="{{ suspect.mugshot.url }}"
+                                    alt="Current mugshot"
+                                    class="current-photo"
+                                >
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No photograph currently uploaded.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-8 mb-3">
+
+                        <label
+                            for="{{ form.mugshot.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Replace Photograph
+                        </label>
+
+                        {{ form.mugshot }}
+
+                        <div class="form-text">
+                            Leave empty if you want to keep the current photograph.
+                        </div>
+
+                        {% if form.mugshot.errors %}
+                            <div class="text-danger small">
+                                {{ form.mugshot.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-12 mb-3">
+
+                        <label
+                            for="{{ form.identifying_marks.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Identifying Marks
+                        </label>
+
+                        {{ form.identifying_marks }}
+
+                        {% if form.identifying_marks.errors %}
+                            <div class="text-danger small">
+                                {{ form.identifying_marks.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CASE INFORMATION -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Case Information
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-8 mb-3">
+
+                        <label
+                            for="{{ form.case.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Case
+                        </label>
+
+                        {{ form.case }}
+
+                        {% if form.case.errors %}
+                            <div class="text-danger small">
+                                {{ form.case.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="{{ form.suspect_role.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Suspect Role
+                        </label>
+
+                        {{ form.suspect_role }}
+
+                        {% if form.suspect_role.errors %}
+                            <div class="text-danger small">
+                                {{ form.suspect_role.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- CASE DETAILS -->
+
+                <div
+                    id="case-details"
+                    class="alert alert-light border"
+                >
+
+                    <strong>Case Details</strong>
+
+                    <div class="row mt-2">
+
+                        <div class="col-md-6">
+                            <strong>Case Number:</strong>
+                            <span id="case_number">-</span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <strong>Title:</strong>
+                            <span id="case_title">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Offence:</strong>
+                            <span id="case_offence">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Status:</strong>
+                            <span id="case_status">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Priority:</strong>
+                            <span id="case_priority">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Incident Date:</strong>
+                            <span id="incident_date">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Location:</strong>
+                            <span id="case_location">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Investigating Officer:</strong>
+                            <span id="investigating_officer">-</span>
+                        </div>
+
+                        <div class="col-md-6 mt-2">
+                            <strong>Station:</strong>
+                            <span id="case_station">-</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADDITIONAL INFORMATION -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="section-title">
+                    Additional Information
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="{{ form.notes.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        Notes
+                    </label>
+
+                    {{ form.notes }}
+
+                    {% if form.notes.errors %}
+                        <div class="text-danger small">
+                            {{ form.notes.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="d-flex justify-content-between">
+
+            <a
+                href="{% url 'suspects:detail' suspect.id %}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary px-4"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<script>
+
+    /*
+     * Case information supplied by the Django view.
+     *
+     * The view should provide:
+     * case_details
+     */
+
+    const caseDetails = {{ case_details|safe }};
+
+    const caseSelect = document.getElementById("id_case");
+
+    function updateCaseDetails() {
+
+        const selectedCase = caseSelect.value;
+
+        const details = caseDetails[selectedCase];
+
+        if (!details) {
+
+            document.getElementById("case_number").textContent = "-";
+            document.getElementById("case_title").textContent = "-";
+            document.getElementById("case_offence").textContent = "-";
+            document.getElementById("case_status").textContent = "-";
+            document.getElementById("case_priority").textContent = "-";
+            document.getElementById("incident_date").textContent = "-";
+            document.getElementById("case_location").textContent = "-";
+            document.getElementById("investigating_officer").textContent = "-";
+            document.getElementById("case_station").textContent = "-";
+
+            return;
+        }
+
+        document.getElementById("case_number").textContent =
+            details.case_number || "-";
+
+        document.getElementById("case_title").textContent =
+            details.title || "-";
+
+        document.getElementById("case_offence").textContent =
+            details.offence || "-";
+
+        document.getElementById("case_status").textContent =
+            details.status || "-";
+
+        document.getElementById("case_priority").textContent =
+            details.priority || "-";
+
+        document.getElementById("incident_date").textContent =
+            details.incident_date || "-";
+
+        document.getElementById("case_location").textContent =
+            details.location || "-";
+
+        document.getElementById("investigating_officer").textContent =
+            details.investigating_officer || "-";
+
+        document.getElementById("case_station").textContent =
+            details.station || "-";
+    }
+
+
+    if (caseSelect) {
+
+        caseSelect.addEventListener(
+            "change",
+            updateCaseDetails
+        );
+
+        /*
+         * Run once when the edit page loads.
+         * This displays the existing case information.
+         */
+        updateCaseDetails();
+
+    }
+
+</script>
+
+
+</body>
+</html>

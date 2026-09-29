@@ -14,28 +14,184 @@
 
     <title>My Cases | BlueShield</title>
 
-    <!-- Bootstrap -->
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- Bootstrap Icons -->
+
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+    ====================================================== -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         rel="stylesheet"
     >
 
-    <!-- BlueShield Global CSS -->
+
+    <!-- =====================================================
+         BLUESHIELD GLOBAL CSS
+    ====================================================== -->
+
     <link
         rel="stylesheet"
         href="{% static 'css/blueshield.css' %}"
     >
 
+
+    <!-- =====================================================
+         PAGE STYLES
+    ====================================================== -->
+
+    <style>
+
+        body {
+            background-color: #f4f7fb;
+        }
+
+        .page-header {
+            background: linear-gradient(
+                135deg,
+                #0d47a1,
+                #1565c0
+            );
+
+            color: white;
+            border-radius: 12px;
+            padding: 28px 30px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header .breadcrumb-text {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            margin-bottom: 6px;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            opacity: 0.85;
+        }
+
+        .page-header .btn {
+            white-space: nowrap;
+        }
+
+        .content-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-card .card-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 18px 22px;
+        }
+
+        .table thead th {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
+        .case-number {
+            color: #0d47a1;
+            font-weight: 600;
+        }
+
+        .case-title {
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .case-station {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            border-radius: 20px;
+        }
+
+        .priority-badge {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            border-radius: 20px;
+        }
+
+        .empty-state {
+            padding: 70px 20px;
+        }
+
+        .empty-state-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: #eaf2fb;
+            color: #0d47a1;
+
+            border-radius: 50%;
+
+            font-size: 2rem;
+        }
+
+        .record-count {
+            font-size: 0.8rem;
+            padding: 7px 12px;
+        }
+
+        @media (max-width: 768px) {
+
+            .page-header {
+                padding: 22px;
+            }
+
+            .page-header .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 18px;
+            }
+
+            .page-header h2 {
+                font-size: 1.5rem;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 
 <body>
+
 
 <div class="container py-4">
 
@@ -44,37 +200,50 @@
          PAGE HEADER
     ====================================================== -->
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="page-header mb-4">
 
-        <div>
+        <div class="d-flex justify-content-between align-items-center">
 
-            <div class="text-muted small mb-1">
-                BlueShield / Case Management
+
+            <!-- PAGE TITLE -->
+
+            <div>
+
+                <div class="breadcrumb-text">
+                    <i class="bi bi-shield-lock me-1"></i>
+                    BlueShield / Case Management
+                </div>
+
+                <h2 class="fw-bold">
+                    My Cases
+                </h2>
+
+                <p class="mb-0">
+                    View and manage cases assigned to you.
+                </p>
+
             </div>
 
-            <h2 class="fw-bold mb-1">
-                My Cases
-            </h2>
 
-            <p class="text-muted mb-0">
-                View and manage cases assigned to you.
-            </p>
+            <!-- REGISTER NEW CASE -->
+
+            <div>
+
+                <a
+                    href="{% url 'cases:register_case' %}"
+                    class="btn btn-light fw-semibold"
+                >
+
+                    <i class="bi bi-plus-circle me-1"></i>
+
+                    Register New Case
+
+                </a>
+
+            </div>
+
 
         </div>
-
-
-        <!-- Register New Case -->
-
-        <a
-            href="{% url 'cases:register_case' %}"
-            class="btn btn-primary"
-        >
-
-            <i class="bi bi-plus-circle me-1"></i>
-
-            Register New Case
-
-        </a>
 
     </div>
 
@@ -84,21 +253,37 @@
          CASE LIST CARD
     ====================================================== -->
 
-    <div class="card border-0 shadow-sm">
+    <div class="card content-card">
 
 
-        <!-- Card Header -->
+        <!-- CARD HEADER -->
 
-        <div class="card-header bg-white py-3">
+        <div class="card-header">
 
             <div class="d-flex justify-content-between align-items-center">
 
-                <h5 class="mb-0 fw-semibold">
-                    My Assigned Cases
-                </h5>
+                <div>
+
+                    <h5 class="mb-1 fw-semibold">
+
+                        <i class="bi bi-folder2-open text-primary me-2"></i>
+
+                        My Assigned Cases
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        Cases currently assigned to your account
+
+                    </small>
+
+                </div>
 
 
-                <span class="badge bg-primary">
+                <!-- CASE COUNT -->
+
+                <span class="badge bg-primary record-count">
 
                     {{ cases|length }}
 
@@ -112,7 +297,7 @@
 
 
 
-        <!-- Card Body -->
+        <!-- CARD BODY -->
 
         <div class="card-body p-0">
 
@@ -136,7 +321,7 @@
                             <tr>
 
                                 <th class="px-4">
-                                    Case Number
+                                    Case
                                 </th>
 
                                 <th>
@@ -179,20 +364,19 @@
                             <tr>
 
 
-                                <!-- =================================
-                                     CASE NUMBER
-                                ================================== -->
+                                <!-- CASE NUMBER -->
 
                                 <td class="px-4">
 
-                                    <div class="fw-semibold">
+                                    <div class="case-number">
 
                                         {{ case.case_number }}
 
                                     </div>
 
-
                                     <div class="small text-muted">
+
+                                        <i class="bi bi-calendar3 me-1"></i>
 
                                         {{ case.created_at|date:"d M Y" }}
 
@@ -202,20 +386,19 @@
 
 
 
-                                <!-- =================================
-                                     CASE TITLE
-                                ================================== -->
+                                <!-- CASE TITLE -->
 
                                 <td>
 
-                                    <div class="fw-semibold">
+                                    <div class="case-title">
 
                                         {{ case.title }}
 
                                     </div>
 
+                                    <div class="case-station">
 
-                                    <div class="small text-muted">
+                                        <i class="bi bi-geo-alt me-1"></i>
 
                                         {{ case.station }}
 
@@ -225,32 +408,37 @@
 
 
 
-                                <!-- =================================
-                                     OFFENCE
-                                ================================== -->
+                                <!-- OFFENCE -->
 
                                 <td>
 
-                                    {{ case.offence }}
+                                    <span class="text-dark">
+
+                                        {{ case.offence }}
+
+                                    </span>
 
                                 </td>
 
 
 
-                                <!-- =================================
-                                     SUSPECT
-                                ================================== -->
+                                <!-- SUSPECT -->
 
                                 <td>
 
-
                                     {% if case.suspect %}
 
-                                        {{ case.suspect }}
+                                        <span class="fw-semibold">
+
+                                            {{ case.suspect }}
+
+                                        </span>
 
                                     {% else %}
 
                                         <span class="text-muted">
+
+                                            <i class="bi bi-person-x me-1"></i>
 
                                             Not registered
 
@@ -258,21 +446,19 @@
 
                                     {% endif %}
 
-
                                 </td>
 
 
 
-                                <!-- =================================
-                                     PRIORITY
-                                ================================== -->
+                                <!-- PRIORITY -->
 
                                 <td>
 
-
                                     {% if case.priority == "URGENT" %}
 
-                                        <span class="badge bg-danger">
+                                        <span class="badge bg-danger priority-badge">
+
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
 
                                             Urgent
 
@@ -281,7 +467,9 @@
 
                                     {% elif case.priority == "HIGH" %}
 
-                                        <span class="badge bg-warning text-dark">
+                                        <span class="badge bg-warning text-dark priority-badge">
+
+                                            <i class="bi bi-arrow-up-circle me-1"></i>
 
                                             High
 
@@ -290,7 +478,7 @@
 
                                     {% else %}
 
-                                        <span class="badge bg-secondary">
+                                        <span class="badge bg-secondary priority-badge">
 
                                             Normal
 
@@ -298,21 +486,17 @@
 
                                     {% endif %}
 
-
                                 </td>
 
 
 
-                                <!-- =================================
-                                     STATUS
-                                ================================== -->
+                                <!-- STATUS -->
 
                                 <td>
 
-
                                     {% if case.status == "OPEN" %}
 
-                                        <span class="badge bg-primary">
+                                        <span class="badge bg-primary status-badge">
 
                                             Pending
 
@@ -321,7 +505,7 @@
 
                                     {% elif case.status == "INVESTIGATION" %}
 
-                                        <span class="badge bg-info text-dark">
+                                        <span class="badge bg-info text-dark status-badge">
 
                                             Under Investigation
 
@@ -330,7 +514,7 @@
 
                                     {% elif case.status == "WARRANT" %}
 
-                                        <span class="badge bg-warning text-dark">
+                                        <span class="badge bg-warning text-dark status-badge">
 
                                             Warrant Requested
 
@@ -339,7 +523,7 @@
 
                                     {% elif case.status == "ARRESTED" %}
 
-                                        <span class="badge bg-dark">
+                                        <span class="badge bg-dark status-badge">
 
                                             Arrested
 
@@ -348,7 +532,7 @@
 
                                     {% elif case.status == "CUSTODY" %}
 
-                                        <span class="badge bg-danger">
+                                        <span class="badge bg-danger status-badge">
 
                                             In Custody
 
@@ -357,7 +541,7 @@
 
                                     {% elif case.status == "CASE_FILE_PREPARED" %}
 
-                                        <span class="badge bg-success">
+                                        <span class="badge bg-success status-badge">
 
                                             Case File Prepared
 
@@ -366,7 +550,7 @@
 
                                     {% elif case.status == "PROSECUTION" %}
 
-                                        <span class="badge bg-primary">
+                                        <span class="badge bg-primary status-badge">
 
                                             Submitted to Prosecution
 
@@ -375,7 +559,7 @@
 
                                     {% elif case.status == "CLOSED" %}
 
-                                        <span class="badge bg-secondary">
+                                        <span class="badge bg-secondary status-badge">
 
                                             Closed
 
@@ -384,7 +568,7 @@
 
                                     {% else %}
 
-                                        <span class="badge bg-secondary">
+                                        <span class="badge bg-secondary status-badge">
 
                                             {{ case.get_status_display }}
 
@@ -392,17 +576,13 @@
 
                                     {% endif %}
 
-
                                 </td>
 
 
 
-                                <!-- =================================
-                                     ACTION
-                                ================================== -->
+                                <!-- ACTION -->
 
                                 <td class="text-end px-4">
-
 
                                     <a
                                         href="{% url 'cases:detail' case.id %}"
@@ -411,10 +591,9 @@
 
                                         <i class="bi bi-folder2-open me-1"></i>
 
-                                        Open Case
+                                        Open
 
                                     </a>
-
 
                                 </td>
 
@@ -438,16 +617,17 @@
                      EMPTY STATE
                 ================================================== -->
 
-                <div class="text-center py-5">
+                <div class="empty-state text-center">
 
 
-                    <i
-                        class="bi bi-folder2-open"
-                        style="font-size: 3rem;"
-                    ></i>
+                    <div class="empty-state-icon">
+
+                        <i class="bi bi-folder2-open"></i>
+
+                    </div>
 
 
-                    <h5 class="fw-semibold mt-3">
+                    <h5 class="fw-semibold">
 
                         No Cases Assigned
 
@@ -488,7 +668,9 @@
 
 
 
-<!-- Bootstrap JavaScript -->
+<!-- =====================================================
+     BOOTSTRAP JAVASCRIPT
+====================================================== -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

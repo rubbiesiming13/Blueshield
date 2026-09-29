@@ -1,0 +1,558 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Suspect Details | BlueShield</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+
+        .section-title {
+            background: #0d47a1;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #222;
+        }
+
+        .mugshot {
+            width: 180px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .no-photo {
+            width: 180px;
+            height: 220px;
+            background: #e9ecef;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+
+        <span class="navbar-brand fw-bold">
+            BlueShield
+        </span>
+
+        <div>
+            <a
+                href="{% url 'suspects:list' %}"
+                class="btn btn-light btn-sm"
+            >
+                Back to Suspects
+            </a>
+
+            {% if user.role == "OFFICER" %}
+            <a
+                href="{% url 'suspects:edit' suspect.id %}"
+                class="btn btn-warning btn-sm"
+            >
+                Edit
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="container mt-4 mb-5">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold">
+                Suspect Details
+            </h2>
+
+            <p class="text-muted mb-0">
+                Complete suspect record
+            </p>
+        </div>
+
+        <span class="badge bg-primary fs-6">
+            Suspect #{{ suspect.id }}
+        </span>
+
+    </div>
+
+
+    <!-- IDENTIFICATION -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Identification
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Identification Type:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.get_id_type_display }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        National ID / Voter Number:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.national_id_or_voter_no|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Suspect Number:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.suspect_number|default:suspect.id }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PERSONAL INFORMATION -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Personal Information
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Full Name:
+                    </span>
+                    <div class="info-value">
+                        <strong>{{ suspect.full_name }}</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Alias:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.alias|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        Gender:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.get_gender_display|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        Date of Birth:
+                    </span>
+                    <div class="info-value">
+                        {% if suspect.date_of_birth %}
+                            {{ suspect.date_of_birth }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        Nationality:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.nationality|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Occupation:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.occupation|default:"Not provided" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTACT & ADDRESS -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Contact & Home Address
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Phone Number:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.phone_number|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Village:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.village|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Province:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.province|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <span class="info-label">
+                        Residential Address:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.residential_address|default:"Not provided" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PHOTO & IDENTIFYING FEATURES -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Photograph & Identifying Features
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4 text-center mb-3">
+
+                    {% if suspect.mugshot %}
+                        <img
+                            src="{{ suspect.mugshot.url }}"
+                            alt="Mugshot of {{ suspect.full_name }}"
+                            class="mugshot"
+                        >
+                    {% else %}
+                        <div class="no-photo">
+                            No photograph available
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-8">
+
+                    <span class="info-label">
+                        Identifying Marks:
+                    </span>
+
+                    <div class="info-value mt-2">
+                        {% if suspect.identifying_marks %}
+                            {{ suspect.identifying_marks|linebreaks }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CASE INFORMATION -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Case Information
+            </div>
+
+            {% if suspect.case %}
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Case Number:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.case.case_number }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Case Title:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.case.title }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Offence:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.case.offence|default:"Not provided" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Case Status:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.case.get_status_display }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Suspect Role:
+                    </span>
+                    <div class="info-value">
+                        {{ suspect.get_suspect_role_display }}
+                    </div>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <p class="text-muted mb-0">
+                No case has been linked to this suspect.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ADDITIONAL INFORMATION -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Additional Information
+            </div>
+
+            <div class="mb-3">
+
+                <span class="info-label">
+                    Notes:
+                </span>
+
+                <div class="info-value mt-2">
+                    {% if suspect.notes %}
+                        {{ suspect.notes|linebreaks }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- REGISTRATION INFORMATION -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="section-title">
+                Registration Information
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        Registered By:
+                    </span>
+
+                    <div class="info-value">
+                        {% if suspect.registered_by %}
+                            {{ suspect.registered_by.username }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        Police Station:
+                    </span>
+
+                    <div class="info-value">
+                        {% if suspect.station %}
+                            {{ suspect.station.name }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <span class="info-label">
+                        District:
+                    </span>
+
+                    <div class="info-value">
+                        {% if suspect.district %}
+                            {{ suspect.district.name }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Registered:
+                    </span>
+
+                    <div class="info-value">
+                        {% if suspect.created_at %}
+                            {{ suspect.created_at|date:"d M Y, H:i" }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <span class="info-label">
+                        Last Updated:
+                    </span>
+
+                    <div class="info-value">
+                        {% if suspect.updated_at %}
+                            {{ suspect.updated_at|date:"d M Y, H:i" }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="d-flex gap-2">
+
+        <a
+            href="{% url 'suspects:list' %}"
+            class="btn btn-secondary"
+        >
+            Back to Suspects
+        </a>
+
+        {% if user.role == "OFFICER" %}
+        <a
+            href="{% url 'suspects:edit' suspect.id %}"
+            class="btn btn-warning"
+        >
+            Edit Suspect
+        </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

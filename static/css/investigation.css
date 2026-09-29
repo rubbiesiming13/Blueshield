@@ -5,7 +5,7 @@
 body {
     margin: 0;
     background: #f4f7fb;
-    color: #1f2937;
+    color: #94bdf7;
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
@@ -50,7 +50,7 @@ body {
 
 .workspace-header h1 {
     margin: 0;
-    color: #172b4d;
+    color: #95abd1;
     font-size: 26px;
     font-weight: 700;
 }

@@ -5,16 +5,16 @@
 }
 
 :root {
-    --blue-dark: #0b1f3a;
-    --blue: #123c69;
+    --blue-dark: #14478a;
+    --blue: #285280;
     --blue-light: #1f5f9c;
     --blue-soft: #eaf2f9;
 
     --text-dark: #1f2937;
     --text-muted: #6b7280;
 
-    --background: #194379;
-    --white: #153e73;
+    --background: #e8eef6;
+    --white: #dce8f8;
 
     --border: #d9e0e8;
 
@@ -37,7 +37,7 @@ body {
         sans-serif;
 
     background:
-        #1d4e80;
+        #d4e6f9;
 
     color:
         var(--text-dark);
