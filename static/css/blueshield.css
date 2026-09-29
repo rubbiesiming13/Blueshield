@@ -17,9 +17,9 @@
     --bs-primary-light: #eaf2f9;
 
     /* Background */
-    --bs-background: #f5f7fb;
-    --bs-surface: #ffffff;
-    --bs-surface-soft: #f8fafc;
+    --bs-background: #b8c1ca;
+   --bs-background: #b8c1ca;
+--bs-background: #b8c1ca;
 
     /* Text */
     --bs-text: #172033;
@@ -1244,4 +1244,33 @@ a {
 
     }
 
+}
+/* =====================================================
+   CASE LIST PAGE BACKGROUND
+===================================================== */
+
+body {
+    background: #195590;
+}
+
+.main-content {
+    background: #1c4b79;
+}
+/* =====================================================
+   CASE LIST CARD
+===================================================== */
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+.card-header {
+    background: #173f6b !important;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+.card-header h5 {
+    color: #ffffff;
 }

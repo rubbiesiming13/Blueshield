@@ -7,19 +7,97 @@ from .forms import ArrestRecordForm
 from .models import ArrestRecord
 
 
-@login_required
+# ============================================================
+# ARREST RECORD LIST
+# ============================================================
+
+@login_required(login_url="accounts:login")
 def record_list(request):
 
+    user = request.user
+
+    # --------------------------------------------------------
+    # START WITH NO RECORDS
+    # --------------------------------------------------------
+
+    records = ArrestRecord.objects.none()
+
+    # ========================================================
+    # POLICE OFFICER
+    # ========================================================
+    # Officer sees ONLY arrests made by that officer.
+    # ========================================================
+
+    if user.role == "OFFICER":
+
+        if user.station and user.district:
+
+            records = ArrestRecord.objects.filter(
+                arresting_officer=user,
+                station=user.station,
+            )
+
+    # ========================================================
+    # DIVISION ADMIN / PROSECUTION
+    # ========================================================
+    # Sees arrests within their assigned division,
+    # district and station.
+    # ========================================================
+
+    elif user.role == "DIVISION_ADMIN":
+
+        if user.division and user.station and user.district:
+
+            records = ArrestRecord.objects.filter(
+                arresting_officer__division=user.division,
+                station=user.station,
+                station__district=user.district,
+            )
+
+    # ========================================================
+    # STATION COMMANDER
+    # ========================================================
+    # Sees all arrests at their station.
+    # ========================================================
+
+    elif user.role == "STATION_COMMANDER":
+
+        if user.station and user.district:
+
+            records = ArrestRecord.objects.filter(
+                station=user.station,
+                station__district=user.district,
+            )
+
+    # ========================================================
+    # PPC / SYSTEM ADMIN
+    # ========================================================
+    # Province-wide access.
+    # ========================================================
+
+    elif user.role == "ADMIN":
+
+        records = ArrestRecord.objects.all()
+
+    # ========================================================
+    # COMMON QUERY OPTIMIZATION
+    # ========================================================
+
     records = (
-        ArrestRecord.objects
+        records
         .select_related(
             "suspect",
             "case",
             "arresting_officer",
             "station",
+            "station__district",
         )
-        .prefetch_related("offences")
-        .order_by("-created_at")
+        .prefetch_related(
+            "offences"
+        )
+        .order_by(
+            "-created_at"
+        )
     )
 
     return render(
@@ -31,17 +109,36 @@ def record_list(request):
     )
 
 
-@login_required
+# ============================================================
+# CREATE ARREST RECORD
+# ============================================================
+
+@login_required(login_url="accounts:login")
 def record_create(request):
 
     user = request.user
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
+    # ONLY POLICE OFFICERS CAN CREATE ARREST RECORDS
+    # --------------------------------------------------------
+
+    if user.role != "OFFICER":
+
+        messages.error(
+            request,
+            "You do not have permission to create arrest records."
+        )
+
+        return redirect("accounts:dashboard")
+
+    # --------------------------------------------------------
     # BACKEND-CONTROLLED STATION
-    # -------------------------------------------------
+    # --------------------------------------------------------
+
     station = user.station
 
     if not station:
+
         messages.error(
             request,
             "Your BlueShield account does not have a police station "
@@ -50,12 +147,18 @@ def record_create(request):
 
         return redirect("accounts:dashboard")
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # BACKEND-CONTROLLED DISTRICT
-    # -------------------------------------------------
-    district = getattr(station, "district", None)
+    # --------------------------------------------------------
+
+    district = getattr(
+        station,
+        "district",
+        None
+    )
 
     if not district:
+
         messages.error(
             request,
             "Your assigned police station does not have a district "
@@ -64,21 +167,27 @@ def record_create(request):
 
         return redirect("accounts:dashboard")
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # CREATE RECORD
-    # -------------------------------------------------
+    # --------------------------------------------------------
+
     if request.method == "POST":
 
-        form = ArrestRecordForm(request.POST)
+        form = ArrestRecordForm(
+            request.POST
+        )
 
         if form.is_valid():
 
             with transaction.atomic():
 
-                arrest_record = form.save(commit=False)
+                arrest_record = form.save(
+                    commit=False
+                )
 
-                # NEVER accept these from POST data.
-                # They are controlled by the authenticated user.
+                # NEVER accept these values from POST data.
+                # They are controlled by the authenticated officer.
+
                 arrest_record.arresting_officer = user
                 arrest_record.station = station
 
@@ -90,12 +199,15 @@ def record_create(request):
                 request,
                 f"Arrest record "
                 f"{arrest_record.arrest_tracking_id} "
-                f"was successfully created."
+                "was successfully created."
             )
 
-            return redirect("records:list")
+            return redirect(
+                "records:list"
+            )
 
     else:
+
         form = ArrestRecordForm()
 
     return render(

@@ -55,14 +55,81 @@ def generate_suspect_number():
 @login_required(login_url="accounts:login")
 def list_suspects(request):
 
+    user = request.user
+
+    # --------------------------------------------------------
+    # START WITH NO RECORDS
+    # --------------------------------------------------------
+
+    suspects = Suspect.objects.none()
+
+    # ========================================================
+    # POLICE OFFICER
+    # ========================================================
+    # Officer sees ONLY suspects registered by that officer.
+    # ========================================================
+
+    if user.role == "OFFICER":
+
+        if user.station and user.district:
+
+            suspects = Suspect.objects.filter(
+                registered_by=user,
+                station=user.station,
+            )
+
+    # ========================================================
+    # DIVISION ADMIN / PROSECUTION
+    # ========================================================
+    # Sees suspects registered within their assigned
+    # division, district and station.
+    # ========================================================
+
+    elif user.role == "DIVISION_ADMIN":
+
+        if user.division and user.station and user.district:
+
+            suspects = Suspect.objects.filter(
+                registered_by__division=user.division,
+                station=user.station,
+                station__district=user.district,
+            )
+
+    # ========================================================
+    # STATION COMMANDER
+    # ========================================================
+    # Sees ALL suspects belonging to their station.
+    # ========================================================
+
+    elif user.role == "STATION_COMMANDER":
+
+        if user.station and user.district:
+
+            suspects = Suspect.objects.filter(
+                station=user.station,
+                station__district=user.district,
+            )
+
+    # ========================================================
+    # PPC / SYSTEM ADMIN
+    # ========================================================
+    # Province-wide access.
+    # ========================================================
+
+    elif user.role == "ADMIN":
+
+        suspects = Suspect.objects.all()
+
+    # ========================================================
+    # COMMON QUERY OPTIMIZATION
+    # ========================================================
+
     suspects = (
-        Suspect.objects
-        .filter(
-            station=request.user.station
-        )
+        suspects
         .select_related(
             "case",
             "station",
+            "station__district",
             "registered_by",
         )
         .order_by("-created_at")
@@ -73,7 +140,7 @@ def list_suspects(request):
         "suspects/suspect_list.html",
         {
             "suspects": suspects,
-            "user": request.user,
+            "user": user,
         }
     )
 
@@ -122,16 +189,21 @@ def create_suspect(request):
 
             suspect.suspect_number = generate_suspect_number()
 
-            # Automatically record the officer
+            # Automatically record the logged-in officer.
             suspect.registered_by = request.user
 
-            # Automatically record the police station
+            # Automatically record the officer's station.
             suspect.station = request.user.station
 
-            # Automatically record the officer's district
+            # Automatically record the officer's district.
             if request.user.district:
-                suspect.district = request.user.district.name
+
+                suspect.district = (
+                    request.user.district.name
+                )
+
             else:
+
                 suspect.district = (
                     request.user.station.district.name
                 )
@@ -163,6 +235,8 @@ def create_suspect(request):
             "case_details": form.case_details,
         }
     )
+
+
 # ============================================================
 # VIEW SUSPECT DETAILS
 # ============================================================
@@ -170,21 +244,111 @@ def create_suspect(request):
 @login_required(login_url="accounts:login")
 def suspect_detail(request, pk):
 
-    suspect = get_object_or_404(
-        Suspect.objects.select_related(
+    user = request.user
+
+    # --------------------------------------------------------
+    # START WITH BASE QUERY
+    # --------------------------------------------------------
+
+    suspect_queryset = (
+        Suspect.objects
+        .select_related(
             "case",
             "station",
+            "station__district",
             "registered_by",
-        ),
-        pk=pk,
-        station=request.user.station
+        )
     )
+
+    # ========================================================
+    # POLICE OFFICER
+    # ========================================================
+
+    if user.role == "OFFICER":
+
+        suspect = get_object_or_404(
+            suspect_queryset,
+            pk=pk,
+            registered_by=user,
+            station=user.station,
+        )
+
+    # ========================================================
+    # DIVISION ADMIN
+    # ========================================================
+
+    elif user.role == "DIVISION_ADMIN":
+
+        if not user.division or not user.station or not user.district:
+
+            messages.error(
+                request,
+                "Your account is not fully assigned to a "
+                "division, district and station."
+            )
+
+            return redirect("accounts:dashboard")
+
+        suspect = get_object_or_404(
+            suspect_queryset,
+            pk=pk,
+            registered_by__division=user.division,
+            station=user.station,
+            station__district=user.district,
+        )
+
+    # ========================================================
+    # STATION COMMANDER
+    # ========================================================
+
+    elif user.role == "STATION_COMMANDER":
+
+        if not user.station or not user.district:
+
+            messages.error(
+                request,
+                "Your account is not assigned to a "
+                "district and police station."
+            )
+
+            return redirect("accounts:dashboard")
+
+        suspect = get_object_or_404(
+            suspect_queryset,
+            pk=pk,
+            station=user.station,
+            station__district=user.district,
+        )
+
+    # ========================================================
+    # PPC / SYSTEM ADMIN
+    # ========================================================
+
+    elif user.role == "ADMIN":
+
+        suspect = get_object_or_404(
+            suspect_queryset,
+            pk=pk,
+        )
+
+    # ========================================================
+    # UNKNOWN ROLE
+    # ========================================================
+
+    else:
+
+        messages.error(
+            request,
+            "You do not have permission to view this suspect."
+        )
+
+        return redirect("accounts:dashboard")
 
     return render(
         request,
         "suspects/detail.html",
         {
-            "suspect": suspect
+            "suspect": suspect,
         }
     )
 
@@ -196,13 +360,13 @@ def suspect_detail(request, pk):
 @login_required(login_url="accounts:login")
 def edit_suspect(request, pk):
 
-    suspect = get_object_or_404(
-        Suspect,
-        pk=pk,
-        station=request.user.station
-    )
+    user = request.user
 
-    if request.user.role != "OFFICER":
+    # --------------------------------------------------------
+    # Only the officer who registered the suspect can edit it.
+    # --------------------------------------------------------
+
+    if user.role != "OFFICER":
 
         messages.error(
             request,
@@ -211,31 +375,44 @@ def edit_suspect(request, pk):
 
         return redirect("suspects:list")
 
+    suspect = get_object_or_404(
+        Suspect,
+        pk=pk,
+        registered_by=user,
+        station=user.station,
+    )
+
     if request.method == "POST":
 
         form = SuspectForm(
             request.POST,
             request.FILES,
-            instance=suspect
+            instance=suspect,
+            user=request.user,
         )
 
         if form.is_valid():
 
             suspect = form.save(commit=False)
 
-            # Keep system information protected
-            suspect.registered_by = suspect.registered_by
-            suspect.station = suspect.station
+            # Keep system-controlled information unchanged.
+            suspect.registered_by = user
+            suspect.station = user.station
 
-            # Automatically keep the officer's district
-            if request.user.district:
-                suspect.district = request.user.district.name
+            # Keep the officer's district.
+            if user.district:
+
+                suspect.district = (
+                    user.district.name
+                )
+
             else:
-                suspect.district = request.user.station.district.name
 
-            # Home province is NOT overwritten.
-            # It comes from the officer's form input.
+                suspect.district = (
+                    user.station.district.name
+                )
 
+            # Home province is not overwritten.
             suspect.save()
 
             messages.success(
@@ -252,7 +429,8 @@ def edit_suspect(request, pk):
     else:
 
         form = SuspectForm(
-            instance=suspect
+            instance=suspect,
+            user=request.user,
         )
 
     return render(
@@ -260,7 +438,7 @@ def edit_suspect(request, pk):
         "suspects/edit.html",
         {
             "form": form,
-            "suspect": suspect
+            "suspect": suspect,
         }
     )
 
@@ -272,13 +450,13 @@ def edit_suspect(request, pk):
 @login_required(login_url="accounts:login")
 def delete_suspect(request, pk):
 
-    suspect = get_object_or_404(
-        Suspect,
-        pk=pk,
-        station=request.user.station
-    )
+    user = request.user
 
-    if request.user.role != "OFFICER":
+    # --------------------------------------------------------
+    # Only the officer who registered the suspect can delete it.
+    # --------------------------------------------------------
+
+    if user.role != "OFFICER":
 
         messages.error(
             request,
@@ -286,6 +464,13 @@ def delete_suspect(request, pk):
         )
 
         return redirect("suspects:list")
+
+    suspect = get_object_or_404(
+        Suspect,
+        pk=pk,
+        registered_by=user,
+        station=user.station,
+    )
 
     if request.method == "POST":
 
@@ -304,6 +489,6 @@ def delete_suspect(request, pk):
         request,
         "suspects/delete.html",
         {
-            "suspect": suspect
+            "suspect": suspect,
         }
     )

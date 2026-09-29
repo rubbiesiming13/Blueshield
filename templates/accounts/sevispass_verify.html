@@ -1,306 +1,433 @@
 {% load static %}
 
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SevisPass Verification | BlueShield</title>
+<meta charset="UTF-8">
 
-    <!-- Bootstrap 5.3.3 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <!-- Bootstrap Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+<meta
+    name="description"
+    content="BlueShield - SevisPass Identity Verification"
+>
 
-    <style>
-        body {
-            min-height: 100vh;
-            margin: 0;
+<title>BlueShield | SevisPass Verification</title>
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
 
-            background:
-                linear-gradient(
-                    rgba(0, 35, 70, 0.88),
-                    rgba(0, 35, 70, 0.88)
-                ),
-                url("{% static 'images/jomba_icon.jpg' %}");
+<!-- Bootstrap -->
 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
 
-            font-family: Arial, sans-serif;
-        }
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+>
 
-        .verification-container {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-        }
 
-        .verification-card {
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
+<style>
 
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.30);
-        }
+    body {
 
-        .logo-icon {
-            width: 70px;
-            height: 70px;
+        min-height: 100vh;
 
-            margin: 0 auto 15px;
+        margin: 0;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        background: #0b2f55;
 
-            background: #0d6efd;
-            color: white;
+        display: flex;
 
-            border-radius: 50%;
+        align-items: center;
 
-            font-size: 32px;
-        }
+        justify-content: center;
 
-        .page-title {
-            text-align: center;
+        font-family:
+            "Segoe UI",
+            Arial,
+            sans-serif;
 
-            font-weight: 700;
+        position: relative;
 
-            color: #123;
+        overflow-x: hidden;
+    }
 
-            margin-bottom: 8px;
-        }
 
-        .page-description {
-            text-align: center;
+    body::before {
 
-            color: #6c757d;
+        content: "";
 
-            margin-bottom: 25px;
-        }
+        position: fixed;
 
-        .steps {
-            display: flex;
+        inset: 0;
 
-            justify-content: space-between;
+        background:
+            linear-gradient(
+                rgba(11, 47, 85, 0.78),
+                rgba(13, 71, 161, 0.78)
+            ),
+            url("{% static 'images/jomba_icon.jpg' %}");
 
-            margin-bottom: 30px;
-        }
+        background-size: cover;
 
-        .step {
-            flex: 1;
+        background-position: center;
 
-            text-align: center;
+        background-repeat: no-repeat;
 
-            position: relative;
-        }
+        z-index: -1;
+    }
 
-        .step-circle {
-            width: 35px;
-            height: 35px;
 
-            margin: 0 auto 8px;
+    .verify-wrapper {
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        width: 100%;
 
-            border-radius: 50%;
+        max-width: 460px;
 
-            background: #dee2e6;
-            color: #6c757d;
+        padding: 20px;
+    }
 
-            font-weight: bold;
-        }
 
-        .step.active .step-circle {
-            background: #0d6efd;
-            color: white;
-        }
+    .verify-card {
 
-        .step-label {
-            font-size: 12px;
+        background: #ffffff;
 
-            color: #6c757d;
-        }
+        border: none;
 
-        .step.active .step-label {
-            color: #0d6efd;
+        border-radius: 16px;
 
-            font-weight: 600;
-        }
+        overflow: hidden;
 
-        .form-label {
-            font-weight: 600;
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, 0.25);
+    }
 
-            color: #343a40;
-        }
 
-        .form-control {
-            padding: 13px;
+    .brand-section {
 
-            border: 2px solid #dee2e6;
+        text-align: center;
 
-            border-radius: 10px;
-        }
+        padding: 35px 30px 20px;
+    }
 
-        .form-control:focus {
-            border-color: #0d6efd;
 
-            box-shadow:
-                0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-        }
+    .brand-icon {
 
-        .verify-button {
-            width: 100%;
+        width: 70px;
 
-            padding: 13px;
+        height: 70px;
 
-            border: none;
+        margin: 0 auto 15px;
 
-            border-radius: 10px;
+        border-radius: 50%;
 
-            background: #0d6efd;
-            color: white;
+        background: #eaf2fb;
 
-            font-size: 16px;
+        color: #0d47a1;
 
-            font-weight: 600;
-        }
+        display: flex;
 
-        .verify-button:hover {
-            background: #0b5ed7;
-        }
+        align-items: center;
 
-        .security-box {
-            margin-top: 25px;
+        justify-content: center;
+
+        font-size: 32px;
+    }
+
+
+    .brand {
+
+        font-size: 30px;
+
+        font-weight: 700;
+
+        color: #0d47a1;
+
+        margin-bottom: 4px;
+    }
+
+
+    .brand-subtitle {
+
+        color: #6c757d;
+
+        font-size: 14px;
+
+        margin: 0;
+    }
+
+
+    .verify-body {
+
+        padding: 10px 35px 35px;
+    }
+
+
+    .verify-heading {
+
+        text-align: center;
+
+        margin-bottom: 25px;
+    }
+
+
+    .verify-heading h4 {
+
+        color: #173f67;
+
+        font-weight: 700;
+
+        margin-bottom: 7px;
+    }
+
+
+    .verify-heading p {
+
+        color: #6c757d;
+
+        font-size: 14px;
+
+        line-height: 1.5;
+
+        margin: 0;
+    }
+
+
+    .form-label {
+
+        color: #334155;
+
+        font-size: 14px;
+
+        margin-bottom: 7px;
+    }
+
+
+    .form-control {
+
+        min-height: 52px;
+
+        border: 1px solid #d7dee7;
+
+        border-radius: 8px;
+
+        font-size: 15px;
+    }
+
+
+    .form-control:focus {
+
+        border-color: #1976d2;
+
+        box-shadow:
+            0 0 0 0.2rem
+            rgba(25, 118, 210, 0.12);
+    }
+
+
+    .input-group-text {
+
+        background: #f8fafc;
+
+        border: 1px solid #d7dee7;
+
+        color: #64748b;
+
+        border-radius: 8px 0 0 8px;
+    }
+
+
+    .input-group .form-control {
+
+        border-radius: 0 8px 8px 0;
+    }
+
+
+    .help-text {
+
+        margin-top: 7px;
+
+        font-size: 12px;
+
+        color: #64748b;
+    }
+
+
+    .verify-btn {
+
+        min-height: 50px;
+
+        background: #0d47a1;
+
+        border: none;
+
+        border-radius: 8px;
+
+        font-weight: 600;
+
+        font-size: 15px;
+
+        transition: 0.2s ease;
+    }
+
+
+    .verify-btn:hover {
+
+        background: #083b82;
+
+        transform: translateY(-1px);
+
+        box-shadow:
+            0 5px 15px
+            rgba(13, 71, 161, 0.25);
+    }
+
+
+    .security-box {
+
+        margin-top: 25px;
+
+        padding: 14px;
+
+        background: #f8fafc;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 8px;
+
+        text-align: center;
+    }
+
+
+    .security-title {
+
+        color: #334155;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        margin-bottom: 4px;
+    }
+
+
+    .security-title i {
+
+        color: #0d47a1;
+
+        margin-right: 5px;
+    }
+
+
+    .security-text {
+
+        color: #6c757d;
+
+        font-size: 12px;
+
+        line-height: 1.5;
+
+        margin: 0;
+    }
+
+
+    .login-footer {
+
+        text-align: center;
+
+        margin-top: 18px;
+
+        color: rgba(255, 255, 255, 0.85);
+
+        font-size: 12px;
+    }
+
+
+    @media (max-width: 576px) {
+
+        .verify-wrapper {
 
             padding: 15px;
-
-            background: #f8f9fa;
-
-            border-left: 4px solid #0d6efd;
-
-            border-radius: 8px;
-
-            font-size: 13px;
-
-            color: #495057;
         }
 
-        .footer-text {
-            margin-top: 20px;
+        .verify-body {
 
-            text-align: center;
-
-            font-size: 12px;
-
-            color: #6c757d;
+            padding: 10px 25px 30px;
         }
-    </style>
+
+    }
+
+</style>
+
 </head>
 
 <body>
 
-<div class="verification-container">
+<div class="verify-wrapper">
 
-    <div class="verification-card">
+<div class="verify-card">
 
-        <!-- =====================================================
-             LOGO
-             ===================================================== -->
 
-        <div class="logo-icon">
+    <!-- BRAND -->
+
+    <div class="brand-section">
+
+        <div class="brand-icon">
 
             <i class="bi bi-shield-lock-fill"></i>
 
         </div>
 
 
-        <!-- =====================================================
-             TITLE
-             ===================================================== -->
+        <div class="brand">
 
-        <h2 class="page-title">
-            SevisPass Verification
-        </h2>
-
-        <p class="page-description">
-            Verify your SevisPass identity before accessing BlueShield.
-        </p>
-
-
-        <!-- =====================================================
-             VERIFICATION STEPS
-             ===================================================== -->
-
-        <div class="steps">
-
-            <!-- Step 1 -->
-
-            <div class="step active">
-
-                <div class="step-circle">
-                    1
-                </div>
-
-                <div class="step-label">
-                    SevisPass
-                </div>
-
-            </div>
-
-
-            <!-- Step 2 -->
-
-            <div class="step">
-
-                <div class="step-circle">
-                    2
-                </div>
-
-                <div class="step-label">
-                    OTP
-                </div>
-
-            </div>
-
-
-            <!-- Step 3 -->
-
-            <div class="step">
-
-                <div class="step-circle">
-                    3
-                </div>
-
-                <div class="step-label">
-                    Login
-                </div>
-
-            </div>
+            BlueShield
 
         </div>
 
 
-        <!-- =====================================================
-             DJANGO MESSAGES
-             ===================================================== -->
+        <p class="brand-subtitle">
+
+            Madang Provincial Police
+
+        </p>
+
+    </div>
+
+
+    <!-- BODY -->
+
+    <div class="verify-body">
+
+
+        <div class="verify-heading">
+
+            <h4>
+
+                SevisPass Verification
+
+            </h4>
+
+
+            <p>
+
+                Verify your authorized police identity
+                before accessing BlueShield.
+
+            </p>
+
+        </div>
+
+
+        <!-- MESSAGES -->
 
         {% if messages %}
 
@@ -311,12 +438,16 @@
                     role="alert"
                 >
 
+                    <i class="bi bi-info-circle me-1"></i>
+
                     {{ message }}
+
 
                     <button
                         type="button"
                         class="btn-close"
                         data-bs-dismiss="alert"
+                        aria-label="Close"
                     ></button>
 
                 </div>
@@ -326,9 +457,23 @@
         {% endif %}
 
 
-        <!-- =====================================================
-             SEVISPASS FORM
-             ===================================================== -->
+        <!-- FORM ERRORS -->
+
+        {% if form.non_field_errors %}
+
+            <div
+                class="alert alert-danger"
+                role="alert"
+            >
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- FORM -->
 
         <form
             method="POST"
@@ -342,22 +487,41 @@
 
                 <label
                     for="{{ form.sevispass_id.id_for_label }}"
-                    class="form-label"
+                    class="form-label fw-semibold"
                 >
-
-                    <i class="bi bi-person-badge me-1"></i>
 
                     SevisPass ID
 
                 </label>
 
 
-                {{ form.sevispass_id }}
+                <div class="input-group">
+
+                    <span class="input-group-text">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </span>
+
+
+                    {{ form.sevispass_id }}
+
+                </div>
+
+
+                <div class="help-text">
+
+                    <i class="bi bi-shield-check me-1"></i>
+
+                    Enter the SevisPass ID registered
+                    with your BlueShield account.
+
+                </div>
 
 
                 {% if form.sevispass_id.errors %}
 
-                    <div class="alert alert-danger mt-2">
+                    <div class="text-danger small mt-1">
 
                         {{ form.sevispass_id.errors }}
 
@@ -368,64 +532,57 @@
             </div>
 
 
-            <!-- =================================================
-                 VERIFY BUTTON
-                 ================================================= -->
-
             <button
                 type="submit"
-                class="verify-button"
+                class="btn btn-primary verify-btn w-100"
             >
 
-                <i class="bi bi-shield-check me-2"></i>
+                <i class="bi bi-patch-check-fill me-2"></i>
 
                 Verify SevisPass Identity
 
             </button>
 
+
         </form>
 
 
-        <!-- =====================================================
-             SECURITY INFORMATION
-             ===================================================== -->
+        <!-- SECURITY INFORMATION -->
 
         <div class="security-box">
 
-            <i class="bi bi-shield-check me-2"></i>
+            <div class="security-title">
 
-            <strong>Security Notice</strong>
+                <i class="bi bi-shield-check"></i>
 
-            <br>
+                Identity Verification
 
-            Your SevisPass identity must match an active
-            BlueShield user account before verification can continue.
-
-        </div>
+            </div>
 
 
-        <!-- =====================================================
-             FOOTER
-             ===================================================== -->
-
-        <div class="footer-text">
-
-            BlueShield — Madang Provincial Police Command
+         
 
         </div>
+
 
     </div>
 
 </div>
 
 
-<!-- =========================================================
-     BOOTSTRAP
-     ========================================================= -->
+<div class="login-footer">
 
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
+    BlueShield • Madang Provincial Police
+
+    <br>
+
+    Secure Police Records &amp; Case Management System
+
+</div>
+
+
+</div>
 
 </body>
+
 </html>

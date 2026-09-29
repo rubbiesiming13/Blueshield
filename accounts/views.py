@@ -1,6 +1,6 @@
 # accounts/views.py
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -17,14 +17,18 @@ from .forms import (
     SevisPassOTPForm,
 )
 
-from .models import User
+from .models import (
+    User,
+    SevisPassOTP,
+)
 
 from .services import (
     verify_sevispass,
+    generate_sevispass_otp,
+    verify_sevispass_otp,
+    send_sevispass_otp_email,
 )
-import firebase_admin
 
-from firebase_admin import auth
 from complaints.models import Complaint
 from cases.models import Case
 from suspects.models import Suspect
@@ -36,65 +40,71 @@ from audit_logs.models import AuditLog
 
 
 # ============================================================
+# HELPER - MASK EMAIL ADDRESS
+# ============================================================
+
+def mask_email(email):
+    """
+    Hide most of the email address while still showing
+    enough information for the user to identify it.
+
+    Example:
+        rubbie@gmail.com
+        becomes:
+        r*****@gmail.com
+    """
+
+    if not email:
+        return "registered email address"
+
+    email = email.strip()
+
+    if "@" not in email:
+        return "registered email address"
+
+    local_part, domain = email.split("@", 1)
+
+    if not local_part:
+        return "registered email address"
+
+    if len(local_part) == 1:
+        masked_local = local_part
+
+    elif len(local_part) == 2:
+        masked_local = local_part[0] + "*"
+
+    else:
+        masked_local = (
+            local_part[0]
+            + "*" * min(len(local_part) - 1, 5)
+        )
+
+    return masked_local + "@" + domain
+
+
+# ============================================================
 # SEVISPASS ID VERIFICATION
 # ============================================================
 
 def sevispass_verify_view(request):
 
     if request.user.is_authenticated:
-
-        return redirect(
-            "accounts:dashboard"
-        )
+        return redirect("accounts:dashboard")
 
     # --------------------------------------------------------
-    # Clear old verification/pending session
+    # Clear old verification/pending session data
     # --------------------------------------------------------
 
-    request.session.pop(
-        "sevispass_user_id",
-        None
-    )
+    request.session.pop("sevispass_user_id", None)
+    request.session.pop("sevispass_verified", None)
+    request.session.pop("sevispass_verified_at", None)
+    request.session.pop("verified_sevispass_id", None)
 
-    request.session.pop(
-        "sevispass_verified",
-        None
-    )
-
-    request.session.pop(
-        "sevispass_verified_at",
-        None
-    )
-
-    request.session.pop(
-        "verified_sevispass_id",
-        None
-    )
-
-    request.session.pop(
-        "sevispass_pending_user_id",
-        None
-    )
-
-    request.session.pop(
-        "sevispass_pending_sevispass_id",
-        None
-    )
-
-    request.session.pop(
-        "sevispass_otp_expires_at",
-        None
-    )
-
-    request.session.pop(
-        "simulated_sevispass_otp",
-        None
-    )
-
-    request.session.pop(
-        "sevispass_masked_phone",
-        None
-    )
+    request.session.pop("sevispass_pending_user_id", None)
+    request.session.pop("sevispass_pending_sevispass_id", None)
+    request.session.pop("sevispass_otp_expires_at", None)
+    request.session.pop("sevispass_otp_sent_at", None)
+    request.session.pop("sevispass_masked_email", None)
 
     # --------------------------------------------------------
     # PROCESS SEVISPASS ID
@@ -102,49 +112,45 @@ def sevispass_verify_view(request):
 
     if request.method == "POST":
 
-        form = SevisPassVerificationForm(
-            request.POST
-        )
+        form = SevisPassVerificationForm(request.POST)
 
         if form.is_valid():
 
             sevispass_id = (
-                form.cleaned_data[
-                    "sevispass_id"
-                ].strip()
+                form.cleaned_data["sevispass_id"].strip()
             )
 
             # ------------------------------------------------
             # FIND ACTIVE USER
             # ------------------------------------------------
 
-            user = verify_sevispass(
-                sevispass_id
-            )
+            user = verify_sevispass(sevispass_id)
 
             if user:
 
                 # ------------------------------------------------
-                # REQUIRE REGISTERED MOBILE NUMBER
+                # REQUIRE REGISTERED EMAIL ADDRESS
                 # ------------------------------------------------
 
-                if not user.phone_number:
+                email = str(user.email or "").strip()
+
+                if not email:
 
                     messages.error(
                         request,
                         (
-                            "No registered mobile phone number "
-                            "is available for this account. "
+                            "No registered email address is "
+                            "available for this account. "
                             "Please contact the system administrator."
-                        )
+                        ),
                     )
 
                     return render(
                         request,
                         "accounts/sevispass_verify.html",
                         {
-                            "form": form
-                        }
+                            "form": form,
+                        },
                     )
 
                 # ------------------------------------------------
@@ -160,48 +166,118 @@ def sevispass_verify_view(request):
                 ] = user.sevispass_id
 
                 # ------------------------------------------------
-                # MASK MOBILE NUMBER
+                # MASK EMAIL ADDRESS
                 # ------------------------------------------------
 
-                phone = str(
-                    user.phone_number
-                    or ""
-                ).strip()
-
-                if len(phone) >= 4:
-
-                    masked_phone = (
-                        "••••"
-                        + phone[-4:]
-                    )
-
-                else:
-
-                    masked_phone = (
-                        "Registered mobile number"
-                    )
+                masked_email = mask_email(email)
 
                 request.session[
-                    "sevispass_masked_phone"
-                ] = masked_phone
+                    "sevispass_masked_email"
+                ] = masked_email
 
                 # ------------------------------------------------
-                # FIREBASE WILL SEND THE SMS
+                # GENERATE AND SEND OTP
                 # ------------------------------------------------
-                #
-                # The actual SMS is now sent by Firebase
-                # from the OTP page.
-                #
-                # We no longer generate or store a Django OTP.
+
+                otp_record = None
+
+                try:
+
+                    otp_record, otp = (
+                        generate_sevispass_otp(user)
+                    )
+
+                    send_sevispass_otp_email(
+                        user,
+                        otp,
+                    )
+
+                except Exception:
+
+                    # --------------------------------------------
+                    # Prevent an OTP that was not successfully
+                    # delivered from remaining usable.
+                    # --------------------------------------------
+
+                    if otp_record is not None:
+
+                        otp_record.used = True
+
+                        otp_record.save(
+                            update_fields=["used"]
+                        )
+
+                    # --------------------------------------------
+                    # Remove pending verification data.
+                    # --------------------------------------------
+
+                    request.session.pop(
+                        "sevispass_pending_user_id",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_pending_sevispass_id",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_masked_email",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_otp_expires_at",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_otp_sent_at",
+                        None,
+                    )
+
+                    messages.error(
+                        request,
+                        (
+                            "We could not send the "
+                            "SevisPass verification code "
+                            "to your registered email address. "
+                            "Please check the email configuration "
+                            "or contact the system administrator."
+                        ),
+                    )
+
+                    return render(
+                        request,
+                        "accounts/sevispass_verify.html",
+                        {
+                            "form": form,
+                        },
+                    )
+
+                # ------------------------------------------------
+                # STORE OTP INFORMATION IN SESSION
+                # ------------------------------------------------
+
+                request.session[
+                    "sevispass_otp_expires_at"
+                ] = otp_record.expires_at.isoformat()
+
+                request.session[
+                    "sevispass_otp_sent_at"
+                ] = timezone.now().isoformat()
+
+                # ------------------------------------------------
+                # SUCCESS
                 # ------------------------------------------------
 
                 messages.success(
                     request,
                     (
                         "SevisPass ID verified. "
-                        "A verification code will be sent "
-                        "to your registered mobile number."
-                    )
+                        f"A 6-digit verification code has "
+                        f"been sent to {masked_email}."
+                    ),
                 )
 
                 return redirect(
@@ -218,7 +294,7 @@ def sevispass_verify_view(request):
                     "SevisPass verification failed. "
                     "Please check your SevisPass ID "
                     "or contact the system administrator."
-                )
+                ),
             )
 
     else:
@@ -229,11 +305,13 @@ def sevispass_verify_view(request):
         request,
         "accounts/sevispass_verify.html",
         {
-            "form": form
-        }
+            "form": form,
+        },
     )
+
+
 # ============================================================
-# SEVISPASS OTP VERIFICATION USING FIREBASE
+# SEVISPASS OTP VERIFICATION USING GMAIL SMTP
 # ============================================================
 
 def sevispass_otp_view(request):
@@ -253,7 +331,7 @@ def sevispass_otp_view(request):
             (
                 "Your SevisPass verification session "
                 "has expired. Please start again."
-            )
+            ),
         )
 
         return redirect(
@@ -271,11 +349,11 @@ def sevispass_otp_view(request):
             .select_related(
                 "district",
                 "station",
-                "division"
+                "division",
             )
             .get(
                 id=pending_user_id,
-                is_active=True
+                is_active=True,
             )
         )
 
@@ -288,7 +366,7 @@ def sevispass_otp_view(request):
             (
                 "The BlueShield account could not be found. "
                 "Please contact the system administrator."
-            )
+            ),
         )
 
         return redirect(
@@ -296,24 +374,21 @@ def sevispass_otp_view(request):
         )
 
     # --------------------------------------------------------
-    # GET REGISTERED PHONE NUMBER
+    # GET REGISTERED EMAIL
     # --------------------------------------------------------
 
-    phone = str(
-        user.phone_number
-        or ""
-    ).strip()
+    email = str(user.email or "").strip()
 
-    if not phone:
+    if not email:
 
         request.session.flush()
 
         messages.error(
             request,
             (
-                "No registered mobile phone number is "
+                "No registered email address is "
                 "available for this account."
-            )
+            ),
         )
 
         return redirect(
@@ -321,265 +396,411 @@ def sevispass_otp_view(request):
         )
 
     # --------------------------------------------------------
-    # MASK PHONE NUMBER
+    # CONFIRM PENDING SEVISPASS ID MATCHES USER
     # --------------------------------------------------------
 
-    masked_phone = request.session.get(
-        "sevispass_masked_phone",
-        "Registered mobile number"
+    pending_sevispass_id = request.session.get(
+        "sevispass_pending_sevispass_id"
     )
 
-    # --------------------------------------------------------
-    # FIREBASE TOKEN VERIFICATION
-    # --------------------------------------------------------
-
     if (
-        request.method == "POST"
-        and request.POST.get("action") == "verify_firebase"
+        pending_sevispass_id
+        and pending_sevispass_id != user.sevispass_id
     ):
 
-        firebase_token = (
-            request.POST.get(
-                "firebase_token",
-                ""
-            ).strip()
-        )
+        request.session.flush()
 
-        if not firebase_token:
-
-            return render(
-                request,
-                "accounts/sevispass_otp.html",
-                {
-                    "form": SevisPassOTPForm(),
-                    "masked_phone": masked_phone,
-                    "firebase_phone_number": phone,
-                    "firebase_error": (
-                        "Firebase verification token was not "
-                        "received. Please try again."
-                    ),
-                }
-            )
-
-        # ----------------------------------------------------
-        # VERIFY FIREBASE ID TOKEN
-        # ----------------------------------------------------
-
-        try:
-
-            decoded_token = (
-                auth.verify_id_token(
-                    firebase_token
-                )
-            )
-
-        except Exception:
-
-            return render(
-                request,
-                "accounts/sevispass_otp.html",
-                {
-                    "form": SevisPassOTPForm(),
-                    "masked_phone": masked_phone,
-                    "firebase_phone_number": phone,
-                    "firebase_error": (
-                        "Firebase verification failed. "
-                        "Please enter the correct SMS code "
-                        "and try again."
-                    ),
-                }
-            )
-
-        # ----------------------------------------------------
-        # GET VERIFIED FIREBASE PHONE NUMBER
-        # ----------------------------------------------------
-
-        firebase_phone = (
-            decoded_token.get(
-                "phone_number"
-            )
-        )
-
-        if not firebase_phone:
-
-            return render(
-                request,
-                "accounts/sevispass_otp.html",
-                {
-                    "form": SevisPassOTPForm(),
-                    "masked_phone": masked_phone,
-                    "firebase_phone_number": phone,
-                    "firebase_error": (
-                        "Firebase did not return a verified "
-                        "phone number."
-                    ),
-                }
-            )
-
-        # ----------------------------------------------------
-        # NORMALIZE PHONE NUMBERS
-        # ----------------------------------------------------
-
-        normalized_database_phone = (
-            phone.replace(
-                " ",
-                ""
-            )
-            .replace(
-                "-",
-                ""
-            )
-            .replace(
-                "(",
-                ""
-            )
-            .replace(
-                ")",
-                ""
-            )
-        )
-
-        normalized_firebase_phone = (
-            str(firebase_phone)
-            .replace(
-                " ",
-                ""
-            )
-            .replace(
-                "-",
-                ""
-            )
-            .replace(
-                "(",
-                ""
-            )
-            .replace(
-                ")",
-                ""
-            )
-        )
-
-        # ----------------------------------------------------
-        # CONFIRM PHONE BELONGS TO SEVISPASS USER
-        # ----------------------------------------------------
-
-        if (
-            normalized_database_phone
-            != normalized_firebase_phone
-        ):
-
-            messages.error(
-                request,
-                (
-                    "The verified mobile number does not "
-                    "match the mobile number registered "
-                    "with this SevisPass account."
-                )
-            )
-
-            request.session.flush()
-
-            return redirect(
-                "accounts:sevispass_verify"
-            )
-
-        # ----------------------------------------------------
-        # FIREBASE + SEVISPASS VERIFICATION SUCCESSFUL
-        # ----------------------------------------------------
-
-        request.session[
-            "sevispass_verified"
-        ] = True
-
-        request.session[
-            "sevispass_user_id"
-        ] = user.id
-
-        request.session[
-            "verified_sevispass_id"
-        ] = user.sevispass_id
-
-        request.session[
-            "sevispass_verified_at"
-        ] = timezone.now().isoformat()
-
-        # ----------------------------------------------------
-        # STORE FIREBASE USER ID FOR THIS SESSION
-        # ----------------------------------------------------
-
-        firebase_uid = (
-            decoded_token.get(
-                "uid"
-            )
-        )
-
-        if firebase_uid:
-
-            request.session[
-                "firebase_uid"
-            ] = firebase_uid
-
-        # ----------------------------------------------------
-        # REMOVE TEMPORARY DATA
-        # ----------------------------------------------------
-
-        request.session.pop(
-            "sevispass_pending_user_id",
-            None
-        )
-
-        request.session.pop(
-            "sevispass_pending_sevispass_id",
-            None
-        )
-
-        request.session.pop(
-            "sevispass_otp_expires_at",
-            None
-        )
-
-        request.session.pop(
-            "simulated_sevispass_otp",
-            None
-        )
-
-        request.session.pop(
-            "sevispass_masked_phone",
-            None
-        )
-
-        # ----------------------------------------------------
-        # SUCCESS
-        # ----------------------------------------------------
-
-        messages.success(
+        messages.error(
             request,
             (
-                "SevisPass identity successfully "
-                "verified. Please continue with "
-                "your BlueShield login."
-            )
+                "The SevisPass verification session is "
+                "invalid. Please start again."
+            ),
         )
 
         return redirect(
-            "accounts:login"
+            "accounts:sevispass_verify"
         )
 
     # --------------------------------------------------------
-    # NORMAL PAGE LOAD
+    # MASK EMAIL
+    # --------------------------------------------------------
+
+    masked_email = request.session.get(
+        "sevispass_masked_email"
+    )
+
+    if not masked_email:
+
+        masked_email = mask_email(email)
+
+        request.session[
+            "sevispass_masked_email"
+        ] = masked_email
+
+    # --------------------------------------------------------
+    # OTP EXPIRY
+    # --------------------------------------------------------
+
+    otp_expires_at = request.session.get(
+        "sevispass_otp_expires_at"
+    )
+
+    # --------------------------------------------------------
+    # ALWAYS INITIALIZE OTP FORM
     # --------------------------------------------------------
 
     form = SevisPassOTPForm()
+
+    # --------------------------------------------------------
+    # PROCESS POST REQUEST
+    # --------------------------------------------------------
+
+    if request.method == "POST":
+
+        action = request.POST.get(
+            "action",
+            "verify",
+        ).strip()
+
+        # ====================================================
+        # VERIFY OTP
+        # ====================================================
+
+        if action == "verify":
+
+            form = SevisPassOTPForm(
+                request.POST
+            )
+
+            if form.is_valid():
+
+                otp = form.cleaned_data["otp"]
+
+                verified = verify_sevispass_otp(
+                    user,
+                    otp,
+                )
+
+                if verified:
+
+                    # ----------------------------------------
+                    # SET SUCCESSFUL SEVISPASS SESSION
+                    # ----------------------------------------
+
+                    request.session[
+                        "sevispass_verified"
+                    ] = True
+
+                    request.session[
+                        "sevispass_user_id"
+                    ] = user.id
+
+                    request.session[
+                        "verified_sevispass_id"
+                    ] = user.sevispass_id
+
+                    request.session[
+                        "sevispass_verified_at"
+                    ] = timezone.now().isoformat()
+
+                    # ----------------------------------------
+                    # REMOVE TEMPORARY OTP DATA
+                    # ----------------------------------------
+
+                    request.session.pop(
+                        "sevispass_pending_user_id",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_pending_sevispass_id",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_otp_expires_at",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_otp_sent_at",
+                        None,
+                    )
+
+                    request.session.pop(
+                        "sevispass_masked_email",
+                        None,
+                    )
+
+                    # ----------------------------------------
+                    # SUCCESS MESSAGE
+                    # ----------------------------------------
+
+                    messages.success(
+                        request,
+                        (
+                            "SevisPass identity successfully "
+                            "verified. Please continue with "
+                            "your BlueShield login."
+                        ),
+                    )
+
+                    return redirect(
+                        "accounts:login"
+                    )
+
+                # --------------------------------------------
+                # INVALID OTP
+                # --------------------------------------------
+
+                messages.error(
+                    request,
+                    (
+                        "The verification code is incorrect, "
+                        "expired, or has already been used. "
+                        "Please try again."
+                    ),
+                )
+
+            else:
+
+                messages.error(
+                    request,
+                    (
+                        "Please enter the 6-digit "
+                        "verification code."
+                    ),
+                )
+
+        # ====================================================
+        # RESEND OTP
+        # ====================================================
+
+        elif action == "resend":
+
+            # ------------------------------------------------
+            # SERVER-SIDE RESEND COOLDOWN
+            # ------------------------------------------------
+
+            last_sent_at = request.session.get(
+                "sevispass_otp_sent_at"
+            )
+
+            can_resend = True
+
+            if last_sent_at:
+
+                try:
+
+                    last_sent_time = (
+                        datetime.fromisoformat(
+                            last_sent_at
+                        )
+                    )
+
+                    # Make sure datetime is timezone-aware.
+                    if timezone.is_naive(
+                        last_sent_time
+                    ):
+
+                        last_sent_time = (
+                            timezone.make_aware(
+                                last_sent_time
+                            )
+                        )
+
+                    seconds_since_last_send = (
+                        timezone.now()
+                        - last_sent_time
+                    ).total_seconds()
+
+                    if seconds_since_last_send < 30:
+
+                        can_resend = False
+
+                except (
+                    ValueError,
+                    TypeError,
+                ):
+
+                    can_resend = True
+
+            # ------------------------------------------------
+            # COOLDOWN STILL ACTIVE
+            # ------------------------------------------------
+
+            if not can_resend:
+
+                messages.warning(
+                    request,
+                    (
+                        "Please wait 30 seconds "
+                        "before requesting another "
+                        "verification code."
+                    ),
+                )
+
+            # ------------------------------------------------
+            # SEND NEW OTP
+            # ------------------------------------------------
+
+            else:
+
+                otp_record = None
+
+                try:
+
+                    # ----------------------------------------
+                    # GENERATE NEW OTP
+                    # ----------------------------------------
+
+                    otp_record, otp = (
+                        generate_sevispass_otp(
+                            user
+                        )
+                    )
+
+                    # ----------------------------------------
+                    # SEND NEW OTP THROUGH GMAIL
+                    # ----------------------------------------
+
+                    send_sevispass_otp_email(
+                        user,
+                        otp,
+                    )
+
+                except Exception:
+
+                    # ----------------------------------------
+                    # Prevent an undelivered OTP from
+                    # remaining usable.
+                    # ----------------------------------------
+
+                    if otp_record is not None:
+
+                        otp_record.used = True
+
+                        otp_record.save(
+                            update_fields=["used"]
+                        )
+
+                    messages.error(
+                        request,
+                        (
+                            "We could not send a new "
+                            "verification code. Please "
+                            "try again or contact the "
+                            "system administrator."
+                        ),
+                    )
+
+                else:
+
+                    # ----------------------------------------
+                    # UPDATE SESSION
+                    # ----------------------------------------
+
+                    request.session[
+                        "sevispass_otp_expires_at"
+                    ] = (
+                        otp_record
+                        .expires_at
+                        .isoformat()
+                    )
+
+                    request.session[
+                        "sevispass_otp_sent_at"
+                    ] = timezone.now().isoformat()
+
+                    request.session[
+                        "sevispass_masked_email"
+                    ] = mask_email(
+                        user.email
+                    )
+
+                    # Update local values too.
+                    masked_email = (
+                        request.session[
+                            "sevispass_masked_email"
+                        ]
+                    )
+
+                    otp_expires_at = (
+                        request.session[
+                            "sevispass_otp_expires_at"
+                        ]
+                    )
+
+                    messages.success(
+                        request,
+                        (
+                            "A new verification code has "
+                            f"been sent to {masked_email}."
+                        ),
+                    )
+
+        # ====================================================
+        # INVALID ACTION
+        # ====================================================
+
+        else:
+
+            messages.error(
+                request,
+                "Invalid SevisPass verification request.",
+            )
+
+    # --------------------------------------------------------
+    # GET CURRENT OTP RECORD
+    # --------------------------------------------------------
+
+    otp_record = (
+        SevisPassOTP.objects
+        .filter(
+            user=user,
+            used=False,
+        )
+        .order_by(
+            "-created_at"
+        )
+        .first()
+    )
+
+    # --------------------------------------------------------
+    # CALCULATE REMAINING ATTEMPTS
+    # --------------------------------------------------------
+
+    max_attempts = 5
+
+    if otp_record:
+
+        attempts_remaining = max(
+            0,
+            max_attempts - otp_record.attempts,
+        )
+
+    else:
+
+        attempts_remaining = 0
+
+    # --------------------------------------------------------
+    # RENDER OTP PAGE
+    # --------------------------------------------------------
 
     return render(
         request,
         "accounts/sevispass_otp.html",
         {
             "form": form,
-            "masked_phone": masked_phone,
-            "firebase_phone_number": phone,
-        }
+            "masked_email": masked_email,
+            "otp_expires_at": otp_expires_at,
+            "attempts_remaining": attempts_remaining,
+            "max_attempts": max_attempts,
+        },
     )
+
+
 # ============================================================
 # BLUESHIELD LOGIN
 # ============================================================
@@ -612,6 +833,26 @@ def login_view(request):
         "sevispass_user_id"
     )
 
+    verified_sevispass_id = request.session.get(
+        "verified_sevispass_id"
+    )
+
+    if not sevispass_user_id or not verified_sevispass_id:
+
+        request.session.flush()
+
+        messages.error(
+            request,
+            (
+                "Your SevisPass verification session "
+                "is incomplete. Please verify again."
+            ),
+        )
+
+        return redirect(
+            "accounts:sevispass_verify"
+        )
+
     try:
 
         sevispass_user = (
@@ -619,11 +860,11 @@ def login_view(request):
             .select_related(
                 "district",
                 "station",
-                "division"
+                "division",
             )
             .get(
                 id=sevispass_user_id,
-                is_active=True
+                is_active=True,
             )
         )
 
@@ -636,7 +877,27 @@ def login_view(request):
             (
                 "Your SevisPass verification session "
                 "has expired. Please verify again."
-            )
+            ),
+        )
+
+        return redirect(
+            "accounts:sevispass_verify"
+        )
+
+    # --------------------------------------------------------
+    # CONFIRM SESSION SEVISPASS ID MATCHES USER
+    # --------------------------------------------------------
+
+    if verified_sevispass_id != sevispass_user.sevispass_id:
+
+        request.session.flush()
+
+        messages.error(
+            request,
+            (
+                "Your SevisPass verification session "
+                "is invalid. Please verify again."
+            ),
         )
 
         return redirect(
@@ -688,7 +949,7 @@ def login_view(request):
                     (
                         "Invalid BlueShield username "
                         "or password."
-                    )
+                    ),
                 )
 
                 return render(
@@ -697,7 +958,7 @@ def login_view(request):
                     {
                         "form": form,
                         "sevispass_user": sevispass_user,
-                    }
+                    },
                 )
 
             # ------------------------------------------------
@@ -708,7 +969,7 @@ def login_view(request):
 
                 messages.error(
                     request,
-                    "Your BlueShield account is inactive."
+                    "Your BlueShield account is inactive.",
                 )
 
                 return redirect(
@@ -726,7 +987,47 @@ def login_view(request):
                     (
                         "The BlueShield account does not "
                         "match the verified SevisPass identity."
-                    )
+                    ),
+                )
+
+                request.session.flush()
+
+                return redirect(
+                    "accounts:sevispass_verify"
+                )
+
+            # ------------------------------------------------
+            # CONFIRM USER SEVISPASS ID
+            # ------------------------------------------------
+
+            if user.sevispass_id != verified_sevispass_id:
+
+                messages.error(
+                    request,
+                    (
+                        "The BlueShield account does not "
+                        "match the verified SevisPass identity."
+                    ),
+                )
+
+                request.session.flush()
+
+                return redirect(
+                    "accounts:sevispass_verify"
+                )
+
+            # ------------------------------------------------
+            # CONFIRM SEVISPASS IS STILL VERIFIED
+            # ------------------------------------------------
+
+            if not user.sevispass_verified:
+
+                messages.error(
+                    request,
+                    (
+                        "Your SevisPass identity verification "
+                        "is no longer active. Please verify again."
+                    ),
                 )
 
                 request.session.flush()
@@ -741,7 +1042,7 @@ def login_view(request):
 
             login(
                 request,
-                user
+                user,
             )
 
             # ------------------------------------------------
@@ -760,9 +1061,9 @@ def login_view(request):
                     "User successfully logged into "
                     "BlueShield. "
                     f"Role: {user.get_role_display()}. "
-                    f"Station: "
+                    "Station: "
                     f"{user.station.name if user.station else 'N/A'}. "
-                    f"District: "
+                    "District: "
                     f"{user.district.name if user.district else 'N/A'}."
                 ),
             )
@@ -796,7 +1097,7 @@ def login_view(request):
                 (
                     f"Welcome to BlueShield, "
                     f"{user.get_full_name() or user.username}."
-                )
+                ),
             )
 
             # ------------------------------------------------
@@ -817,7 +1118,7 @@ def login_view(request):
         {
             "form": form,
             "sevispass_user": sevispass_user,
-        }
+        },
     )
 
 
@@ -855,7 +1156,7 @@ def logout_view(request):
 
     messages.success(
         request,
-        "You have been securely logged out of BlueShield."
+        "You have been securely logged out of BlueShield.",
     )
 
     return redirect(
@@ -909,7 +1210,7 @@ def police_officers(request):
         .select_related(
             "district",
             "station",
-            "division"
+            "division",
         )
         .order_by(
             "username"
@@ -920,8 +1221,8 @@ def police_officers(request):
         request,
         "dashboards/police_officers.html",
         {
-            "officers": officers
-        }
+            "officers": officers,
+        },
     )
 
 
@@ -939,7 +1240,7 @@ def police_stations(request):
         )
         .order_by(
             "district__name",
-            "name"
+            "name",
         )
     )
 
@@ -948,7 +1249,7 @@ def police_stations(request):
         "dashboards/police_stations.html",
         {
             "stations": stations,
-        }
+        },
     )
 
 
@@ -983,47 +1284,83 @@ def dashboard(request):
 
         if station:
 
+            # ========================================================
+            # OFFICER OWN COMPLAINTS
+            # ========================================================
+
             total_complaints = Complaint.objects.filter(
-                station=station
+                reported_by=user
             ).count()
+
+            # ========================================================
+            # OFFICER OWN CASES
+            # ========================================================
 
             total_cases = Case.objects.filter(
-                station=station
+                investigating_officer=user
             ).count()
+
+            # ========================================================
+            # OFFICER OWN ARRESTS
+            # ========================================================
 
             total_arrests = ArrestRecord.objects.filter(
-                station=station
+                arresting_officer=user
             ).count()
+
+            # ========================================================
+            # OFFICER OWN SUSPECTS
+            # ========================================================
 
             total_suspects = Suspect.objects.filter(
-                station=station
+                registered_by=user
             ).count()
+
+            # ========================================================
+            # ACTIVE INVESTIGATIONS
+            # ========================================================
 
             active_investigations = Case.objects.filter(
-                station=station,
-                status=Case.Status.UNDER_INVESTIGATION
+                investigating_officer=user,
+                status=Case.Status.UNDER_INVESTIGATION,
             ).count()
+
+            # ========================================================
+            # CASES PREPARED FOR REVIEW
+            # ========================================================
 
             cases_for_review = Case.objects.filter(
-                station=station,
-                status=Case.Status.CASE_FILE_PREPARED
+                investigating_officer=user,
+                status=Case.Status.CASE_FILE_PREPARED,
             ).count()
+
+            # ========================================================
+            # CLOSED CASES
+            # ========================================================
 
             closed_cases = Case.objects.filter(
-                station=station,
-                status=Case.Status.CLOSED
+                investigating_officer=user,
+                status=Case.Status.CLOSED,
             ).count()
 
+            # ========================================================
+            # MONTHLY ARRESTS
+            # ========================================================
+
             monthly_arrests = ArrestRecord.objects.filter(
-                station=station,
+                arresting_officer=user,
                 arrest_datetime__date__gte=current_month_start,
                 arrest_datetime__date__lte=today,
             ).count()
 
+            # ========================================================
+            # RECENT ARRESTS
+            # ========================================================
+
             recent_arrests = (
                 ArrestRecord.objects
                 .filter(
-                    station=station
+                    arresting_officer=user
                 )
                 .select_related(
                     "suspect",
@@ -1051,24 +1388,24 @@ def dashboard(request):
             monthly_arrests = 0
             recent_arrests = []
 
-        dashboard_data.update({
-
-            "total_complaints": total_complaints,
-            "total_cases": total_cases,
-            "total_arrests": total_arrests,
-            "total_suspects": total_suspects,
-            "active_investigations": active_investigations,
-            "cases_for_review": cases_for_review,
-            "closed_cases": closed_cases,
-            "monthly_arrests": monthly_arrests,
-            "recent_arrests": recent_arrests,
-
-        })
+        dashboard_data.update(
+            {
+                "total_complaints": total_complaints,
+                "total_cases": total_cases,
+                "total_arrests": total_arrests,
+                "total_suspects": total_suspects,
+                "active_investigations": active_investigations,
+                "cases_for_review": cases_for_review,
+                "closed_cases": closed_cases,
+                "monthly_arrests": monthly_arrests,
+                "recent_arrests": recent_arrests,
+            }
+        )
 
         return render(
             request,
             "dashboards/officer_dashboard.html",
-            dashboard_data
+            dashboard_data,
         )
 
     # ========================================================
@@ -1084,7 +1421,7 @@ def dashboard(request):
             officer_count = User.objects.filter(
                 station=station,
                 role="OFFICER",
-                is_active=True
+                is_active=True,
             ).count()
 
             total_complaints = Complaint.objects.filter(
@@ -1105,17 +1442,17 @@ def dashboard(request):
 
             active_investigations = Case.objects.filter(
                 station=station,
-                status=Case.Status.UNDER_INVESTIGATION
+                status=Case.Status.UNDER_INVESTIGATION,
             ).count()
 
             cases_for_review = Case.objects.filter(
                 station=station,
-                status=Case.Status.CASE_FILE_PREPARED
+                status=Case.Status.CASE_FILE_PREPARED,
             ).count()
 
             solved_cases = Case.objects.filter(
                 station=station,
-                status=Case.Status.CLOSED
+                status=Case.Status.CLOSED,
             ).count()
 
             monthly_arrests = ArrestRecord.objects.filter(
@@ -1124,38 +1461,30 @@ def dashboard(request):
                 arrest_datetime__date__lte=today,
             ).count()
 
-            # -----------------------------------------------
-            # OFFICER ACTIVITY
-            # -----------------------------------------------
-
             officer_activity = (
                 User.objects
                 .filter(
                     station=station,
                     role="OFFICER",
-                    is_active=True
+                    is_active=True,
                 )
                 .annotate(
-
                     complaint_count=Count(
                         "complaints_created",
-                        distinct=True
+                        distinct=True,
                     ),
-
                     case_count=Count(
                         "investigated_cases",
-                        distinct=True
+                        distinct=True,
                     ),
-
                     arrest_count=Count(
                         "arrests_made",
-                        distinct=True
+                        distinct=True,
                     ),
-
                 )
                 .order_by(
                     "-case_count",
-                    "-arrest_count"
+                    "-arrest_count",
                 )[:10]
             )
 
@@ -1192,26 +1521,26 @@ def dashboard(request):
             officer_activity = []
             recent_arrests = []
 
-        dashboard_data.update({
-
-            "officer_count": officer_count,
-            "total_complaints": total_complaints,
-            "total_cases": total_cases,
-            "total_arrests": total_arrests,
-            "total_suspects": total_suspects,
-            "active_investigations": active_investigations,
-            "cases_for_review": cases_for_review,
-            "solved_cases": solved_cases,
-            "monthly_arrests": monthly_arrests,
-            "officer_activity": officer_activity,
-            "recent_arrests": recent_arrests,
-
-        })
+        dashboard_data.update(
+            {
+                "officer_count": officer_count,
+                "total_complaints": total_complaints,
+                "total_cases": total_cases,
+                "total_arrests": total_arrests,
+                "total_suspects": total_suspects,
+                "active_investigations": active_investigations,
+                "cases_for_review": cases_for_review,
+                "solved_cases": solved_cases,
+                "monthly_arrests": monthly_arrests,
+                "officer_activity": officer_activity,
+                "recent_arrests": recent_arrests,
+            }
+        )
 
         return render(
             request,
             "dashboards/station_commander_dashboard.html",
-            dashboard_data
+            dashboard_data,
         )
 
     # ========================================================
@@ -1228,7 +1557,7 @@ def dashboard(request):
             officers = User.objects.filter(
                 division=division,
                 role="OFFICER",
-                is_active=True
+                is_active=True,
             ).count()
 
         else:
@@ -1240,7 +1569,7 @@ def dashboard(request):
             commanders = User.objects.filter(
                 district=district,
                 role="STATION_COMMANDER",
-                is_active=True
+                is_active=True,
             ).count()
 
             total_complaints = Complaint.objects.filter(
@@ -1261,17 +1590,17 @@ def dashboard(request):
 
             active_investigations = Case.objects.filter(
                 station__district=district,
-                status=Case.Status.UNDER_INVESTIGATION
+                status=Case.Status.UNDER_INVESTIGATION,
             ).count()
 
             cases_for_review = Case.objects.filter(
                 station__district=district,
-                status=Case.Status.CASE_FILE_PREPARED
+                status=Case.Status.CASE_FILE_PREPARED,
             ).count()
 
             solved_cases = Case.objects.filter(
                 station__district=district,
-                status=Case.Status.CLOSED
+                status=Case.Status.CLOSED,
             ).count()
 
             monthly_arrests = ArrestRecord.objects.filter(
@@ -1286,7 +1615,7 @@ def dashboard(request):
                     "SUBMITTED",
                     "UNDER_REVIEW",
                     "RETURNED",
-                ]
+                ],
             ).count()
 
             recent_arrests = (
@@ -1322,27 +1651,27 @@ def dashboard(request):
             pending_prosecutions = 0
             recent_arrests = []
 
-        dashboard_data.update({
-
-            "officers": officers,
-            "commanders": commanders,
-            "total_complaints": total_complaints,
-            "total_cases": total_cases,
-            "total_arrests": total_arrests,
-            "total_suspects": total_suspects,
-            "active_investigations": active_investigations,
-            "cases_for_review": cases_for_review,
-            "solved_cases": solved_cases,
-            "monthly_arrests": monthly_arrests,
-            "pending_prosecutions": pending_prosecutions,
-            "recent_arrests": recent_arrests,
-
-        })
+        dashboard_data.update(
+            {
+                "officers": officers,
+                "commanders": commanders,
+                "total_complaints": total_complaints,
+                "total_cases": total_cases,
+                "total_arrests": total_arrests,
+                "total_suspects": total_suspects,
+                "active_investigations": active_investigations,
+                "cases_for_review": cases_for_review,
+                "solved_cases": solved_cases,
+                "monthly_arrests": monthly_arrests,
+                "pending_prosecutions": pending_prosecutions,
+                "recent_arrests": recent_arrests,
+            }
+        )
 
         return render(
             request,
             "dashboards/division_admin_dashboard.html",
-            dashboard_data
+            dashboard_data,
         )
 
     # ========================================================
@@ -1351,20 +1680,16 @@ def dashboard(request):
 
     elif user.role == "ADMIN":
 
-        # ====================================================
-        # PROVINCIAL TOTALS
-        # ====================================================
-
         total_complaints = Complaint.objects.count()
 
         total_officers = User.objects.filter(
             role="OFFICER",
-            is_active=True
+            is_active=True,
         ).count()
 
         total_commanders = User.objects.filter(
             role="STATION_COMMANDER",
-            is_active=True
+            is_active=True,
         ).count()
 
         total_stations = PoliceStation.objects.count()
@@ -1376,10 +1701,6 @@ def dashboard(request):
         total_suspects = Suspect.objects.count()
 
         total_offences = CriminalOffence.objects.count()
-
-        # ====================================================
-        # CASE STATUS INTELLIGENCE
-        # ====================================================
 
         active_investigations = Case.objects.filter(
             status=Case.Status.UNDER_INVESTIGATION
@@ -1393,10 +1714,6 @@ def dashboard(request):
             status=Case.Status.CLOSED
         ).count()
 
-        # ====================================================
-        # MONTHLY ARRESTS
-        # ====================================================
-
         current_month_arrests = ArrestRecord.objects.filter(
             arrest_datetime__date__gte=current_month_start,
             arrest_datetime__date__lte=today,
@@ -1406,10 +1723,6 @@ def dashboard(request):
             arrest_datetime__date__gte=previous_month_start,
             arrest_datetime__date__lte=previous_month_end,
         ).count()
-
-        # ====================================================
-        # MONTHLY SUSPECTS
-        # ====================================================
 
         current_month_suspects = Suspect.objects.filter(
             created_at__date__gte=current_month_start,
@@ -1421,10 +1734,6 @@ def dashboard(request):
             created_at__date__lte=previous_month_end,
         ).count()
 
-        # ====================================================
-        # MONTHLY CASES
-        # ====================================================
-
         current_month_cases = Case.objects.filter(
             created_at__date__gte=current_month_start,
             created_at__date__lte=today,
@@ -1435,10 +1744,6 @@ def dashboard(request):
             created_at__date__lte=previous_month_end,
         ).count()
 
-        # ====================================================
-        # ACTIVE WARRANTS
-        # ====================================================
-
         active_warrants = Warrant.objects.filter(
             status__in=[
                 Warrant.Status.PENDING,
@@ -1446,29 +1751,21 @@ def dashboard(request):
             ]
         ).count()
 
-        # ====================================================
-        # STATION COMMANDERS
-        # ====================================================
-
         station_commanders = (
             User.objects
             .filter(
                 role="STATION_COMMANDER",
-                is_active=True
+                is_active=True,
             )
             .select_related(
                 "station",
-                "district"
+                "district",
             )
             .order_by(
                 "district__name",
-                "station__name"
+                "station__name",
             )
         )
-
-        # ====================================================
-        # DISTRICT SUMMARY
-        # ====================================================
 
         district_stats = []
 
@@ -1483,13 +1780,13 @@ def dashboard(request):
             district_officers = User.objects.filter(
                 district=district,
                 role="OFFICER",
-                is_active=True
+                is_active=True,
             ).count()
 
             district_commanders = User.objects.filter(
                 district=district,
                 role="STATION_COMMANDER",
-                is_active=True
+                is_active=True,
             ).count()
 
             district_stations = PoliceStation.objects.filter(
@@ -1505,7 +1802,7 @@ def dashboard(request):
             ).count()
 
             district_suspects = Suspect.objects.filter(
-                station__district=district
+                district=district
             ).count()
 
             district_warrants = Warrant.objects.filter(
@@ -1526,43 +1823,30 @@ def dashboard(request):
 
             district_solved = Case.objects.filter(
                 station__district=district,
-                status=Case.Status.CLOSED
+                status=Case.Status.CLOSED,
             ).count()
 
-            district_stats.append({
-
-                "name": district.name,
-
-                "officers": district_officers,
-
-                "commanders": district_commanders,
-
-                "stations": district_stations,
-
-                "cases": district_cases,
-
-                "arrests": district_arrests,
-
-                "suspects": district_suspects,
-
-                "warrants": district_warrants,
-
-                "offences": district_offences,
-
-                "solved": district_solved,
-
-            })
-
-        # ====================================================
-        # MOST COMMON OFFENCES
-        # ====================================================
+            district_stats.append(
+                {
+                    "name": district.name,
+                    "officers": district_officers,
+                    "commanders": district_commanders,
+                    "stations": district_stations,
+                    "cases": district_cases,
+                    "arrests": district_arrests,
+                    "suspects": district_suspects,
+                    "warrants": district_warrants,
+                    "offences": district_offences,
+                    "solved": district_solved,
+                }
+            )
 
         common_offence_objects = (
             CriminalOffence.objects
             .annotate(
                 case_count=Count(
                     "cases",
-                    distinct=True
+                    distinct=True,
                 )
             )
             .filter(
@@ -1570,7 +1854,7 @@ def dashboard(request):
             )
             .order_by(
                 "-case_count",
-                "title"
+                "title",
             )[:10]
         )
 
@@ -1578,19 +1862,13 @@ def dashboard(request):
 
         for offence in common_offence_objects:
 
-            common_offences.append({
-
-                "name": offence.title,
-
-                "code": offence.code,
-
-                "count": offence.case_count,
-
-            })
-
-        # ====================================================
-        # HIGHEST CRIME LOCATIONS / HOTSPOTS
-        # ====================================================
+            common_offences.append(
+                {
+                    "name": offence.title,
+                    "code": offence.code,
+                    "count": offence.case_count,
+                }
+            )
 
         crime_hotspots = []
 
@@ -1604,45 +1882,34 @@ def dashboard(request):
             )
             .values(
                 "location",
-                "station__district__name"
+                "station__district__name",
             )
             .annotate(
                 crime_count=Count(
                     "id",
-                    distinct=True
+                    distinct=True,
                 )
             )
             .order_by(
                 "-crime_count",
-                "location"
+                "location",
             )[:10]
         )
 
         for hotspot in hotspot_data:
 
             district_name = (
-                hotspot[
-                    "station__district__name"
-                ]
+                hotspot["station__district__name"]
                 or "Unknown District"
             )
 
-            crime_hotspots.append({
-
-                "location":
-                    hotspot["location"],
-
-                "district":
-                    district_name,
-
-                "crime_count":
-                    hotspot["crime_count"],
-
-            })
-
-        # ====================================================
-        # CRIME SUMMARY
-        # ====================================================
+            crime_hotspots.append(
+                {
+                    "location": hotspot["location"],
+                    "district": district_name,
+                    "crime_count": hotspot["crime_count"],
+                }
+            )
 
         crime_summary = []
 
@@ -1686,31 +1953,16 @@ def dashboard(request):
                 .count()
             )
 
-            crime_summary.append({
-
-                "offence":
-                    offence.title,
-
-                "code":
-                    offence.code,
-
-                "cases":
-                    offence_case_count,
-
-                "arrests":
-                    offence_arrests,
-
-                "suspects":
-                    offence_suspects,
-
-                "warrants":
-                    offence_warrants,
-
-            })
-
-        # ====================================================
-        # RECENT ARRESTS
-        # ====================================================
+            crime_summary.append(
+                {
+                    "offence": offence.title,
+                    "code": offence.code,
+                    "cases": offence_case_count,
+                    "arrests": offence_arrests,
+                    "suspects": offence_suspects,
+                    "warrants": offence_warrants,
+                }
+            )
 
         recent_arrests = (
             ArrestRecord.objects
@@ -1728,15 +1980,11 @@ def dashboard(request):
             )[:10]
         )
 
-        # ====================================================
-        # RECENT SYSTEM ACTIVITY
-        # ====================================================
-
         recent_complaints = (
             Complaint.objects
             .select_related(
                 "reported_by",
-                "station"
+                "station",
             )
             .order_by(
                 "-created_at"
@@ -1749,16 +1997,12 @@ def dashboard(request):
                 "investigating_officer",
                 "station",
                 "offence",
-                "suspect"
+                "suspect",
             )
             .order_by(
                 "-created_at"
             )[:5]
         )
-
-        # ====================================================
-        # CRIME SUMMARY TOTALS
-        # ====================================================
 
         crime_summary_total_cases = sum(
             item["cases"]
@@ -1780,108 +2024,104 @@ def dashboard(request):
             for item in crime_summary
         )
 
-        # ====================================================
-        # DASHBOARD DATA
-        # ====================================================
+        dashboard_data.update(
+            {
+                "total_complaints":
+                    total_complaints,
 
-        dashboard_data.update({
+                "total_officers":
+                    total_officers,
 
-            "total_complaints":
-                total_complaints,
+                "total_commanders":
+                    total_commanders,
 
-            "total_officers":
-                total_officers,
+                "total_stations":
+                    total_stations,
 
-            "total_commanders":
-                total_commanders,
+                "total_cases":
+                    total_cases,
 
-            "total_stations":
-                total_stations,
+                "total_arrests":
+                    total_arrests,
 
-            "total_cases":
-                total_cases,
+                "total_suspects":
+                    total_suspects,
 
-            "total_arrests":
-                total_arrests,
+                "total_offences":
+                    total_offences,
 
-            "total_suspects":
-                total_suspects,
+                "active_investigations":
+                    active_investigations,
 
-            "total_offences":
-                total_offences,
+                "cases_for_review":
+                    cases_for_review,
 
-            "active_investigations":
-                active_investigations,
+                "solved_cases":
+                    solved_cases,
 
-            "cases_for_review":
-                cases_for_review,
+                "current_month_arrests":
+                    current_month_arrests,
 
-            "solved_cases":
-                solved_cases,
+                "previous_month_arrests":
+                    previous_month_arrests,
 
-            "current_month_arrests":
-                current_month_arrests,
+                "current_month_suspects":
+                    current_month_suspects,
 
-            "previous_month_arrests":
-                previous_month_arrests,
+                "previous_month_suspects":
+                    previous_month_suspects,
 
-            "current_month_suspects":
-                current_month_suspects,
+                "current_month_cases":
+                    current_month_cases,
 
-            "previous_month_suspects":
-                previous_month_suspects,
+                "previous_month_cases":
+                    previous_month_cases,
 
-            "current_month_cases":
-                current_month_cases,
+                "active_warrants":
+                    active_warrants,
 
-            "previous_month_cases":
-                previous_month_cases,
+                "district_stats":
+                    district_stats,
 
-            "active_warrants":
-                active_warrants,
+                "common_offences":
+                    common_offences,
 
-            "district_stats":
-                district_stats,
+                "crime_hotspots":
+                    crime_hotspots,
 
-            "common_offences":
-                common_offences,
+                "crime_summary":
+                    crime_summary,
 
-            "crime_hotspots":
-                crime_hotspots,
+                "crime_summary_total_cases":
+                    crime_summary_total_cases,
 
-            "crime_summary":
-                crime_summary,
+                "crime_summary_total_arrests":
+                    crime_summary_total_arrests,
 
-            "crime_summary_total_cases":
-                crime_summary_total_cases,
+                "crime_summary_total_suspects":
+                    crime_summary_total_suspects,
 
-            "crime_summary_total_arrests":
-                crime_summary_total_arrests,
+                "crime_summary_total_warrants":
+                    crime_summary_total_warrants,
 
-            "crime_summary_total_suspects":
-                crime_summary_total_suspects,
+                "station_commanders":
+                    station_commanders,
 
-            "crime_summary_total_warrants":
-                crime_summary_total_warrants,
+                "recent_arrests":
+                    recent_arrests,
 
-            "station_commanders":
-                station_commanders,
+                "recent_complaints":
+                    recent_complaints,
 
-            "recent_arrests":
-                recent_arrests,
-
-            "recent_complaints":
-                recent_complaints,
-
-            "recent_cases":
-                recent_cases,
-
-        })
+                "recent_cases":
+                    recent_cases,
+            }
+        )
 
         return render(
             request,
             "dashboards/admin_dashboard.html",
-            dashboard_data
+            dashboard_data,
         )
 
     # ========================================================
@@ -1893,7 +2133,7 @@ def dashboard(request):
         (
             "Your BlueShield account has an unsupported role. "
             "Please contact the system administrator."
-        )
+        ),
     )
 
     logout(request)
@@ -1996,10 +2236,6 @@ def arrest_report(request):
 
     total_arrests = arrests.count()
 
-    # --------------------------------------------------------
-    # Arrests by district
-    # --------------------------------------------------------
-
     district_statistics = (
         arrests
         .values(
@@ -2012,10 +2248,6 @@ def arrest_report(request):
             "-total"
         )
     )
-
-    # --------------------------------------------------------
-    # Arrests by station
-    # --------------------------------------------------------
 
     station_statistics = (
         arrests
@@ -2030,10 +2262,6 @@ def arrest_report(request):
             "-total"
         )
     )
-
-    # --------------------------------------------------------
-    # Arrests by offence
-    # --------------------------------------------------------
 
     offence_statistics = (
         arrests
@@ -2057,37 +2285,27 @@ def arrest_report(request):
     )
 
     context = {
-
         "arrests": arrests,
-
         "districts": districts,
-
         "total_arrests": total_arrests,
-
         "district_statistics":
             district_statistics,
-
         "station_statistics":
             station_statistics,
-
         "offence_statistics":
             offence_statistics,
-
         "start_date": (
             start_date.strftime("%Y-%m-%d")
             if start_date
             else ""
         ),
-
         "end_date": (
             end_date.strftime("%Y-%m-%d")
             if end_date
             else ""
         ),
-
         "selected_district":
             district_id,
-
     }
 
     return render(
@@ -2127,11 +2345,8 @@ def district_report(request):
     )
 
     complaints = Complaint.objects.all()
-
     cases = Case.objects.all()
-
     suspects = Suspect.objects.all()
-
     arrests = ArrestRecord.objects.all()
 
     complaints = apply_report_date_filter(
@@ -2231,7 +2446,6 @@ def district_report(request):
         )
 
     context = {
-
         "district_statistics":
             district_statistics,
 
@@ -2261,7 +2475,6 @@ def district_report(request):
 
         "total_arrests":
             arrests.count(),
-
     }
 
     return render(
@@ -2300,10 +2513,6 @@ def overall_crime_summary(request):
         request.GET.get("end_date", "")
     )
 
-    # --------------------------------------------------------
-    # Base querysets
-    # --------------------------------------------------------
-
     complaints = Complaint.objects.all()
 
     cases = (
@@ -2328,10 +2537,6 @@ def overall_crime_summary(request):
             "case__offence",
         )
     )
-
-    # --------------------------------------------------------
-    # Date filtering
-    # --------------------------------------------------------
 
     complaints = apply_report_date_filter(
         complaints,
@@ -2361,16 +2566,9 @@ def overall_crime_summary(request):
         end_date,
     )
 
-    # --------------------------------------------------------
-    # Main totals
-    # --------------------------------------------------------
-
     total_complaints = complaints.count()
-
     total_cases = cases.count()
-
     total_suspects = suspects.count()
-
     total_arrests = arrests.count()
 
     active_cases = cases.exclude(
@@ -2380,10 +2578,6 @@ def overall_crime_summary(request):
     closed_cases = cases.filter(
         status=Case.Status.CLOSED
     ).count()
-
-    # --------------------------------------------------------
-    # Case status statistics
-    # --------------------------------------------------------
 
     status_labels = dict(
         Case.Status.choices
@@ -2420,10 +2614,6 @@ def overall_crime_summary(request):
             }
         )
 
-    # --------------------------------------------------------
-    # Offence statistics
-    # --------------------------------------------------------
-
     offence_statistics = (
         cases
         .filter(
@@ -2442,10 +2632,6 @@ def overall_crime_summary(request):
         )
     )
 
-    # --------------------------------------------------------
-    # District statistics
-    # --------------------------------------------------------
-
     district_statistics = (
         cases
         .filter(
@@ -2461,10 +2647,6 @@ def overall_crime_summary(request):
             "-total"
         )
     )
-
-    # --------------------------------------------------------
-    # Monthly cases
-    # --------------------------------------------------------
 
     monthly_cases = (
         cases
@@ -2502,10 +2684,6 @@ def overall_crime_summary(request):
                 }
             )
 
-    # --------------------------------------------------------
-    # Monthly arrests
-    # --------------------------------------------------------
-
     monthly_arrests = (
         arrests
         .annotate(
@@ -2541,10 +2719,6 @@ def overall_crime_summary(request):
                         item["total"],
                 }
             )
-
-    # --------------------------------------------------------
-    # Monthly complaints
-    # --------------------------------------------------------
 
     monthly_complaints = (
         complaints
@@ -2582,12 +2756,7 @@ def overall_crime_summary(request):
                 }
             )
 
-    # --------------------------------------------------------
-    # Context
-    # --------------------------------------------------------
-
     context = {
-
         "total_complaints":
             total_complaints,
 
@@ -2635,7 +2804,6 @@ def overall_crime_summary(request):
             if end_date
             else ""
         ),
-
     }
 
     return render(

@@ -13,8 +13,8 @@
     --text-dark: #1f2937;
     --text-muted: #6b7280;
 
-    --background: #f4f7fb;
-    --white: #ffffff;
+    --background: #194379;
+    --white: #153e73;
 
     --border: #d9e0e8;
 
@@ -30,17 +30,29 @@
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--background);
-    color: var(--text-dark);
-    line-height: 1.5;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        #1d4e80;
+
+    color:
+        var(--text-dark);
+
+    line-height:
+        1.5;
+
 }
 
 .case-page {
-    min-height: 100vh;
+
+    min-height:
+        100vh;
+
 }
-
-
 /* ================================
    HEADER
 ================================ */

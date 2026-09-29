@@ -26,205 +26,501 @@
 
     <style>
 
+        /* =========================================================
+           PAGE
+        ========================================================= */
+
         body {
             margin: 0;
-            background: #fbfbfb;
-            color: #222;
-            font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b4f87 0%,
+                    #1c5881 50%,
+                    #225486 100%
+                );
+
+            color: #172033;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                Helvetica,
+                sans-serif;
+
             font-size: 15px;
         }
+
+
+        /* =========================================================
+           MAIN CONTAINER
+        ========================================================= */
 
         .page-container {
             max-width: 1250px;
             margin: 0 auto;
-            padding: 35px 25px;
+            padding: 40px 25px 50px;
         }
+
+
+        /* =========================================================
+           BLUE SHIELD PAGE HEADER
+        ========================================================= */
 
         .page-header {
-            margin-bottom: 25px;
+            margin-bottom: 28px;
+
+            padding: 25px 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e8f0f6 0%,
+                    #dce9f2 100%
+                );
+
+            border: 1px solid rgba(255, 255, 255, 0.70);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 10px 28px rgba(15, 45, 77, 0.18);
         }
+
 
         .breadcrumb-text {
-            color: #727272;
+            color: #526b80;
+
             font-size: 13px;
-            margin-bottom: 5px;
+
+            font-weight: 500;
+
+            margin-bottom: 6px;
         }
+
 
         .page-title {
-            color: #222;
-            font-size: 26px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            color: #173f6b;
+
+            font-size: 27px;
+
+            font-weight: 700;
+
+            margin: 0 0 5px;
         }
+
 
         .page-description {
-            color: #727272;
+            color: #5e7181;
+
             margin: 0;
+
+            font-size: 14px;
         }
+
+
+        /* =========================================================
+           HEADER BUTTONS
+        ========================================================= */
+
+        .page-header .btn {
+            min-height: 40px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            padding: 9px 15px;
+        }
+
+
+        .page-header .btn-primary {
+            background: #173f6b;
+
+            border-color: #173f6b;
+        }
+
+
+        .page-header .btn-primary:hover {
+            background: #0f2d4d;
+
+            border-color: #0f2d4d;
+        }
+
+
+        .page-header .btn-outline-secondary {
+            color: #173f6b;
+
+            border-color: #a8bac9;
+
+            background: rgba(255, 255, 255, 0.55);
+        }
+
+
+        .page-header .btn-outline-secondary:hover {
+            color: #ffffff;
+
+            background: #173f6b;
+
+            border-color: #173f6b;
+        }
+
+
+        /* =========================================================
+           COMPLAINTS WHITE PANEL
+        ========================================================= */
 
         .content-panel {
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 6px;
+            background: #ffffff;
+
+            border: 1px solid #dfe6ec;
+
+            border-radius: 12px;
+
             overflow: hidden;
+
+            box-shadow:
+                0 10px 28px rgba(15, 45, 77, 0.16);
         }
 
+
+        /* =========================================================
+           PANEL HEADER
+        ========================================================= */
+
         .panel-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 18px 22px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e3e8ed;
         }
+
 
         .panel-header h5 {
             margin: 0;
+
+            color: #173f6b;
+
             font-size: 16px;
-            font-weight: 600;
+
+            font-weight: 700;
         }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
 
         .table {
             margin: 0;
+
+            background: #ffffff;
         }
 
+
         .table th {
-            background: #fafafa;
-            color: #555;
-            font-size: 12px;
-            font-weight: 600;
+            background: #f5f8fa;
+
+            color: #526273;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
             text-transform: uppercase;
-            padding: 13px 14px;
-            border-bottom: 1px solid #e5e5e5;
+
+            letter-spacing: 0.3px;
+
+            padding: 14px;
+
+            border-bottom: 1px solid #dfe6ec;
+
             white-space: nowrap;
         }
+
 
         .table td {
             padding: 14px;
+
             vertical-align: middle;
-            color: #333;
+
+            color: #333333;
+
+            border-bottom: 1px solid #edf1f4;
         }
+
+
+        .table tbody tr {
+            background: #ffffff;
+
+            transition:
+                background-color 0.15s ease;
+        }
+
 
         .table tbody tr:hover {
-            background: #fafafa;
+            background: #f7fafc;
         }
 
-        /* =========================================
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .table strong {
+            color: #173f6b;
+
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
            STATUS
-        ========================================== */
+        ========================================================= */
 
         .status {
             display: inline-block;
-            padding: 4px 9px;
-            border-radius: 4px;
-            background: #eef4fa;
-            color: #164a7a;
+
+            padding: 5px 10px;
+
+            border-radius: 5px;
+
+            background: #eaf2f9;
+
+            color: #173f6b;
+
             font-size: 11px;
-            font-weight: 600;
+
+            font-weight: 700;
+
             white-space: nowrap;
         }
 
-        /* =========================================
+
+        /* =========================================================
            ROLE
-        ========================================== */
+        ========================================================= */
 
         .role {
             display: inline-block;
-            padding: 4px 9px;
-            border-radius: 4px;
-            background: #f1f3f5;
-            color: #555;
+
+            padding: 5px 10px;
+
+            border-radius: 5px;
+
+            background: #edf2f6;
+
+            color: #526273;
+
             font-size: 11px;
-            font-weight: 600;
+
+            font-weight: 700;
+
             white-space: nowrap;
         }
 
-        /* =========================================
+
+        /* =========================================================
            WITNESS COUNT
-        ========================================== */
+        ========================================================= */
 
         .witness-count {
-            color: #555;
+            color: #526273;
+
             font-size: 13px;
+
             white-space: nowrap;
         }
 
+
         .witness-count i {
-            color: #164a7a;
+            color: #173f6b;
+
             margin-right: 4px;
         }
 
-        /* =========================================
+
+        /* =========================================================
            ACTION BUTTONS
-        ========================================== */
+        ========================================================= */
 
         .action-buttons {
             display: flex;
-            gap: 5px;
+
+            gap: 6px;
+
             white-space: nowrap;
         }
 
+
         .action-btn {
             width: 34px;
+
             height: 34px;
 
             display: inline-flex;
+
             align-items: center;
+
             justify-content: center;
 
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #d5dde4;
 
-            background: #fff;
-            color: #555;
+            border-radius: 6px;
+
+            background: #ffffff;
+
+            color: #526273;
 
             text-decoration: none;
 
-            transition: 0.15s ease;
+            transition:
+                0.15s ease;
         }
 
+
         .action-btn:hover {
-            background: #f3f7fb;
-            color: #164a7a;
-            border-color: #c8d6e5;
+            background: #eaf2f9;
+
+            color: #173f6b;
+
+            border-color: #b8cad9;
         }
+
 
         .action-btn.view:hover {
             color: #0d6efd;
         }
 
+
         .action-btn.edit:hover {
             color: #198754;
         }
 
-        /* =========================================
+
+        /* =========================================================
            EMPTY STATE
-        ========================================== */
+        ========================================================= */
 
         .empty-state {
-            padding: 45px 20px;
+            padding: 55px 20px;
+
             text-align: center;
-            color: #727272;
+
+            color: #727f8c;
+
+            background: #ffffff;
         }
+
 
         .empty-state i {
-            font-size: 35px;
-            color: #aaa;
-            margin-bottom: 10px;
+            display: block;
+
+            font-size: 40px;
+
+            color: #8daabe;
+
+            margin-bottom: 12px;
         }
 
-        /* =========================================
+
+        .empty-state h6 {
+            color: #173f6b;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+
+        .empty-state p {
+            color: #71808e;
+
+            font-size: 14px;
+        }
+
+
+        .empty-state .btn-primary {
+            background: #173f6b;
+
+            border-color: #173f6b;
+
+            font-weight: 600;
+
+            border-radius: 7px;
+
+            padding: 9px 16px;
+        }
+
+
+        .empty-state .btn-primary:hover {
+            background: #0f2d4d;
+
+            border-color: #0f2d4d;
+        }
+
+
+        /* =========================================================
            MOBILE
-        ========================================== */
+        ========================================================= */
 
         @media (max-width: 900px) {
 
             .page-container {
-                padding: 25px 15px;
+                padding: 25px 15px 40px;
             }
 
+
             .page-header {
-                flex-direction: column;
+                padding: 22px 20px;
             }
+
+
+            .page-title {
+                font-size: 24px;
+            }
+
+
+            .page-header > div:last-child {
+                width: 100%;
+            }
+
+
+            .page-header > div:last-child .btn {
+                flex: 1;
+            }
+
 
             .table {
                 min-width: 1050px;
+            }
+
+        }
+
+
+        @media (max-width: 576px) {
+
+            .page-header > div:last-child {
+                flex-direction: column;
+            }
+
+
+            .page-header > div:last-child .btn {
+                width: 100%;
             }
 
         }
@@ -236,79 +532,103 @@
 
 <body>
 
+
 <div class="page-container">
 
 
-    <!-- =================================================
-         PAGE HEADER
-    ================================================== -->
+    <!-- =========================================================
+         BLUE SHIELD PAGE HEADER
+    ========================================================== -->
 
-    <div
-        class="d-flex justify-content-between align-items-start flex-wrap gap-3 page-header"
-    >
+    <div class="page-header">
 
-        <div>
 
-            <div class="breadcrumb-text">
-                BlueShield / Case Management
+        <div
+            class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+        >
+
+
+            <!-- PAGE INFORMATION -->
+
+            <div>
+
+                <div class="breadcrumb-text">
+
+                    BlueShield / Case Management
+
+                </div>
+
+
+                <h1 class="page-title">
+
+                    My Complaints
+
+                </h1>
+
+
+                <p class="page-description">
+
+                    View complaints you have registered in BlueShield.
+
+                </p>
+
             </div>
 
-            <h1 class="page-title">
-                My Complaints
-            </h1>
 
-            <p class="page-description">
-                View complaints you have registered in BlueShield.
-            </p>
+            <!-- HEADER ACTIONS -->
 
-        </div>
+            <div class="d-flex gap-2 flex-wrap">
 
 
-        <div class="d-flex gap-2">
+                <!-- BACK TO DASHBOARD -->
 
-            <!-- BACK TO DASHBOARD -->
+                <a
+                    href="{% url 'accounts:dashboard' %}"
+                    class="btn btn-outline-secondary"
+                >
 
-            <a
-                href="{% url 'accounts:dashboard' %}"
-                class="btn btn-outline-secondary"
-            >
+                    <i class="bi bi-arrow-left me-1"></i>
 
-                <i class="bi bi-arrow-left me-1"></i>
+                    Back to Dashboard
 
-                Back to Dashboard
-
-            </a>
+                </a>
 
 
-            <!-- CREATE COMPLAINT -->
+                <!-- CREATE COMPLAINT -->
 
-            <a
-                href="{% url 'complaints:create_complaint' %}"
-                class="btn btn-primary"
-            >
+                <a
+                    href="{% url 'complaints:create_complaint' %}"
+                    class="btn btn-primary"
+                >
 
-                <i class="bi bi-plus-circle me-1"></i>
+                    <i class="bi bi-plus-circle me-1"></i>
 
-                Create Complaint
+                    Create Complaint
 
-            </a>
+                </a>
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- =================================================
-         COMPLAINT PANEL
-    ================================================== -->
+    <!-- =========================================================
+         COMPLAINTS WHITE PANEL
+    ========================================================== -->
 
     <div class="content-panel">
 
 
+        <!-- PANEL HEADER -->
+
         <div class="panel-header">
 
             <h5>
+
                 Complaint Records
+
             </h5>
 
         </div>
@@ -317,9 +637,14 @@
         {% if complaints %}
 
 
+            <!-- =================================================
+                 COMPLAINT TABLE
+            ================================================== -->
+
             <div class="table-responsive">
 
                 <table class="table">
+
 
                     <thead>
 
@@ -379,26 +704,25 @@
                             <tr>
 
 
-                                <!-- =================================
-                                     COMPLAINT NUMBER
-                                ================================== -->
+                                <!-- COMPLAINT NUMBER -->
 
                                 <td>
 
                                     <strong>
+
                                         {{ complaint.complaint_number }}
+
                                     </strong>
 
                                 </td>
 
 
-                                <!-- =================================
-                                     COMPLAINANT
-                                ================================== -->
+                                <!-- COMPLAINANT -->
 
                                 <td>
 
                                     {{ complaint.complainant_name }}
+
 
                                     {% if complaint.complainant_phone %}
 
@@ -417,9 +741,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     ROLE
-                                ================================== -->
+                                <!-- ROLE -->
 
                                 <td>
 
@@ -432,9 +754,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     COMPLAINT TYPE
-                                ================================== -->
+                                <!-- COMPLAINT TYPE -->
 
                                 <td>
 
@@ -443,9 +763,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     INCIDENT DATE
-                                ================================== -->
+                                <!-- INCIDENT DATE -->
 
                                 <td>
 
@@ -454,9 +772,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     LOCATION
-                                ================================== -->
+                                <!-- LOCATION -->
 
                                 <td>
 
@@ -465,9 +781,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     WITNESSES
-                                ================================== -->
+                                <!-- WITNESSES -->
 
                                 <td>
 
@@ -477,10 +791,15 @@
 
                                         {{ complaint.witnesses.all|length }}
 
+
                                         {% if complaint.witnesses.all|length == 1 %}
+
                                             Witness
+
                                         {% else %}
+
                                             Witnesses
+
                                         {% endif %}
 
                                     </span>
@@ -488,9 +807,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     STATUS
-                                ================================== -->
+                                <!-- STATUS -->
 
                                 <td>
 
@@ -503,9 +820,7 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     REGISTERED
-                                ================================== -->
+                                <!-- REGISTERED -->
 
                                 <td>
 
@@ -514,16 +829,14 @@
                                 </td>
 
 
-                                <!-- =================================
-                                     ACTIONS
-                                ================================== -->
+                                <!-- ACTIONS -->
 
                                 <td>
 
                                     <div class="action-buttons">
 
 
-                                        <!-- VIEW COMPLAINT -->
+                                        <!-- VIEW -->
 
                                         <a
                                             href="{% url 'complaints:detail' complaint.pk %}"
@@ -536,7 +849,7 @@
                                         </a>
 
 
-                                        <!-- EDIT COMPLAINT -->
+                                        <!-- EDIT -->
 
                                         <a
                                             href="{% url 'complaints:edit' complaint.pk %}"
@@ -570,21 +883,29 @@
         {% else %}
 
 
-            <!-- =========================================
+            <!-- =================================================
                  EMPTY STATE
-            ========================================== -->
+            ================================================== -->
 
             <div class="empty-state">
 
+
                 <i class="bi bi-megaphone"></i>
 
+
                 <h6>
+
                     No complaints found
+
                 </h6>
 
+
                 <p class="mb-3">
+
                     You have not registered any complaints yet.
+
                 </p>
+
 
                 <a
                     href="{% url 'complaints:create_complaint' %}"
@@ -604,6 +925,7 @@
 
 
     </div>
+
 
 </div>
 

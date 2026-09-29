@@ -10,36 +10,51 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Load environment variables from .env file
+load_dotenv()
+
+# ============================================================
+# BASE DIRECTORY
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
+# ============================================================
+# SECURITY
+# ============================================================
+
 SECRET_KEY = 'django-insecure-=0o6@^84u-dns%id&7j&n=8109_zh=t5xmms)##gd1n7-r%!ei'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
-# Application definition
+# ============================================================
+# APPLICATIONS   
+    # # ============================================================
 
 INSTALLED_APPS = [
+    # Django applications
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',                  
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-     'rest_framework',
-     #blushileld apps
+    # Third-party applications
+    'rest_framework',
+
+    # BlueShield applications
     'accounts',
     'audit_logs',
     'cases',
@@ -54,11 +69,19 @@ INSTALLED_APPS = [
     'stations',
     'suspects',
     'warrant',
-
-   
 ]
 
+
+# ============================================================
+# CUSTOM USER MODEL
+# ============================================================
+
 AUTH_USER_MODEL = "accounts.User"
+
+
+# ============================================================
+# LOGIN / LOGOUT
+# ============================================================
 
 LOGIN_URL = "/accounts/login/"
 
@@ -66,17 +89,32 @@ LOGIN_REDIRECT_URL = "/accounts/dashboard/"
 
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
+
+# ============================================================
+# MIDDLEWARE
+# ============================================================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# ============================================================
+# URL CONFIGURATION
+# ============================================================
+
 ROOT_URLCONF = 'blueshield_project.urls'
+
+
+# ============================================================
+# TEMPLATES
+# ============================================================
 
 TEMPLATES = [
     {
@@ -85,6 +123,7 @@ TEMPLATES = [
         "DIRS": [
             BASE_DIR / "templates",
         ],
+        
 
         "APP_DIRS": True,
 
@@ -99,12 +138,18 @@ TEMPLATES = [
         },
     },
 ]
+
+
+# ============================================================
+# WSGI
+# ============================================================
+
 WSGI_APPLICATION = 'blueshield_project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
+# ============================================================
+# DATABASE
+# ============================================================
 
 DATABASES = {
     "default": {
@@ -117,27 +162,38 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
+
+# ============================================================
+# PASSWORD VALIDATION
+# ============================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.'
+            'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.'
+            'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.'
+            'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.'
+            'NumericPasswordValidator',
     },
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.1/topics/i18n/
+# ============================================================
+# INTERNATIONALIZATION
+# ============================================================
 
 LANGUAGE_CODE = 'en-us'
 
@@ -148,8 +204,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
+# ============================================================
+# STATIC FILES
+# ============================================================
 
 STATIC_URL = 'static/'
 
@@ -158,12 +215,24 @@ STATICFILES_DIRS = [
 ]
 
 
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+# ============================================================
+# EMAIL CONFIGURATION
+# GMAIL SMTP
+# ============================================================
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
+EMAIL_HOST = "smtp.gmail.com"
+
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER,
+)

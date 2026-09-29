@@ -1,32 +1,30 @@
+
 import secrets
 
 from datetime import timedelta
 
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.mail import send_mail
 from django.utils import timezone
 
 from .models import User, SevisPassOTP
 
-# ============================================================
-# GENERATE TEST SEVISPASS ID
-# ============================================================
 
+# ============================================================
+# BLUESHIELD USERNAME GENERATOR
+# ============================================================
 
 def generate_blueshield_username():
     """
-    Generate the next BlueShield system username.
-
-    Format:
-        BS-0001
-        BS-0002
-        BS-0003
+    Generate a unique BlueShield username.
     """
-
-    number = 1
 
     while True:
 
-        username = f"BS-{number:04d}"
+        username = (
+            f"BS-"
+            f"{secrets.token_hex(3).upper()}"
+        )
 
         if not User.objects.filter(
             username=username
@@ -34,42 +32,43 @@ def generate_blueshield_username():
 
             return username
 
-        number += 1
 
+# ============================================================
+# TEMPORARY PASSWORD GENERATOR
+# ============================================================
 
 def generate_temporary_password():
     """
-    Generate a temporary password for a new
-    BlueShield user account.
+    Generate a temporary password for a newly
+    created BlueShield user.
     """
 
-    alphabet = (
-        "ABCDEFGHJKLMNPQRSTUVWXYZ"
-        "abcdefghijkmnopqrstuvwxyz"
-        "23456789"
-        "@#$%"
+    return (
+        f"BS!"
+        f"{secrets.token_urlsafe(8)}"
     )
 
-    password = "".join(
-        secrets.choice(alphabet)
-        for _ in range(12)
-    )
 
-    return password
+# ============================================================
+# SEVISPASS ID GENERATOR
+# ============================================================
 
 def generate_sevispass_id():
     """
-    Generate a unique test SevisPass ID
-    for the BlueShield prototype.
+    Generate a unique SevisPass ID.
+
+    Example:
+        PNG-SP-2026-4A5B9D1
     """
+
+    year = timezone.now().year
 
     while True:
 
-        random_part = secrets.token_hex(4).upper()
-
         sevispass_id = (
-            f"PNG-SP-{timezone.now().year}-"
-            f"{random_part}"
+            f"PNG-SP-"
+            f"{year}-"
+            f"{secrets.token_hex(4).upper()}"
         )
 
         if not User.objects.filter(
@@ -85,10 +84,14 @@ def generate_sevispass_id():
 
 def generate_sevispass_otp(user):
     """
-    Generate a 6-digit one-time PIN for
-    test SevisPass verification.
+    Generate a secure 6-digit SevisPass OTP.
 
-    OTP expires after 10 minutes.
+    Security features:
+        - Uses Python secrets for random generation.
+        - OTP is valid for 3 minutes.
+        - OTP is stored as a password hash.
+        - Previous unused OTPs are invalidated.
+        - Plain OTP is returned only for email delivery.
     """
 
     # --------------------------------------------------------
@@ -97,36 +100,140 @@ def generate_sevispass_otp(user):
 
     SevisPassOTP.objects.filter(
         user=user,
-        used=False
+        used=False,
     ).update(
         used=True
     )
 
     # --------------------------------------------------------
-    # Generate 6-digit OTP
+    # Generate secure 6-digit OTP
     # --------------------------------------------------------
 
-    otp = f"{secrets.randbelow(1000000):06d}"
+    otp = (
+        f"{secrets.randbelow(1_000_000):06d}"
+    )
 
     # --------------------------------------------------------
-    # Store hashed OTP
+    # Hash OTP before storing it
+    # --------------------------------------------------------
+
+    otp_hash = make_password(
+        otp
+    )
+
+    # --------------------------------------------------------
+    # Set 3-minute expiry
+    # --------------------------------------------------------
+
+    now = timezone.now()
+
+    expires_at = (
+        now +
+        timedelta(minutes=3)
+    )
+
+    # --------------------------------------------------------
+    # Create OTP record
     # --------------------------------------------------------
 
     otp_record = SevisPassOTP.objects.create(
-
         user=user,
-
-        otp_hash=make_password(
-            otp
-        ),
-
-        expires_at=(
-            timezone.now()
-            + timedelta(minutes=3)
-        ),
+        otp_hash=otp_hash,
+        created_at=now,
+        expires_at=expires_at,
+        used=False,
+        attempts=0,
     )
 
     return otp_record, otp
+
+
+# ============================================================
+# SEND SEVISPASS OTP BY EMAIL
+# ============================================================
+
+def send_sevispass_otp_email(user, otp):
+    """
+    Send the SevisPass OTP to the user's registered email
+    address using Django's configured Gmail SMTP server.
+    """
+
+    # --------------------------------------------------------
+    # Make sure the user has an email address
+    # --------------------------------------------------------
+
+    if not user.email:
+
+        raise ValueError(
+            "This BlueShield account does not have a "
+            "registered email address."
+        )
+
+    # --------------------------------------------------------
+    # Email subject
+    # --------------------------------------------------------
+
+    subject = (
+        "BlueShield SevisPass Verification Code"
+    )
+
+    # --------------------------------------------------------
+    # Email message
+    # --------------------------------------------------------
+
+    message = f"""
+Hello {user.first_name or user.username},
+
+Your BlueShield SevisPass verification code is:
+
+{otp}
+
+This verification code is valid for 3 minutes.
+
+For your security:
+
+- Do not share this code with anyone.
+- BlueShield staff will never ask you to provide your OTP.
+- If you did not request this verification code, you can safely ignore this email.
+
+Regards,
+
+BlueShield
+Madang Provincial Police Command
+SevisPass Security System
+""".strip()
+
+    # --------------------------------------------------------
+    # Send email
+    # --------------------------------------------------------
+
+    try:
+
+        sent_count = send_mail(
+            subject=subject,
+            message=message,
+            from_email=None,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+    except Exception:
+
+        raise RuntimeError(
+            "The SevisPass OTP email could not be sent."
+        )
+
+    # --------------------------------------------------------
+    # Confirm successful delivery request
+    # --------------------------------------------------------
+
+    if sent_count != 1:
+
+        raise RuntimeError(
+            "The SevisPass OTP email could not be sent."
+        )
+
+    return True
 
 
 # ============================================================
@@ -135,40 +242,53 @@ def generate_sevispass_otp(user):
 
 def verify_sevispass_otp(user, otp):
     """
-    Verify the latest valid SevisPass OTP.
+    Verify the latest unused SevisPass OTP.
 
-    Security:
-    - OTP is valid for 3 minutes.
-    - Maximum 5 verification attempts.
-    - OTP is invalidated after successful verification.
-    - OTP is invalidated after the maximum attempts are reached.
+    Security rules:
+        - OTP must contain exactly 6 digits.
+        - OTP must not be expired.
+        - Maximum 5 attempts.
+        - OTP can only be used once.
+        - OTP is marked as used after successful verification.
     """
 
-    if not user:
+    # --------------------------------------------------------
+    # Validate OTP format
+    # --------------------------------------------------------
+
+    if not otp:
+
         return False
 
     otp = str(otp).strip()
 
-    if len(otp) != 6 or not otp.isdigit():
+    if (
+        len(otp) != 6
+        or not otp.isdigit()
+    ):
+
         return False
+
+    # --------------------------------------------------------
+    # Get latest unused OTP
+    # --------------------------------------------------------
 
     otp_record = (
         SevisPassOTP.objects
         .filter(
             user=user,
-            used=False
+            used=False,
         )
-        .order_by(
-            "-created_at"
-        )
+        .order_by("-created_at")
         .first()
     )
 
     if not otp_record:
+
         return False
 
     # --------------------------------------------------------
-    # CHECK EXPIRATION
+    # Check expiry
     # --------------------------------------------------------
 
     if otp_record.is_expired():
@@ -176,82 +296,98 @@ def verify_sevispass_otp(user, otp):
         otp_record.used = True
 
         otp_record.save(
-            update_fields=["used"]
+            update_fields=[
+                "used"
+            ]
         )
 
         return False
 
     # --------------------------------------------------------
-    # CHECK MAXIMUM ATTEMPTS
+    # Maximum attempts
     # --------------------------------------------------------
 
-    if otp_record.attempts >= 5:
+    MAX_ATTEMPTS = 5
+
+    if otp_record.attempts >= MAX_ATTEMPTS:
 
         otp_record.used = True
 
         otp_record.save(
-            update_fields=["used"]
+            update_fields=[
+                "used"
+            ]
         )
 
         return False
 
     # --------------------------------------------------------
-    # RECORD ATTEMPT
+    # Increase attempt counter
     # --------------------------------------------------------
 
     otp_record.attempts += 1
 
     otp_record.save(
-        update_fields=["attempts"]
+        update_fields=[
+            "attempts"
+        ]
     )
 
     # --------------------------------------------------------
-    # VERIFY OTP
+    # Compare entered OTP with stored hash
     # --------------------------------------------------------
 
     if not check_password(
         otp,
-        otp_record.otp_hash
+        otp_record.otp_hash,
     ):
 
-        # Invalidate after 5th failed attempt
-        if otp_record.attempts >= 5:
+        # Invalidate OTP after fifth failed attempt.
+
+        if otp_record.attempts >= MAX_ATTEMPTS:
 
             otp_record.used = True
 
             otp_record.save(
-                update_fields=["used"]
+                update_fields=[
+                    "used"
+                ]
             )
 
         return False
 
     # --------------------------------------------------------
-    # SUCCESSFUL VERIFICATION
+    # OTP is correct
     # --------------------------------------------------------
 
-    otp_record.used = True
+    now = timezone.now()
 
-    otp_record.verified_at = timezone.now()
+    otp_record.used = True
+    otp_record.verified_at = now
 
     otp_record.save(
         update_fields=[
             "used",
-            "verified_at"
+            "verified_at",
         ]
     )
 
-    user.sevispass_verified = True
+    # --------------------------------------------------------
+    # Mark SevisPass as verified
+    # --------------------------------------------------------
 
-    user.sevispass_verified_at = timezone.now()
+    user.sevispass_verified = True
+    user.sevispass_verified_at = now
 
     user.save(
         update_fields=[
             "sevispass_verified",
-            "sevispass_verified_at"
+            "sevispass_verified_at",
         ]
     )
 
     return True
+
 
 # ============================================================
 # VERIFY SEVISPASS ID
@@ -259,79 +395,83 @@ def verify_sevispass_otp(user, otp):
 
 def verify_sevispass(sevispass_id):
     """
-    Find an active BlueShield user using their
-    registered SevisPass ID.
+    Find an active BlueShield user using their SevisPass ID.
 
-    The user does not need to be SevisPass verified yet.
-    OTP verification is responsible for completing
-    the verification process.
+    The user must have:
+        - a matching SevisPass ID
+        - an active account
     """
 
     if not sevispass_id:
+
         return None
 
-    try:
+    sevispass_id = sevispass_id.strip()
 
-        user = (
-            User.objects
-            .select_related(
-                "district",
-                "station",
-                "division"
-            )
-            .get(
-                sevispass_id=sevispass_id,
-                is_active=True
-            )
+    user = (
+        User.objects
+        .select_related(
+            "district",
+            "station",
+            "division",
         )
+        .filter(
+            sevispass_id=sevispass_id,
+            is_active=True,
+        )
+        .first()
+    )
 
-        return user
-
-    except User.DoesNotExist:
-
-        return None
-
+    return user
 
 
 # ============================================================
-# SYSTEM ACTIVITY / AUDIT LOGGING
+# ACTIVITY LOGGING
 # ============================================================
 
 def log_activity(
-    request,
+    *,
+    user,
     action,
-    target_model,
-    target_id="",
+    request=None,
+    target_model="",
+    target_id=None,
     details="",
 ):
     """
-    Record an important user activity in BlueShield.
-
-    Records:
-    - User who performed the action
-    - Action performed
-    - Record affected
-    - IP address
-    - Additional details
+    Create a BlueShield audit log entry.
     """
 
     from audit_logs.models import AuditLog
 
-    user = (
-        request.user
-        if request.user.is_authenticated
-        else None
-    )
+    ip_address = None
 
-    ip_address = request.META.get(
-        "REMOTE_ADDR"
-    )
+    if request:
 
-    AuditLog.objects.create(
+        forwarded_for = request.META.get(
+            "HTTP_X_FORWARDED_FOR"
+        )
+
+        if forwarded_for:
+
+            ip_address = (
+                forwarded_for
+                .split(",")[0]
+                .strip()
+            )
+
+        else:
+
+            ip_address = request.META.get(
+                "REMOTE_ADDR"
+            )
+
+    return AuditLog.objects.create(
         user=user,
         action=action,
         target_model=target_model,
-        target_id=str(target_id),
+        target_id=target_id,
         ip_address=ip_address,
         details=details,
     )
+

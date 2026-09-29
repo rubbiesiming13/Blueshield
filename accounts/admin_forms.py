@@ -51,7 +51,8 @@ class AdminUserCreateForm(forms.ModelForm):
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Email address",
+                    "placeholder": "Registered email address",
+                    "autocomplete": "email",
                 }
             ),
 
@@ -113,6 +114,20 @@ class AdminUserCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # ----------------------------------------------------
+        # Email is required for SevisPass OTP verification.
+        # ----------------------------------------------------
+
+        self.fields["email"].required = True
+
+        # ----------------------------------------------------
+        # Phone number is optional.
+        # It is kept as a contact field but is NOT used
+        # for SevisPass OTP verification.
+        # ----------------------------------------------------
+
+        self.fields["phone_number"].required = False
+
+        # ----------------------------------------------------
         # Active divisions only
         # ----------------------------------------------------
 
@@ -145,39 +160,25 @@ class AdminUserCreateForm(forms.ModelForm):
         )
 
         # ----------------------------------------------------
-        # Required fields
+        # Optional location fields.
+        # Role validation is handled in clean().
         # ----------------------------------------------------
-
-        self.fields["phone_number"].required = True
 
         self.fields["division"].required = False
         self.fields["district"].required = False
         self.fields["station"].required = False
 
-    def clean_phone_number(self):
+    def clean_email(self):
 
-        phone_number = self.cleaned_data.get(
-            "phone_number"
-        )
+        email = self.cleaned_data.get("email")
 
-        if not phone_number:
+        if not email:
             raise forms.ValidationError(
-                "A registered mobile phone number is required for SevisPass OTP verification."
+                "A registered email address is required for "
+                "SevisPass OTP verification."
             )
 
-        phone_number = phone_number.strip()
-
-        if not phone_number.isdigit():
-            raise forms.ValidationError(
-                "Enter a valid mobile phone number using digits only."
-            )
-
-        if len(phone_number) < 8:
-            raise forms.ValidationError(
-                "Enter a valid mobile phone number."
-            )
-
-        return phone_number
+        return email.strip().lower()
 
     def clean(self):
 
@@ -270,8 +271,12 @@ class AdminUserCreateForm(forms.ModelForm):
             commit=False
         )
 
-        # New users are NOT SevisPass verified
-        # until OTP verification succeeds.
+        # ----------------------------------------------------
+        # New users are NOT SevisPass verified.
+        # Verification happens only after successful OTP
+        # verification.
+        # ----------------------------------------------------
+
         user.sevispass_verified = False
         user.sevispass_verified_at = None
 
@@ -280,7 +285,8 @@ class AdminUserCreateForm(forms.ModelForm):
 
         return user
 
-    # ============================================================
+
+# ============================================================
 # UPDATE USER FORM
 # ============================================================
 
@@ -323,7 +329,8 @@ class AdminUserUpdateForm(forms.ModelForm):
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Email address",
+                    "placeholder": "Registered email address",
+                    "autocomplete": "email",
                 }
             ),
 
@@ -384,16 +391,41 @@ class AdminUserUpdateForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
+        # ----------------------------------------------------
+        # Email is required for SevisPass OTP verification.
+        # ----------------------------------------------------
+
+        self.fields["email"].required = True
+
+        # ----------------------------------------------------
+        # Phone number is optional.
+        # It is NOT used for SevisPass OTP verification.
+        # ----------------------------------------------------
+
+        self.fields["phone_number"].required = False
+
+        # ----------------------------------------------------
+        # Active divisions only
+        # ----------------------------------------------------
+
         self.fields["division"].queryset = (
             Division.objects
             .filter(is_active=True)
             .order_by("name")
         )
 
+        # ----------------------------------------------------
+        # All districts
+        # ----------------------------------------------------
+
         self.fields["district"].queryset = (
             District.objects
             .order_by("name")
         )
+
+        # ----------------------------------------------------
+        # All police stations
+        # ----------------------------------------------------
 
         self.fields["station"].queryset = (
             PoliceStation.objects
@@ -404,36 +436,26 @@ class AdminUserUpdateForm(forms.ModelForm):
             )
         )
 
-        self.fields["phone_number"].required = True
+        # ----------------------------------------------------
+        # Optional location fields.
+        # Role validation is handled in clean().
+        # ----------------------------------------------------
 
         self.fields["division"].required = False
         self.fields["district"].required = False
         self.fields["station"].required = False
 
-    def clean_phone_number(self):
+    def clean_email(self):
 
-        phone_number = self.cleaned_data.get(
-            "phone_number"
-        )
+        email = self.cleaned_data.get("email")
 
-        if not phone_number:
+        if not email:
             raise forms.ValidationError(
-                "A registered mobile phone number is required for SevisPass OTP verification."
+                "A registered email address is required for "
+                "SevisPass OTP verification."
             )
 
-        phone_number = phone_number.strip()
-
-        if not phone_number.isdigit():
-            raise forms.ValidationError(
-                "Enter a valid mobile phone number using digits only."
-            )
-
-        if len(phone_number) < 8:
-            raise forms.ValidationError(
-                "Enter a valid mobile phone number."
-            )
-
-        return phone_number
+        return email.strip().lower()
 
     def clean(self):
 
@@ -443,6 +465,10 @@ class AdminUserUpdateForm(forms.ModelForm):
         division = cleaned_data.get("division")
         district = cleaned_data.get("district")
         station = cleaned_data.get("station")
+
+        # ----------------------------------------------------
+        # Role assignment rules
+        # ----------------------------------------------------
 
         if role == "OFFICER":
 
@@ -493,7 +519,14 @@ class AdminUserUpdateForm(forms.ModelForm):
                 )
 
         elif role == "ADMIN":
+
+            # PPC / System Admin does not require
+            # district, station or division.
             pass
+
+        # ----------------------------------------------------
+        # Station must belong to selected district
+        # ----------------------------------------------------
 
         if station and district:
 

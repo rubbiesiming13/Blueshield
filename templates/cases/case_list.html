@@ -1,178 +1,248 @@
 {% load static %}
 
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta charset="UTF-8">
 
-<title>My Cases | BlueShield</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
->
+    <title>My Cases | BlueShield</title>
 
-<link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    rel="stylesheet"
->
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-<link
-    rel="stylesheet"
-    href="{% static 'css/blueshield.css' %}"
->
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <!-- BlueShield Global CSS -->
+    <link
+        rel="stylesheet"
+        href="{% static 'css/blueshield.css' %}"
+    >
+
 </head>
+
 
 <body>
 
 <div class="container py-4">
 
 
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
 
-    <div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="text-muted small mb-1">
-            BlueShield / Case Management
-        </div>
+        <div>
 
-        <h2 class="fw-bold mb-1">
-            My Cases
-        </h2>
+            <div class="text-muted small mb-1">
+                BlueShield / Case Management
+            </div>
 
-        <p class="text-muted mb-0">
-            View and manage cases assigned to you.
-        </p>
+            <h2 class="fw-bold mb-1">
+                My Cases
+            </h2>
 
-    </div>
-
-    <a
-        href="{% url 'cases:register_case' %}"
-        class="btn btn-primary"
-    >
-        <i class="bi bi-plus-circle me-1"></i>
-        Register New Case
-    </a>
-
-</div>
-
-
-<!-- Case List -->
-<div class="card border-0 shadow-sm">
-
-    <div class="card-header bg-white py-3">
-
-        <div class="d-flex justify-content-between align-items-center">
-
-            <h5 class="mb-0 fw-semibold">
-                My Assigned Cases
-            </h5>
-
-            <span class="badge bg-primary">
-                {{ cases|length }}
-                Case{{ cases|length|pluralize }}
-            </span>
+            <p class="text-muted mb-0">
+                View and manage cases assigned to you.
+            </p>
 
         </div>
+
+
+        <!-- Register New Case -->
+
+        <a
+            href="{% url 'cases:register_case' %}"
+            class="btn btn-primary"
+        >
+
+            <i class="bi bi-plus-circle me-1"></i>
+
+            Register New Case
+
+        </a>
 
     </div>
 
 
-    <div class="card-body p-0">
 
-        {% if cases %}
+    <!-- =====================================================
+         CASE LIST CARD
+    ====================================================== -->
 
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead class="table-light">
-
-                        <tr>
-
-                            <th class="px-4">
-                                Case Number
-                            </th>
-
-                            <th>
-                                Case Title
-                            </th>
-
-                            <th>
-                                Offence
-                            </th>
-
-                            <th>
-                                Suspect
-                            </th>
-
-                            <th>
-                                Priority
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th class="text-end px-4">
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
+    <div class="card border-0 shadow-sm">
 
 
-                    <tbody>
+        <!-- Card Header -->
 
-                        {% for case in cases %}
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 fw-semibold">
+                    My Assigned Cases
+                </h5>
+
+
+                <span class="badge bg-primary">
+
+                    {{ cases|length }}
+
+                    Case{{ cases|length|pluralize }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Card Body -->
+
+        <div class="card-body p-0">
+
+
+            {% if cases %}
+
+
+                <!-- =================================================
+                     CASE TABLE
+                ================================================== -->
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+
+                        <!-- TABLE HEADER -->
+
+                        <thead class="table-light">
 
                             <tr>
 
-                                <!-- Case Number -->
+                                <th class="px-4">
+                                    Case Number
+                                </th>
+
+                                <th>
+                                    Case Title
+                                </th>
+
+                                <th>
+                                    Offence
+                                </th>
+
+                                <th>
+                                    Suspect
+                                </th>
+
+                                <th>
+                                    Priority
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th class="text-end px-4">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <!-- TABLE BODY -->
+
+                        <tbody>
+
+
+                            {% for case in cases %}
+
+                            <tr>
+
+
+                                <!-- =================================
+                                     CASE NUMBER
+                                ================================== -->
+
                                 <td class="px-4">
 
                                     <div class="fw-semibold">
+
                                         {{ case.case_number }}
+
                                     </div>
 
+
                                     <div class="small text-muted">
+
                                         {{ case.created_at|date:"d M Y" }}
+
                                     </div>
 
                                 </td>
 
 
-                                <!-- Title -->
+
+                                <!-- =================================
+                                     CASE TITLE
+                                ================================== -->
+
                                 <td>
 
                                     <div class="fw-semibold">
+
                                         {{ case.title }}
+
                                     </div>
+
 
                                     <div class="small text-muted">
+
                                         {{ case.station }}
+
                                     </div>
 
                                 </td>
 
 
-                                <!-- Offence -->
+
+                                <!-- =================================
+                                     OFFENCE
+                                ================================== -->
+
                                 <td>
+
                                     {{ case.offence }}
+
                                 </td>
 
 
-                                <!-- Suspect -->
+
+                                <!-- =================================
+                                     SUSPECT
+                                ================================== -->
+
                                 <td>
+
 
                                     {% if case.suspect %}
 
@@ -181,104 +251,158 @@
                                     {% else %}
 
                                         <span class="text-muted">
+
                                             Not registered
+
                                         </span>
 
                                     {% endif %}
 
+
                                 </td>
 
 
-                                <!-- Priority -->
+
+                                <!-- =================================
+                                     PRIORITY
+                                ================================== -->
+
                                 <td>
+
 
                                     {% if case.priority == "URGENT" %}
 
                                         <span class="badge bg-danger">
+
                                             Urgent
+
                                         </span>
+
 
                                     {% elif case.priority == "HIGH" %}
 
                                         <span class="badge bg-warning text-dark">
+
                                             High
+
                                         </span>
+
 
                                     {% else %}
 
                                         <span class="badge bg-secondary">
+
                                             Normal
+
                                         </span>
 
                                     {% endif %}
 
+
                                 </td>
 
 
-                                <!-- Status -->
+
+                                <!-- =================================
+                                     STATUS
+                                ================================== -->
+
                                 <td>
+
 
                                     {% if case.status == "OPEN" %}
 
                                         <span class="badge bg-primary">
+
                                             Pending
+
                                         </span>
+
 
                                     {% elif case.status == "INVESTIGATION" %}
 
                                         <span class="badge bg-info text-dark">
+
                                             Under Investigation
+
                                         </span>
+
 
                                     {% elif case.status == "WARRANT" %}
 
                                         <span class="badge bg-warning text-dark">
+
                                             Warrant Requested
+
                                         </span>
+
 
                                     {% elif case.status == "ARRESTED" %}
 
                                         <span class="badge bg-dark">
+
                                             Arrested
+
                                         </span>
+
 
                                     {% elif case.status == "CUSTODY" %}
 
                                         <span class="badge bg-danger">
+
                                             In Custody
+
                                         </span>
 
-                                    {% elif case.status == "FILE_PREPARED" %}
+
+                                    {% elif case.status == "CASE_FILE_PREPARED" %}
 
                                         <span class="badge bg-success">
+
                                             Case File Prepared
+
                                         </span>
+
 
                                     {% elif case.status == "PROSECUTION" %}
 
                                         <span class="badge bg-primary">
+
                                             Submitted to Prosecution
+
                                         </span>
+
 
                                     {% elif case.status == "CLOSED" %}
 
                                         <span class="badge bg-secondary">
+
                                             Closed
+
                                         </span>
+
 
                                     {% else %}
 
                                         <span class="badge bg-secondary">
+
                                             {{ case.get_status_display }}
+
                                         </span>
 
                                     {% endif %}
 
+
                                 </td>
 
 
-                                <!-- Action -->
+
+                                <!-- =================================
+                                     ACTION
+                                ================================== -->
+
                                 <td class="text-end px-4">
+
 
                                     <a
                                         href="{% url 'cases:detail' case.id %}"
@@ -291,60 +415,85 @@
 
                                     </a>
 
+
                                 </td>
+
 
                             </tr>
 
-                        {% endfor %}
+                            {% endfor %}
 
-                    </tbody>
 
-                </table>
+                        </tbody>
 
-            </div>
+                    </table>
 
-        {% else %}
+                </div>
 
-            <div class="text-center py-5">
 
-                <i
-                    class="bi bi-folder2-open"
-                    style="font-size: 3rem;"
-                ></i>
+            {% else %}
 
-                <h5 class="fw-semibold mt-3">
-                    No Cases Assigned
-                </h5>
 
-                <p class="text-muted mb-4">
-                    You currently have no cases assigned to you.
-                </p>
+                <!-- =================================================
+                     EMPTY STATE
+                ================================================== -->
 
-                <a
-                    href="{% url 'cases:register_case' %}"
-                    class="btn btn-primary"
-                >
+                <div class="text-center py-5">
 
-                    <i class="bi bi-plus-circle me-1"></i>
 
-                    Register New Case
+                    <i
+                        class="bi bi-folder2-open"
+                        style="font-size: 3rem;"
+                    ></i>
 
-                </a>
 
-            </div>
+                    <h5 class="fw-semibold mt-3">
 
-        {% endif %}
+                        No Cases Assigned
+
+                    </h5>
+
+
+                    <p class="text-muted mb-4">
+
+                        You currently have no cases assigned to you.
+
+                    </p>
+
+
+                    <a
+                        href="{% url 'cases:register_case' %}"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-plus-circle me-1"></i>
+
+                        Register New Case
+
+                    </a>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
 
     </div>
 
-</div>
-```
 
 </div>
+
+
+
+<!-- Bootstrap JavaScript -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
+
 
 </body>
 
