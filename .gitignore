@@ -38,3 +38,5 @@ Thumbs.db
 
 mugshots/
 media/
+
+seed_demo_data.py
