@@ -6,8 +6,6 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.utils import timezone
 
 from .models import User, SevisPassOTP
-from audit_logs.models import AuditLog
-
 
 # ============================================================
 # GENERATE TEST SEVISPASS ID
