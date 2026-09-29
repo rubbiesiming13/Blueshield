@@ -1,8 +1,8 @@
-
 import secrets
 
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -156,6 +156,9 @@ def send_sevispass_otp_email(user, otp):
     """
     Send the SevisPass OTP to the user's registered email
     address using Django's configured Gmail SMTP server.
+
+    The OTP itself is never stored in plain text.
+    It is only passed here for email delivery.
     """
 
     # --------------------------------------------------------
@@ -204,6 +207,19 @@ SevisPass Security System
 """.strip()
 
     # --------------------------------------------------------
+    # SMTP diagnostic information
+    # --------------------------------------------------------
+
+    print("=" * 70)
+    print("SEVISPASS OTP EMAIL START")
+    print("Recipient:", user.email)
+    print("Sender:", settings.DEFAULT_FROM_EMAIL)
+    print("SMTP host:", settings.EMAIL_HOST)
+    print("SMTP port:", settings.EMAIL_PORT)
+    print("SMTP TLS:", settings.EMAIL_USE_TLS)
+    print("=" * 70)
+
+    # --------------------------------------------------------
     # Send email
     # --------------------------------------------------------
 
@@ -212,20 +228,32 @@ SevisPass Security System
         sent_count = send_mail(
             subject=subject,
             message=message,
-            from_email=None,
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
             fail_silently=False,
         )
 
-    except Exception:
+    except Exception as e:
 
-        raise RuntimeError(
-            "The SevisPass OTP email could not be sent."
-        )
+        print("=" * 70)
+        print("SEVISPASS EMAIL ERROR")
+        print("Exception type:", type(e).__name__)
+        print("Exception:", str(e))
+        print("=" * 70)
+
+        raise
 
     # --------------------------------------------------------
-    # Confirm successful delivery request
+    # Confirm successful SMTP send request
     # --------------------------------------------------------
+
+    print("=" * 70)
+    print(
+        "SEVISPASS OTP EMAIL SEND RESULT:",
+        sent_count
+    )
+    print("SEVISPASS OTP EMAIL FINISHED")
+    print("=" * 70)
 
     if sent_count != 1:
 
@@ -474,4 +502,3 @@ def log_activity(
         ip_address=ip_address,
         details=details,
     )
-

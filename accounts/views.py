@@ -1,7 +1,7 @@
 # accounts/views.py
 
 from datetime import datetime, timedelta
-
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -192,7 +192,18 @@ def sevispass_verify_view(request):
                         otp,
                     )
 
-                except Exception:
+                except Exception as e:
+
+                    print("=" * 70)
+                    print("SEVISPASS EMAIL ERROR")
+                    print("Exception type:", type(e).__name__)
+                    print("Exception:", str(e))
+                    print("User:", user.username)
+                    print("Email:", user.email)
+                    print("SMTP TLS:", settings.EMAIL_USE_TLS)
+                    print("=" * 70)
+
+    
 
                     # --------------------------------------------
                     # Prevent an OTP that was not successfully
@@ -254,6 +265,7 @@ def sevispass_verify_view(request):
                             "form": form,
                         },
                     )
+
 
                 # ------------------------------------------------
                 # STORE OTP INFORMATION IN SESSION
@@ -537,15 +549,7 @@ def sevispass_otp_view(request):
                     # SUCCESS MESSAGE
                     # ----------------------------------------
 
-                    messages.success(
-                        request,
-                        (
-                            "SevisPass identity successfully "
-                            "verified. Please continue with "
-                            "your BlueShield login."
-                        ),
-                    )
-
+                    
                     return redirect(
                         "accounts:login"
                     )

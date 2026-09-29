@@ -14,12 +14,8 @@ from accounts.services import log_activity
 
 
 def generate_complaint_number():
-    """
-    Generate a complaint number such as:
-    CMP-2026-0001
-    """
-
-    year = timezone.now().year
+    current_time = timezone.localtime(timezone.now())
+    year = current_time.year
 
     last_complaint = (
         Complaint.objects
@@ -169,24 +165,24 @@ def create_complaint(request):
         # AUDIT LOG
         # ----------------------------------------------------
 
-        log_activity(
-            request=request,
-            action="CREATE",
-            target_model="Complaint",
-            target_id=complaint.pk,
-            details=(
-                f"Created complaint "
-                f"{complaint.complaint_number}. "
-                f"Station: {station.name}. "
-                f"District: "
-                f"{district.name if district else 'N/A'}."
-            ),
-        )
+    log_activity(
+    user=request.user,
+    action="CREATE",
+    target_model="Complaint",
+    target_id=complaint.pk,
+    details=(
+        f"Created complaint "
+        f"{complaint.complaint_number}. "
+        f"Station: {station.name}. "
+        f"District: "
+        f"{district.name if district else 'N/A'}."
+    ),
+)
 
-        # Go back to My Complaints
-        return redirect(
-            "complaints:list"
-        )
+# Go back to My Complaints
+    return redirect(
+    "complaints:list"
+)
 
     # --------------------------------------------------------
     # VALIDATION ERROR
@@ -395,24 +391,18 @@ def edit_complaint(request, pk):
         # AUDIT LOG
         # ----------------------------------------------------
 
-        log_activity(
-    request=request,
-    action="UPDATE",
-    target_model="Complaint",
-    target_id=complaint.pk,
-    details=(
-        f"Updated complaint "
-        f"{complaint.complaint_number}. "
-        f"Station: "
-        f"{complaint.station.name if complaint.station else 'N/A'}."
-    ),
-)
-
-        # After editing, show the complaint details
-        return redirect(
-            "complaints:detail",
-            pk=complaint.pk,
-        )
+    log_activity(
+        user=request.user,
+        action="UPDATE",
+        target_model="Complaint",
+        target_id=complaint.pk,
+        details=(
+            f"Updated complaint "
+            f"{complaint.complaint_number}. "
+            f"Station: "
+            f"{complaint.station.name if complaint.station else 'N/A'}."
+        ),
+    )
 
     # --------------------------------------------------------
     # VALIDATION ERROR

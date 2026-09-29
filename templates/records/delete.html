@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delete Arrest Record | BlueShield</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0f2d4d;
+            --blue: #173f6b;
+            --border: #d4dde5;
+            --text: #263544;
+            --muted: #687786;
+            --danger: #a33a3a;
+            --danger-dark: #8d2f2f;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #dceaf5 0%,
+                    #edf5fb 45%,
+                    #d4e5f2 100%
+                );
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 25px;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            background: var(--navy);
+            color: white;
+            padding: 25px 28px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 20px rgba(15,45,77,.25);
+        }
+
+        .page-header h1 {
+            font-size: 27px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #d9e3eb;
+            font-size: 14px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: rgba(255,255,255,.98);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 7px 20px rgba(36,52,71,.09);
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 35px;
+        }
+
+        /* WARNING */
+
+        .warning-icon {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #fbeaea;
+            color: var(--danger);
+
+            border: 1px solid #eccaca;
+            border-radius: 50%;
+
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .confirmation {
+            text-align: center;
+        }
+
+        .confirmation h2 {
+            color: var(--navy);
+            font-size: 23px;
+            margin-bottom: 9px;
+        }
+
+        .confirmation > p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 650px;
+            margin: 0 auto 25px;
+        }
+
+        /* RECORD */
+
+        .record-summary {
+            background: #f6f9fb;
+            border: 1px solid #dce5eb;
+            border-radius: 9px;
+            padding: 20px;
+            text-align: left;
+            margin: 25px 0;
+        }
+
+        .record-title {
+            color: #365d7a;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .record-item {
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5ebef;
+        }
+
+        .record-label {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+
+        .record-value {
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* WARNING NOTICE */
+
+        .danger-notice {
+            background: #fbeaea;
+            border: 1px solid #eccaca;
+            border-left: 4px solid var(--danger);
+            border-radius: 7px;
+            padding: 15px;
+            text-align: left;
+            color: #7f3a3a;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 22px;
+        }
+
+        /* ACTIONS */
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 7px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border-color: #cbd6df;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f6f8;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+
+        /* FOOTER */
+
+        .page-footer {
+            text-align: center;
+            color: #788894;
+            font-size: 13px;
+            padding-top: 22px;
+        }
+
+        @media (max-width: 650px) {
+
+            .page-container {
+                padding: 25px 15px;
+            }
+
+            .card-body {
+                padding: 23px;
+            }
+
+            .record-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <h1>
+            Delete Arrest Record
+        </h1>
+
+        <p>
+            BlueShield record management and security control.
+        </p>
+
+    </div>
+
+
+    <!-- CARD -->
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="confirmation">
+
+                <div class="warning-icon">
+                    !
+                </div>
+
+
+                <h2>
+                    Confirm Record Deletion
+                </h2>
+
+
+                <p>
+                    Are you sure you want to permanently delete this
+                    arrest record? This action cannot be undone.
+                </p>
+
+
+                <!-- RECORD SUMMARY -->
+
+                <div class="record-summary">
+
+                    <div class="record-title">
+                        {{ record.arrest_tracking_id }}
+                    </div>
+
+
+                    <div class="record-grid">
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                OB Number
+                            </div>
+
+                            <div class="record-value">
+                                {{ record.occurrence_book_no }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                Suspect
+                            </div>
+
+                            <div class="record-value">
+                                {{ record.suspect }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                Case
+                            </div>
+
+                            <div class="record-value">
+
+                                {% if record.case %}
+                                    {{ record.case.case_number }}
+                                {% else %}
+                                    No case linked
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                Arrest Date
+                            </div>
+
+                            <div class="record-value">
+                                {{ record.arrest_datetime|date:"d M Y, H:i" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                Arrest Location
+                            </div>
+
+                            <div class="record-value">
+                                {{ record.arrest_location }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="record-item">
+
+                            <div class="record-label">
+                                Custody Status
+                            </div>
+
+                            <div class="record-value">
+                                {{ record.get_custody_status_display }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WARNING -->
+
+                <div class="danger-notice">
+
+                    <strong>Important:</strong>
+
+                    Deleting this record will permanently remove it
+                    from the BlueShield arrest-record database.
+                    The operation is subject to the system's
+                    record-protection rules.
+
+                </div>
+
+
+                <!-- FORM -->
+
+                <form
+                    method="POST"
+                    action="{% url 'records:delete' record.pk %}"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="actions">
+
+                        <a
+                            href="{% url 'records:detail' record.pk %}"
+                            class="btn btn-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                        >
+                            Yes, Delete Record
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="page-footer">
+
+        BlueShield — Police Arrest Records and Case Management System
+
+    </div>
+
+</div>
+
+</body>
+</html>

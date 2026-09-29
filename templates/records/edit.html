@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Arrest Record | BlueShield</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0f2d4d;
+            --blue: #173f6b;
+            --blue-light: #eaf2f9;
+            --page-bg: #e7edf2;
+            --card: #ffffff;
+            --border: #d4dde5;
+            --text: #263544;
+            --muted: #687786;
+            --danger: #a33a3a;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #dceaf5 0%,
+                    #edf5fb 45%,
+                    #d4e5f2 100%
+                );
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 35px;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            background: var(--navy);
+            color: white;
+            padding: 28px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(15,45,77,.25);
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: #d9e3eb;
+            font-size: 14px;
+        }
+
+        .tracking {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(255,255,255,.1);
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* CARD */
+
+        .card {
+            background: rgba(255,255,255,.98);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(36,52,71,.08);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #f8fafb;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 25px;
+        }
+
+        .card-header h2 {
+            color: var(--navy);
+            font-size: 19px;
+            margin-bottom: 4px;
+        }
+
+        .card-header p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .card-body {
+            padding: 28px;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 21px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: #425568;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #cbd6df;
+            border-radius: 7px;
+            padding: 11px 12px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: .2s ease;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #557994;
+            box-shadow: 0 0 0 3px rgba(85,121,148,.12);
+        }
+
+        select[multiple] {
+            min-height: 150px;
+        }
+
+        .help-text {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .error-list {
+            margin-top: 6px;
+            color: #a33a3a;
+            font-size: 12px;
+        }
+
+        .field-error {
+            border-color: #c44;
+        }
+
+        /* SYSTEM INFO */
+
+        .system-info {
+            background: #edf5fb;
+            border: 1px solid #c9dce9;
+            border-radius: 8px;
+            padding: 17px;
+            margin-bottom: 25px;
+        }
+
+        .system-info h3 {
+            color: var(--navy);
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .system-item span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .system-item strong {
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* SECURITY */
+
+        .security-notice {
+            margin-top: 25px;
+            background: #f5f8fa;
+            border-left: 4px solid #365d7a;
+            border-radius: 7px;
+            padding: 15px;
+            color: #536777;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ACTIONS */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 25px;
+            margin-top: 25px;
+            border-top: 1px solid #e2e8ed;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 7px;
+            padding: 11px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .btn-primary {
+            background: #365d7a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #294b65;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid #cbd6df;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f6f8;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #8d2f2f;
+        }
+
+        /* MESSAGES */
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            border-radius: 7px;
+            margin-bottom: 8px;
+            background: #fbeaea;
+            border: 1px solid #eccaca;
+            color: #8e3636;
+            font-size: 13px;
+        }
+
+        /* FOOTER */
+
+        .page-footer {
+            text-align: center;
+            color: #788894;
+            font-size: 13px;
+            padding: 22px 0;
+        }
+
+        @media (max-width: 750px) {
+
+            .page-container {
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .system-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <h1>
+            Edit Arrest Record
+        </h1>
+
+        <p>
+            Update the recorded arrest information.
+        </p>
+
+        <span class="tracking">
+            {{ record.arrest_tracking_id }}
+        </span>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+
+                <div class="message">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Arrest Record Information
+            </h2>
+
+            <p>
+                Update the information below and save the changes.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- SYSTEM CONTROLLED INFORMATION -->
+
+            <div class="system-info">
+
+                <h3>
+                    System-Controlled Information
+                </h3>
+
+                <div class="system-grid">
+
+                    <div class="system-item">
+
+                        <span>
+                            Arresting Officer
+                        </span>
+
+                        <strong>
+
+                            {% if record.arresting_officer.get_full_name %}
+                                {{ record.arresting_officer.get_full_name }}
+                            {% else %}
+                                {{ record.arresting_officer.username }}
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="system-item">
+
+                        <span>
+                            Police Station
+                        </span>
+
+                        <strong>
+                            {{ record.station.name }}
+                        </strong>
+
+                    </div>
+
+                    <div class="system-item">
+
+                        <span>
+                            District
+                        </span>
+
+                        <strong>
+
+                            {% if record.station.district %}
+                                {{ record.station.district.name }}
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="error-list">
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="form-grid">
+
+                    {% for field in form %}
+
+                        <div
+                            class="form-group
+                            {% if field.name == 'reason_for_arrest' %}
+                                full
+                            {% elif field.name == 'property_seized' %}
+                                full
+                            {% elif field.name == 'physical_condition_at_intake' %}
+                                full
+                            {% elif field.name == 'offences' %}
+                                full
+                            {% endif %}"
+                        >
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+
+                                {% if field.field.required %}
+                                    <span style="color:#a33a3a;">*</span>
+                                {% endif %}
+
+                            </label>
+
+
+                            {{ field }}
+
+
+                            {% if field.help_text %}
+
+                                <div class="help-text">
+                                    {{ field.help_text }}
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if field.errors %}
+
+                                <div class="error-list">
+
+                                    {{ field.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- SECURITY -->
+
+                <div class="security-notice">
+
+                    <strong>Security:</strong>
+
+                    Arresting officer and police station information
+                    are controlled by BlueShield and cannot be changed
+                    through this form.
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="form-actions">
+
+                    <a
+                        href="{% url 'records:detail' record.pk %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                    <a
+                        href="{% url 'records:delete' record.pk %}"
+                        class="btn btn-danger"
+                    >
+                        Delete Record
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div class="page-footer">
+
+        BlueShield — Police Arrest Records and Case Management System
+
+    </div>
+
+</div>
+
+</body>
+</html>
